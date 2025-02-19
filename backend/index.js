@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema({
     discounted_price: Number,
     rating: Number,
     quantity_ordered: Number,
+    unit: String,
     barcode: String,
     avail: Boolean,
     codenum: String,

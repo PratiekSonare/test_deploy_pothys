@@ -13,7 +13,7 @@ export default function App() {
     <>
       <Swiper
           breakpoints={
-            JSON.stringify({
+            {
             960: {
               slidesPerView: 4,
               spaceBetween: 8
@@ -30,7 +30,7 @@ export default function App() {
               slidesPerView: 1,
               spaceBetween: 2
             }
-          })
+          }
         }
         pagination={{ clickable: true }}
         modules={[Pagination]}
