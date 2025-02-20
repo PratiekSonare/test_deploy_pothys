@@ -62,11 +62,14 @@ export default function AdminDashboard() {
     };
 
     const updateProductData = async (data) => {
+        const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put('/api/products', { ...data, _id: editingProduct._id }); // Send updated data in the body
+            await axios.put('http://localhost:5000/api/products', updatedData); // Send updated data in the body
+            console.log('PUT Request successful!');
             fetchProducts(); // Refresh the product list
             reset(); // Reset the form
             setEditingProduct(null); // Clear editing state
+            setShowPopup(true); // Show confirmation popup if needed
         } catch (error) {
             console.error("Error updating product:", error.response ? error.response.data : error.message);
         }
@@ -98,7 +101,7 @@ export default function AdminDashboard() {
     };
 
     const updateProduct = (product) => {
- setEditingProduct(product);
+        setEditingProduct(product);
         reset({
             name: product.name || "", 
             price: product.price || 0, 
@@ -149,17 +152,20 @@ export default function AdminDashboard() {
     const discount = watch("discount");
     const discountedPrice = watch("discounted_price");
 
+    const [calculatedDiscountedPrice, setCalculatedDiscountedPrice] = useState(0);
+    const [calculatedDiscount, setCalculatedDiscount] = useState(0);
+    
     useEffect(() => {
         if (price && discount) {
-            const calculatedDiscountedPrice = price - (price * (discount / 100));
-            reset({ ...watch(), discounted_price: calculatedDiscountedPrice });
+            const newDiscountedPrice = price - (price * (discount / 100));
+            setCalculatedDiscountedPrice(newDiscountedPrice);
         }
     }, [price, discount]);
-
+    
     useEffect(() => {
         if (discountedPrice && price) {
-            const calculatedDiscount = ((price - discountedPrice) / price) * 100;
-            reset({ ...watch(), discount: calculatedDiscount });
+            const newDiscount = ((price - discountedPrice) / price) * 100;
+            setCalculatedDiscount(newDiscount);
         }
     }, [discountedPrice, price]);
 
@@ -226,26 +232,71 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <input {...register("name")} placeholder="Product Name" required className=" border p-2 rounded w-full" />
-                    <input {...register("price")} type="number" placeholder="Price" required className="border p-2 rounded w-full" />
-                    <div className="flex space-x-2 ">
-                        <input {...register("quantity")} type="number" placeholder="Quantity" required className="border p-2 rounded w-2/3" />
-                        <select {...register("unit")} required className="border p-2 rounded w-1/3">
-                            <option value="kg">kg</option>
-                            <option value="litre">litre</option>
-                            <option value="unit">units</option>
-                        </select>
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Product Name</span>
+                        <input {...register("name")} placeholder="Product Name" required className=" border p-2 rounded w-full" />
                     </div>                    
-                    <input {...register("discount")} type="number" placeholder="Discount (%)" className="border p-2 rounded w-full" />
-                    {/* <input {...register("discounted_price")} type="number" placeholder="Discounted Price" className="border p-2 rounded w-full" /> */}
-                    <input {...register("rating")} type="number" step="0.1" placeholder="Rating (1-5)" className="border p-2 rounded w-full" />
-                    <input {...register("quantity_ordered")} type="number" placeholder="Quantity Ordered" className="border p-2 rounded w-full" />
-                    <input {...register("barcode")} type="text" placeholder="Barcode" className="border p-2 rounded w-full" />
-                    <input {...register("codenum")} type="text" placeholder="Code Number" className="border p-2 rounded w-full" />
-                    <input {...register("imageURL")} type="text" placeholder="Image URL" className="border p-2 rounded w-full" />
+
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Product Price</span>
+                        <input {...register("price")} type="number" placeholder="Price" required className="border p-2 rounded w-full" />
+                    </div>
+
+                   <div className="flex space-x-2 ">
+                        <div className="flex flex-col items-start justify-center flex-grow">
+                            <span>Product Name</span>
+                            <input {...register("quantity")} type="number" placeholder="Quantity" required className="flex flex-grow border p-2 rounded w-2/3" />
+                        </div>
+                        <div className="flex flex-col items-start justify-center flex-grow">
+                            <span>Unit</span>
+                            <select {...register("unit")} required className="flex flex-grow border p-2 rounded w-1/3">
+                                <option value="kg">kg</option>
+                                <option value="litre">litre</option>
+                                <option value="unit">units</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4"> {/* Use gap for spacing between columns */}
+                    <div className="flex flex-col">
+                        <label className="mb-1">Product Name</label> {/* Use label for accessibility */}
+                        <input 
+                            {...register("discount")} 
+                            type="number" 
+                            placeholder="Discount (%)" 
+                            className="border p-2 rounded w-full" 
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="mb-1">Product Rating</label> {/* Use label for accessibility */}
+                        <input 
+                            {...register("rating")} 
+                            type="number" 
+                            step="0.1" 
+                            placeholder="Rating (1-5)" 
+                            className="border p-2 rounded w-full" 
+                        />
+                    </div>
+                </div>
+                   <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Quantity Ordered</span>   
+                        <input {...register("quantity_ordered")} type="number" placeholder="Quantity Ordered" className="border p-2 rounded w-full" />
+                    </div>
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Barcode</span>   
+                        <input {...register("barcode")} type="text" placeholder="Barcode" className="border p-2 rounded w-full" />
+                    </div>
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Code Number</span>   
+                        <input {...register("codenum")} type="text" placeholder="Code Number" className="border p-2 rounded w-full" />
+                    </div>
+
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Image URL</span>   
+                        <input {...register("imageURL")} type="text" placeholder="Image URL" className="border p-2 rounded w-full" />
+                    </div>
 
                     <div className="flex flex-row items-center space-x-5 w-full">
-                        <div className="flex flex-col items-center justify-center flex-grow">
+                        <div className="flex flex-col items-start justify-center flex-grow">
                             <span>Select Category</span>
                             <select {...register("category")} required className="border p-2 rounded w-full">
                                 {categories.map((category, index) => (
@@ -255,16 +306,14 @@ export default function AdminDashboard() {
                                 ))}
                             </select>
                         </div>
-                    </div>
-                    <div className="flex flex-row items-center space-x-5 w-full">
-                        <div className="flex flex-col items-center justify"> 
+                        <div className="flex flex-col items-start justify"> 
                             <span>Deal of the Week</span>
                             <select {...register("dow")} required className="border p-2 rounded w-full">
                                 <option value="true">True</option>
                                 <option value="false">False</option>
                             </select>
                         </div>
-                        <div className="flex flex-col items-center justify-center flex-grow">
+                        <div className="flex flex-col items-start justify-center flex-grow">
                             <span>Availability</span>
                             <select {...register("avail")} required className="border p-2 rounded w-full">
                                 <option value="true">Available</option>
@@ -272,7 +321,10 @@ export default function AdminDashboard() {
                             </select>
                         </div>
                     </div>
-                    <input type="file" accept=".csv" placeholder="Upload Inventory" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
+                    <div className="flex flex-col items-start justify-center flex-grow">
+                        <span>Upload Inventory CSV</span>
+                        <input type="file" accept=".csv" placeholder="Upload Inventory" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
+                    </div>
                 </div>
 
                 <button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
@@ -298,6 +350,7 @@ export default function AdminDashboard() {
                     onCancel={() => setShowConfirmUpload(false)}
                 />
             )}
+
 
             <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700 mb-2">Filter Products</h2>
@@ -325,103 +378,107 @@ export default function AdminDashboard() {
             <div className="bg-white p-6 rounded-lg shadow-md text-black">
                 <div className="flex flex-row space-x-10 justify-between items-center">
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">Product List</h2>
-                    <div className="flex flex-grow mb-4 text-black">
-                        <input 
-                            type="text" 
-                            placeholder="Search by Product Name" 
-                            value={searchTerm} 
-                            onChange={handleSearchChange} 
-                            className="border p-2 rounded w-full"
-                        />
-                    </div>                
+                    <div className="flex flex-row mb-4 space-x-10 text-black">
+                        <div className="flex my-4 flex-grow">
+                            <input 
+                                type="text" 
+                                placeholder="Search by Product Name" 
+                                value={searchTerm} 
+                                onChange={handleSearchChange} 
+                                className="border p-2 rounded w-full"
+                            />
+                        </div>
+                        <button 
+                            onClick={confirmDelete} 
+                            className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition my-4"
+                            disabled={selectedProducts.length === 0}
+                        >
+                            Delete Selected Products
+                        </button>
+                    </div>         
                 </div>    
-                <table className="w-full border border-gray-300 rounded-lg">
-                    <thead className="bg-gray-200">
-                        <tr>
-                            <th className="p-2 border">
-                                <input 
-                                    type="checkbox" 
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setSelectedProducts(products.map(product => product._id));
-                                        } else {
-                                            setSelectedProducts([]);
-                                        }
-                                    }} 
-                                />
-                            </th>
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Price</th>
-                            <th className="p-2 border">Quantity</th>
-                            <th className="p-2 border">Unit</th>
-                            <th className="p-2 border">Discount</th>
-                            <th className="p-2 border">Discounted Price</th>
-                            <th className="p-2 border">Rating</th>
-                            <th className="p-2 border">Quantity Ordered</th>
-                            <th className="p-2 border">Barcode</th>
-                            <th className="p-2 border">Availability</th>
-                            <th className="p-2 border">Category</th>
-                            <th className="p-2 border">Image URL</th>
-                            <th className="p-2 border">DOW</th>
-                            <th className="p-2 border">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.map((product, index) => (
-                            <tr key={product._id} className={index % 2 === 0 ? "bg-[#dbdbdb]" : "bg-white"}>
-                                <td className="p-2 border">
+                <div style={{ height: '500px', overflowY: 'auto' }}>
+                    <table className="w-full border border-gray-300 rounded-lg">
+                        <thead className="bg-gray-200">
+                            <tr>
+                                <th className="p-2 border">
                                     <input 
                                         type="checkbox" 
-                                        checked={selectedProducts.includes(product._id)} 
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                setSelectedProducts([...selectedProducts, product._id]);
+                                                setSelectedProducts(products.map(product => product._id));
                                             } else {
-                                                setSelectedProducts(selectedProducts.filter(id => id !== product._id));
+                                                setSelectedProducts([]);
                                             }
                                         }} 
                                     />
-                                </td>
-                                <td className="p-2 border">{product.name}</td>
-                                <td className="p-2 border">₹{product.price}</td>
-                                <td className="p-2 border">{product.quantity}</td>
-                                <td className="p-2 border">{product.unit}</td>
-                                <td className="p-2 border">{product.discount}%</td>
-                                <td className="p-2 border">₹{product.discounted_price}</td>
-                                <td className="p-2 border">{product.rating} ⭐</td>
-                                <td className="p-2 border">{product.quantity_ordered}</td>
-                                <td className="p-2 border">{product.barcode}</td>
-                                <td className="p-2 border">{product.avail ? "✅ Available" : " ❌ Out of Stock"}</td>
-                                <td className="p-2 border">{product.category}</td>
-                                <td className="p-2 border">{product.imageURL}</td>
-                                <td className="p-2 border">{product.dow ? "Yes" : "No"}</td>
-                                <td className="p-2 border">
-                                    <div className="flex flex-col space-y-2">
-                                        <button onClick={() => updateProduct(product)} className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition">
-                                            Update/Edit
-                                        </button>
-                                        <button onClick={() => deleteProduct(product._id)} className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
+                                </th>
+                                <th className="p-2 border">Name</th>
+                                <th className="p-2 border">Price</th>
+                                <th className="p-2 border">Quantity</th>
+                                <th className="p-2 border">Unit</th>
+                                <th className="p-2 border">Discount</th>
+                                <th className="p-2 border">Discounted Price</th>
+                                <th className="p-2 border">Rating</th>
+                                <th className="p-2 border">Quantity Ordered</th>
+                                <th className="p-2 border">Barcode</th>
+                                <th className="p-2 border">Availability</th>
+                                <th className="p-2 border">Category</th>
+                                <th className="p-2 border">Image URL</th>
+                                <th className="p-2 border">DOW</th>
+                                <th className="p-2 border">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <button 
-                    onClick={confirmDelete} 
-                    className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition mt-4"
-                    disabled={selectedProducts.length === 0}
-                >
-                    Delete Selected Products
-                </button>
+                        </thead>
+                        <tbody>
+                            {filteredProducts.map((product, index) => (
+                                <tr key={product._id} className={index % 2 === 0 ? "bg-[#dbdbdb]" : "bg-white"}>
+                                    <td className="p-2 border">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedProducts.includes(product._id)} 
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedProducts([...selectedProducts, product._id]);
+                                                } else {
+                                                    setSelectedProducts(selectedProducts.filter(id => id !== product._id));
+                                                }
+                                            }} 
+                                        />
+                                    </td>
+                                    <td className="p-2 border">{product.name}</td>
+                                    <td className="p-2 border">₹{product.price}</td>
+                                    <td className="p-2 border">{product.quantity}</td>
+                                    <td className="p-2 border">{product.unit}</td>
+                                    <td className="p-2 border">{product.discount}%</td>
+                                    <td className="p-2 border">₹{product.discounted_price}</td>
+                                    <td className="p-2 border">{product.rating} ⭐</td>
+                                    <td className="p-2 border">{product.quantity_ordered}</td>
+                                    <td className="p-2 border">{product.barcode}</td>
+                                    <td className="p-2 border">{product.avail ? "✅ Available" : " ❌ Out of Stock"}</td>
+                                    <td className="p-2 border">{product.category}</td>
+                                    <td className="p-2 border">{product.imageURL}</td>
+                                    <td className="p-2 border">{product.dow ? "Yes" : "No"}</td>
+                                    <td className="p-2 border">
+                                        <div className="flex flex-col space-y-2">
+                                            <button onClick={() => updateProduct(product)} className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition">
+                                                Update/Edit
+                                            </button>
+                                            <button onClick={() => deleteProduct(product._id)} className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {showPopup && (
                 <ConfirmationPopup
                     message={actionType === "delete" ? "Are you sure you want to delete this product?" : "Are you sure you want to update this product?"}
-                    onConfirm={actionType === "delete" ? confirmDelete : null}
+                    onConfirm={actionType === "delete" ? confirmDelete : updateProductData}
                     onCancel={() => setShowPopup(false)}
                 />
             )}

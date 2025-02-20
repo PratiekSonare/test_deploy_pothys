@@ -157,18 +157,25 @@ app.put('/api/products', async (req, res) => {
     }
 });
 
-// Delete Products (Single or Multiple)
+// Delete Products (Single or Multiple or Clear All)
 app.delete('/api/products', async (req, res) => {
     try {
+        // Check if the request body contains a flag to clear all products
+        if (req.body.clearAll) {
+            // Clear all products
+            await Product.deleteMany({});
+            return res.json({ message: 'All products cleared' });
+        }
+
         // Check if the request body contains an array of IDs
         if (Array.isArray(req.body)) {
             // Use deleteMany to remove products with the specified IDs
             await Product.deleteMany({ _id: { $in: req.body } });
-            res.json({ message: 'Products deleted' });
+            return res.json({ message: 'Products deleted' });
         } else {
             // If a single ID is provided, delete that product
             await Product.findByIdAndDelete(req.body._id);
-            res.json({ message: 'Product deleted' });
+            return res.json({ message: 'Product deleted' });
         }
     } catch (error) {
         res.status(400).json({ message: error.message });
