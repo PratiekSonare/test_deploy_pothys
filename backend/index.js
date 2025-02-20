@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import csv from 'csv-parser'; // Ensure you have this package installed
+import fs from 'fs';
 
 dotenv.config();
 const app = express();
@@ -20,6 +24,9 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
+// Set up multer for file uploads
+const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
+
 // Product Schema
 const productSchema = new mongoose.Schema({
     name: String,
@@ -35,12 +42,64 @@ const productSchema = new mongoose.Schema({
     codenum: String,
     category: String,
     imageURL: String,
-    dow: String
+    dow: Boolean
+});
+
+// Admin schema
+const adminSchema = new mongoose.Schema({
+    username: String,
+    password: String,
 });
 
 const Product = mongoose.model('Product', productSchema, 'productlist');
+const Admin = mongoose.model("Admin", adminSchema, 'admin');
 
 // API Routes
+app.post("/api/admin/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        console.log("Received username:", username);
+        console.log("Received password:", password);
+
+        // Find the admin by username
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            console.log("Admin not found");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        // Compare plain text password directly
+        if (admin.password !== password) {
+            console.log("Password does not match");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        // Generate a token
+        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.json({ success: true, token });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+// Middleware to protect routes
+const authenticate = (req, res, next) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(403).send("A token is required for authentication");
+
+    jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(401).send("Invalid Token");
+        req.user = decoded; // Store the decoded token in the request object
+        next(); // Proceed to the next middleware or route handler
+    });
+};
+
+// Protected admin route
+app.get("/api/admin", authenticate, (req, res) => {
+    res.send("Welcome to the admin dashboard!");
+});
 
 // Add Products (Single or Multiple)
 app.post('/api/products', async (req, res) => {
@@ -101,10 +160,13 @@ app.put('/api/products', async (req, res) => {
 // Delete Products (Single or Multiple)
 app.delete('/api/products', async (req, res) => {
     try {
+        // Check if the request body contains an array of IDs
         if (Array.isArray(req.body)) {
-            await Product.deleteMany({ _id: { $in: req.body.map(p => p._id) } });
+            // Use deleteMany to remove products with the specified IDs
+            await Product.deleteMany({ _id: { $in: req.body } });
             res.json({ message: 'Products deleted' });
         } else {
+            // If a single ID is provided, delete that product
             await Product.findByIdAndDelete(req.body._id);
             res.json({ message: 'Product deleted' });
         }
@@ -113,4 +175,41 @@ app.delete('/api/products', async (req, res) => {
     }
 });
 
+// Endpoint to handle CSV upload
+app.post('/api/products/upload', upload.single('file'), async (req, res) => {
+    const results = [];
+
+    // Check if a file was uploaded
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Read the CSV file and convert it to JSON
+    fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => {
+            console.log("Raw data:", data); // Log the raw data
+            data.avail = data.avail === "true" || data.avail === "TRUE" || data.avail === "Yes";
+            data.dow = data.dow === "true" || data.dow === "TRUE" || data.dow === "Yes";
+            console.log("Parsed data:", data); // Log the parsed data
+            results.push(data);
+        })
+        .on('end', async () => {
+            try {
+                await Product.insertMany(results); // Bulk insert into the database
+                res.status(200).json({ message: 'Products added successfully', data: results });
+            } catch (error) {
+                console.error("Error saving products:", error);
+                res.status(500).json({ message: 'Error saving products', error });
+            } finally {
+                fs.unlinkSync(req.file.path); // Delete the temporary file
+            }
+        })
+        .on('error', (error) => {
+            console.error("Error reading CSV file:", error);
+            res.status(500).json({ message: 'Error reading CSV file', error });
+        });
+});
+
+// Start the server
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
