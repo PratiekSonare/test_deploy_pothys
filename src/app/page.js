@@ -3,6 +3,8 @@ import Header from "./header/Header"
 import ProductCard from './ProductCard'
 import Card from "./Card"
 import BestDeals from "./BestDeals";
+import ShadcnCard from "./ShadcnCard"
+import ShadcnCardAlt from "./ShadcnCardAlt"
 
 export default function Home() {
   return (
@@ -12,11 +14,17 @@ export default function Home() {
       </header>
       
       <div className="p-5 md:p-10">
-        <div className="flex flex-col bg-gray-300 rounded-lg">
-          <span className="text-md md:text-2xl mx-5 md:mx-10 mt-5 md:mt-5 -mb-5 md:-mb-8">Best Deals</span>
-          <div><Card/></div>
+        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5">
+          <span className="text-[30px] items-start">Best Deals</span>
+          <div className=""><ShadcnCard /></div>
+          <div className="my-10"></div>
+          <span className="text-[30px] items-start">Best Deals</span>
+          <div className=""><ShadcnCardAlt /></div>
+
         </div>
+
       </div>
+
     
       {/* <div className=" bg-gray-400">
         <footer className="">

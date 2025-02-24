@@ -1,8 +1,40 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import ConfirmationPopup from './ConfirmationPopup'; // Import the ConfirmationPopup component
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "@/components/ui/table"
+  
+import {
+    useFormField,
+    Form,
+    FormItem,
+    FormLabel,
+    FormControl,
+    FormDescription,
+    FormMessage,
+    FormField,
+  }
+   from '@/components/ui/form';
+
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
+
+import { Button } from '@/components/ui/button'
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label"
 
 export default function AdminDashboard() {
     const { register, handleSubmit, reset, watch } = useForm();
@@ -19,6 +51,7 @@ export default function AdminDashboard() {
     const [showConfirmUpload, setShowConfirmUpload] = useState(false); // State to control the confirmation popup for CSV upload
     const [selectedProducts, setSelectedProducts] = useState([]); // State to track selected products for deletion
     const [filterOption, setFilterOption] = useState(""); // State for filter option
+    const [multipleUpdate, setMultipleUpdate] = useState(false); // State for bulk discount
 
     useEffect(() => {
         fetchProducts();
@@ -73,6 +106,10 @@ export default function AdminDashboard() {
         } catch (error) {
             console.error("Error updating product:", error.response ? error.response.data : error.message);
         }
+    };
+
+    const multipleupdateProductData = () => {
+        setMultipleUpdate(true)
     };
 
     const deleteProduct = async (id) => {
@@ -147,6 +184,7 @@ export default function AdminDashboard() {
             setCsvFile(null); // Clear the uploaded file
         }
     };
+
 
     const price = watch("price");
     const discount = watch("discount");
@@ -224,113 +262,257 @@ export default function AdminDashboard() {
         }
     };
 
+    const form = useForm({
+        defaultValues: {
+          name: "",
+          price: "",
+          quantity: "",
+          unit: "",
+          discount: "",
+          rating: "",
+          quantity_ordered: "",
+          barcode: "",
+          codenum: "",
+          imageURL: "",
+          category: "",
+          dow: "false", // default value for Deal of the Week
+          avail: "true", // default value for Availability
+          csv: null, // for file upload
+        },
+      });
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
-                <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Product Name</span>
-                        <input {...register("name")} placeholder="Product Name" required className=" border p-2 rounded w-full" />
-                    </div>                    
+        <Form {...form}>
+        <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
+            <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
 
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Product Price</span>
-                        <input {...register("price")} type="number" placeholder="Price" required className="border p-2 rounded w-full" />
+            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Product Name</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Product Name" required {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Product Price</FormLabel>
+                        <FormControl>
+                        <Input type="number" placeholder="Price" required {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />                
+                <div className="grid grid-cols-[3fr_2fr_1fr] space-x-5">
+                    <div className="">
+                        <FormField
+                            control={form.control}
+                            name="quantity"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantity</FormLabel>
+                                <FormControl>
+                                <Input type="number" placeholder="Quantity" required {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
                     </div>
 
-                   <div className="flex space-x-2 ">
-                        <div className="flex flex-col items-start justify-center flex-grow">
-                            <span>Product Name</span>
-                            <input {...register("quantity")} type="number" placeholder="Quantity" required className="flex flex-grow border p-2 rounded w-2/3" />
-                        </div>
-                        <div className="flex flex-col items-start justify-center flex-grow">
-                            <span>Unit</span>
-                            <select {...register("unit")} required className="flex flex-grow border p-2 rounded w-1/3">
+                        <FormField
+                        control={form.control}
+                        name="rating"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Product Rating</FormLabel>
+                            <FormControl>
+                            <Input type="number" step="0.1" placeholder="Rating (1-5)" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="unit"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Unit</FormLabel>
+                            <FormControl>
+                            <select {...field} required className="border p-2 rounded w-full">
                                 <option value="kg">kg</option>
                                 <option value="litre">litre</option>
                                 <option value="unit">units</option>
                             </select>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4"> {/* Use gap for spacing between columns */}
-                    <div className="flex flex-col">
-                        <label className="mb-1">Product Name</label> {/* Use label for accessibility */}
-                        <input 
-                            {...register("discount")} 
-                            type="number" 
-                            placeholder="Discount (%)" 
-                            className="border p-2 rounded w-full" 
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <label className="mb-1">Product Rating</label> {/* Use label for accessibility */}
-                        <input 
-                            {...register("rating")} 
-                            type="number" 
-                            step="0.1" 
-                            placeholder="Rating (1-5)" 
-                            className="border p-2 rounded w-full" 
-                        />
-                    </div>
-                </div>
-                   <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Quantity Ordered</span>   
-                        <input {...register("quantity_ordered")} type="number" placeholder="Quantity Ordered" className="border p-2 rounded w-full" />
-                    </div>
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Barcode</span>   
-                        <input {...register("barcode")} type="text" placeholder="Barcode" className="border p-2 rounded w-full" />
-                    </div>
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Code Number</span>   
-                        <input {...register("codenum")} type="text" placeholder="Code Number" className="border p-2 rounded w-full" />
-                    </div>
-
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Image URL</span>   
-                        <input {...register("imageURL")} type="text" placeholder="Image URL" className="border p-2 rounded w-full" />
-                    </div>
-
-                    <div className="flex flex-row items-center space-x-5 w-full">
-                        <div className="flex flex-col items-start justify-center flex-grow">
-                            <span>Select Category</span>
-                            <select {...register("category")} required className="border p-2 rounded w-full">
-                                {categories.map((category, index) => (
-                                    <option key={index} value={category}>   
-                                        {category}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col items-start justify"> 
-                            <span>Deal of the Week</span>
-                            <select {...register("dow")} required className="border p-2 rounded w-full">
-                                <option value="true">True</option>
-                                <option value="false">False</option>
-                            </select>
-                        </div>
-                        <div className="flex flex-col items-start justify-center flex-grow">
-                            <span>Availability</span>
-                            <select {...register("avail")} required className="border p-2 rounded w-full">
-                                <option value="true">Available</option>
-                                <option value="false">Out of Stock</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-start justify-center flex-grow">
-                        <span>Upload Inventory CSV</span>
-                        <input type="file" accept=".csv" placeholder="Upload Inventory" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
-                    </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
                 </div>
 
-                <button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
-                    {editingProduct ? "Update Product" : "Add Product"}
-                </button>
-            </form>
+                <FormField
+                    control={form.control}
+                    name="discount"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Discount (%)</FormLabel>
+                        <FormControl>
+                        <Input type="number" placeholder="Discount (%)" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+                <FormField
+                control={form.control}
+                name="quantity_ordered"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Quantity Ordered</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="Quantity Ordered" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+
+                <FormField
+                control={form.control}
+                name="barcode"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Barcode</FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="Barcode" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+
+                <FormField
+                control={form.control}
+                name="codenum"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Code Number</FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="Code Number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+
+                <FormField
+                control={form.control}
+                name="imageURL"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="Image URL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+
+                <div className="flex flex-row items-center space-x-5 w-full">
+                <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Select Category</FormLabel>
+                        <FormControl>
+                        <select {...field} required className="border p-2 rounded w-full">
+                            {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                            ))}
+                        </select>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="dow"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Deal of the Week</FormLabel>
+                        <FormControl>
+                        <select {...field} required className="border p-2 rounded w-full">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="avail"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Availability</FormLabel>
+                        <FormControl>
+                        <select {...field} required className="border p-2 rounded w-full">
+                            <option value="true">Available</option>
+                            <option value="false">Out of Stock</option>
+                        </select>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                </div>
+
+                <FormField
+                control={form.control}
+                name="csv"
+                render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Upload Inventory CSV</FormLabel>
+                            <FormControl>
+                            <Input type="file" accept=".csv" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                    />
+                </div>
+                <Button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
+                {editingProduct ? "Update Product" : "Add Product"}
+                </Button>
+        </form>
+        </Form>
 
             {csvFile && (
                 <div className="mb-4">
@@ -388,20 +570,60 @@ export default function AdminDashboard() {
                                 className="border p-2 rounded w-full"
                             />
                         </div>
-                        <button 
+                        <Button 
+                            variant="outline"
                             onClick={confirmDelete} 
                             className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition my-4"
                             disabled={selectedProducts.length === 0}
                         >
                             Delete Selected Products
-                        </button>
+                        </Button>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <div className="my-4">
+                                    <Button variant="outline" className="bg-blue-600 hover:bg-blue-700 transition p-2 rounded text-white">
+                                    Update Multiple Products
+                                    </Button>
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                                <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Update Multiple Products</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                    Configure the settings for updating multiple products.
+                                    </p>
+                                </div>
+                                <div className="grid gap-2">
+                                    {/* Add your input fields or any other content here */}
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                    <Label htmlFor="discount">Discount (%)</Label>
+                                    <Input
+                                        id="discount"
+                                        defaultValue="0"
+                                        className="col-span-2 h-8"
+                                    />
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                    <Label htmlFor="quantity">Quantity</Label>
+                                    <Input
+                                        id="quantity"
+                                        defaultValue="1"
+                                        className="col-span-2 h-8"
+                                    />
+                                    </div>
+                                    {/* Add more fields as needed */}
+                                </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                     </div>         
                 </div>    
                 <div style={{ height: '500px', overflowY: 'auto' }}>
-                    <table className="w-full border border-gray-300 rounded-lg">
-                        <thead className="bg-gray-200">
-                            <tr>
-                                <th className="p-2 border">
+                    <Table className="w-full border border-gray-300 rounded-lg">
+                        <TableHeader className="bg-gray-200">
+                            <TableRow>
+                                <TableHead className="p-2 border">
                                     <input 
                                         type="checkbox" 
                                         onChange={(e) => {
@@ -412,27 +634,27 @@ export default function AdminDashboard() {
                                             }
                                         }} 
                                     />
-                                </th>
-                                <th className="p-2 border">Name</th>
-                                <th className="p-2 border">Price</th>
-                                <th className="p-2 border">Quantity</th>
-                                <th className="p-2 border">Unit</th>
-                                <th className="p-2 border">Discount</th>
-                                <th className="p-2 border">Discounted Price</th>
-                                <th className="p-2 border">Rating</th>
-                                <th className="p-2 border">Quantity Ordered</th>
-                                <th className="p-2 border">Barcode</th>
-                                <th className="p-2 border">Availability</th>
-                                <th className="p-2 border">Category</th>
-                                <th className="p-2 border">Image URL</th>
-                                <th className="p-2 border">DOW</th>
-                                <th className="p-2 border">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                                </TableHead>
+                                <TableHead className="p-2 border">Name</TableHead>
+                                <TableHead className="p-2 border">Price</TableHead>
+                                <TableHead className="p-2 border">Quantity</TableHead>
+                                <TableHead className="p-2 border">Unit</TableHead>
+                                <TableHead className="p-2 border">Discount</TableHead>
+                                <TableHead className="p-2 border">Discounted Price</TableHead>
+                                <TableHead className="p-2 border">Rating</TableHead>
+                                <TableHead className="p-2 border">Quantity Ordered</TableHead>
+                                <TableHead className="p-2 border">Barcode</TableHead>
+                                <TableHead className="p-2 border">Availability</TableHead>
+                                <TableHead className="p-2 border">Category</TableHead>
+                                <TableHead className="p-2 border">Image URL</TableHead>
+                                <TableHead className="p-2 border">DOW</TableHead>
+                                <TableHead className="p-2 border">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
                             {filteredProducts.map((product, index) => (
-                                <tr key={product._id} className={index % 2 === 0 ? "bg-[#dbdbdb]" : "bg-white"}>
-                                    <td className="p-2 border">
+                                <TableRow key={product._id} className={index % 2 === 0 ? "bg-white" : "bg-white"}>
+                                    <TableCell className="p-2 border">
                                         <input 
                                             type="checkbox" 
                                             checked={selectedProducts.includes(product._id)} 
@@ -444,21 +666,21 @@ export default function AdminDashboard() {
                                                 }
                                             }} 
                                         />
-                                    </td>
-                                    <td className="p-2 border">{product.name}</td>
-                                    <td className="p-2 border">₹{product.price}</td>
-                                    <td className="p-2 border">{product.quantity}</td>
-                                    <td className="p-2 border">{product.unit}</td>
-                                    <td className="p-2 border">{product.discount}%</td>
-                                    <td className="p-2 border">₹{product.discounted_price}</td>
-                                    <td className="p-2 border">{product.rating} ⭐</td>
-                                    <td className="p-2 border">{product.quantity_ordered}</td>
-                                    <td className="p-2 border">{product.barcode}</td>
-                                    <td className="p-2 border">{product.avail ? "✅ Available" : " ❌ Out of Stock"}</td>
-                                    <td className="p-2 border">{product.category}</td>
-                                    <td className="p-2 border">{product.imageURL}</td>
-                                    <td className="p-2 border">{product.dow ? "Yes" : "No"}</td>
-                                    <td className="p-2 border">
+                                    </TableCell>
+                                    <TableCell className="p-2 border">{product.name}</TableCell>
+                                    <TableCell className="p-2 border">₹{product.price}</TableCell>
+                                    <TableCell className="p-2 border">{product.quantity}</TableCell>
+                                    <TableCell className="p-2 border">{product.unit}</TableCell>
+                                    <TableCell className="p-2 border">{product.discount}%</TableCell>
+                                    <TableCell className="p-2 border">₹{product.discounted_price}</TableCell>
+                                    <TableCell className="p-2 border">{product.rating} ⭐</TableCell>
+                                    <TableCell className="p-2 border">{product.quantity_ordered}</TableCell>
+                                    <TableCell className="p-2 border">{product.barcode}</TableCell>
+                                    <TableCell className="p-2 border">{product.avail ? "✅ Available" : " ❌ Out of Stock"}</TableCell>
+                                    <TableCell className="p-2 border">{product.category}</TableCell>
+                                    <TableCell className="p-2 border">{product.imageURL}</TableCell>
+                                    <TableCell className="p-2 border">{product.dow ? "Yes" : "No"}</TableCell>
+                                    <TableCell className="p-2 border">
                                         <div className="flex flex-col space-y-2">
                                             <button onClick={() => updateProduct(product)} className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition">
                                                 Update/Edit
@@ -467,11 +689,11 @@ export default function AdminDashboard() {
                                                 Delete
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
 
