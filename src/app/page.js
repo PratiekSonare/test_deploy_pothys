@@ -1,44 +1,45 @@
-import Image from "next/image";
 import Header from "./header/Header"
-import ProductCard from './ProductCard'
-import Card from "./Card"
-import BestDeals from "./BestDeals";
-import ShadcnCard from "./ShadcnCard"
-import ShadcnCardAlt from "./ShadcnCardAlt"
+import { SearchBar } from "./header/SearchBar";
+import ShadcnCardAlt from "./ShadcnCard"
+import './styles.css'
 
 export default function Home() {
   return (
     <>
-      <header className="top-0">
+      <header className="top-0 header-sdw">
         <Header />
       </header>
       
+      <div className="flex items-center justify-center my-10">
+        {/* <SearchBar/> */}
+      </div>
+
       <div className="p-5 md:pt-10 md:px-40">
-        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
           <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5"><ShadcnCardAlt /></div>
+          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
         </div>
       </div>
 
 
       <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
           <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5"><ShadcnCardAlt /></div>
+          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
         </div>
       </div>
 
       <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
           <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5"><ShadcnCardAlt /></div>
+          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
         </div>
       </div>
 
       <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
           <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5"><ShadcnCardAlt /></div>
+          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
         </div>
       </div>
 
