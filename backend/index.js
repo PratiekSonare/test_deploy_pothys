@@ -51,8 +51,25 @@ const adminSchema = new mongoose.Schema({
     password: String,
 });
 
+// Transaction Schema
+const transactionSchema = new mongoose.Schema({
+    transactionId: { type: String, required: true },
+    products: [{ 
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        quantity: Number,
+        price: Number,
+        discounted_price: Number,
+    }],
+    totalAmount: Number,
+    paymentMethod: String, // e.g., 'credit_card', 'cash_on_delivery'
+    createdAt: { type: Date, default: Date.now },
+});
+
+
 const Product = mongoose.model('Product', productSchema, 'productlist');
 const Admin = mongoose.model("Admin", adminSchema, 'admin');
+const Transaction = mongoose.model('Transaction', transactionSchema, 'transactions');
+
 
 // API Routes
 app.post("/api/admin/login", async (req, res) => {
@@ -216,6 +233,43 @@ app.post('/api/products/upload', upload.single('file'), async (req, res) => {
             console.error("Error reading CSV file:", error);
             res.status(500).json({ message: 'Error reading CSV file', error });
         });
+});
+
+// Endpoint to handle transactions
+app.post('/api/transactions', async (req, res) => {
+    const transactions = req.body; // Expecting an array of transactions
+
+    try {
+        if (!Array.isArray(transactions) || transactions.length === 0) {
+            return res.status(400).json({ message: "Invalid data format. Expected an array of transactions." });
+        }
+
+        const transactionsToInsert = transactions.map(transaction => ({
+            transactionId: `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, // Unique ID for each
+            products: transaction.products,
+            totalAmount: transaction.products.reduce((total, product) => {
+                return total + (product.discounted_price || product.price) * product.quantity;
+            }, 0),
+            paymentMethod: transaction.paymentMethod,
+        }));
+
+        const savedTransactions = await Transaction.insertMany(transactionsToInsert);
+
+        res.status(201).json(savedTransactions);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+// Endpoint to get all transactions
+app.get('/api/transactions', async (req, res) => {
+    try {
+        const transactions = await Transaction.find().populate('products.productId');
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 // Start the server

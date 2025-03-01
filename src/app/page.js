@@ -13,16 +13,33 @@ export default function Home() {
         <Header />
       </header>
       
-      <div className="p-5 md:p-10">
-        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5">
+      <div className="p-5 md:pt-10 md:px-40">
+        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
           <span className="text-[30px] items-start">Best Deals</span>
-          <div className=""><ShadcnCard /></div>
-          <div className="my-10"></div>
-          <span className="text-[30px] items-start">Best Deals</span>
-          <div className=""><ShadcnCardAlt /></div>
-
+          <div className="mb-5"><ShadcnCardAlt /></div>
         </div>
+      </div>
 
+
+      <div className="p-5 md:py-5 md:px-40">
+        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+          <span className="text-[30px] items-start">Best Deals</span>
+          <div className="mb-5"><ShadcnCardAlt /></div>
+        </div>
+      </div>
+
+      <div className="p-5 md:py-5 md:px-40">
+        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+          <span className="text-[30px] items-start">Best Deals</span>
+          <div className="mb-5"><ShadcnCardAlt /></div>
+        </div>
+      </div>
+
+      <div className="p-5 md:py-5 md:px-40">
+        <div className="flex flex-col bg-gray-300 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+          <span className="text-[30px] items-start">Best Deals</span>
+          <div className="mb-5"><ShadcnCardAlt /></div>
+        </div>
       </div>
 
     
