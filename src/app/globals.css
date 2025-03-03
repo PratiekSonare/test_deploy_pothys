@@ -1,8 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+.text0 {
+  font-family: "Gabarito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
 
+.text1 {
+  font-family: "Gabarito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.text2 {
+  font-family: "Gabarito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.text3 {
+  font-family: "Gabarito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
 
 @layer base {
   :root {

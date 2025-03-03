@@ -65,7 +65,7 @@ export default function CarouselSize() {
       >
         <CarouselContent className="flex gap-4">
           {Array.from({ length: 20 }).map((_, index) => (
-            <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[480px]">
+            <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[450px] text1">
               <div className="transform rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:shadow-lg overflow-hidden">
                 <div className="relative flex flex-col"> {/* Make this relative to position the badge absolutely */}
                   <img
@@ -78,18 +78,26 @@ export default function CarouselSize() {
                     20% off
                   </div>
                   <div className="p-4">
-                    <h2 className="mb-2 text-xl dark:text-white text-gray-900 font-bold">Product Name</h2>
-                    <p className="mb-2 text-base dark:text-gray-300 text-gray-700">Product description goes here.</p>
+                    <h2 className="mb-2 text-xl dark:text-white text-gray-900 text2">
+                      Product Name
+                    </h2>
+                    <p className="mb-2 text-base text-[15px] dark:text-gray-300 text-gray-700">
+                      Product description goes here.
+                    </p>
                     <div className="">
                       <div className="flex flex-col gap-5">
-                        <div className="flex flex-row gap-1">
-                          <p className="mr-2 text-xl font-semibold text-gray-900 dark:text-white">$20.00</p>
-                          <p className="text-md text-base font-medium text-gray-500 line-through dark:text-gray-300">$25.00</p>
+                        <div className="flex flex-row items-end">
+                          <p className="mr-2 text-xl text2 text-gray-900 dark:text-white">
+                            ₹20.00
+                          </p>
+                          <p className="text-md mb-[1px] text-base text2 text-gray-500 line-through dark:text-gray-300">
+                            ₹25.00
+                          </p>
                         </div>
 
-                        <div>
+                        <div className="-mb-3 w-full">
                           <Select>
-                            <SelectTrigger className="w-full h-[40px]">
+                            <SelectTrigger className="w-full h-[40px] bg-gray-300 opacity-80">
                               <SelectValue placeholder="Quantity" />
                             </SelectTrigger>
                             <SelectContent>
@@ -99,6 +107,7 @@ export default function CarouselSize() {
                             </SelectContent>
                           </Select>
                         </div>
+
                       </div>
                     </div>
                   </div>

@@ -1,47 +1,44 @@
+"use client"
+import React, {useState} from "react";
 import Header from "./header/Header"
-import { SearchBar } from "./header/SearchBar";
+import SearchBar from "./header/SearchBar";
 import ShadcnCardAlt from "./ShadcnCard"
 import './styles.css'
 
 export default function Home() {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+
   return (
     <>
       <header className="top-0 header-sdw">
         <Header />
       </header>
       
-      <div className="flex items-center justify-center my-10">
-        {/* <SearchBar/> */}
+      <div className="flex items-center justify-center my-10 z-50">
+        <SearchBar 
+          onFocus={() => setIsSearchFocused(true)} 
+          onBlur={() => setIsSearchFocused(false)} 
+        />
       </div>
 
-      <div className="p-5 md:pt-10 md:px-40">
-        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
-          <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
+
+      <div className={isSearchFocused ? 'blur' : ''}>
+        <div className="p-5 md:pt-10 md:px-40 z-0">
+          <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+            <span className="text-[30px] items-start text3 mt-5">BEST DEALS</span>
+            <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
+          </div>
+        </div>
+  
+        <div className="p-5 md:py-5 md:px-40">
+          <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+            <span className="text-[30px] items-start text3 mt-5">POPULAR NOW</span>
+            <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
+          </div>
         </div>
       </div>
 
-
-      <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
-          <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
-        </div>
-      </div>
-
-      <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
-          <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
-        </div>
-      </div>
-
-      <div className="p-5 md:py-5 md:px-40">
-        <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
-          <span className="text-[30px] items-start">Best Deals</span>
-          <div className="mb-5 mt-2"><ShadcnCardAlt /></div>
-        </div>
-      </div>
 
     
       {/* <div className=" bg-gray-400">

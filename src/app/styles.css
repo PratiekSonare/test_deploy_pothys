@@ -43,51 +43,30 @@
     box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
   }
 
+  .searchbar-sdw {
+    /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  }
+
   body {
     font-family: 'Roboto', Arial, sans-serif;
   }
   
-  .wrapper {
-    width: 100%;
-    max-width: 31.25rem;
-    margin: 6rem auto;
+  /* Add this CSS to your styles */
+  .blur {
+    backdrop-filter: blur(5px); /* Adjust the blur amount as needed */
+    transition: filter 0.5s ease-in-out; /* Smooth transition for the blur effect */
   }
-  
-  .label {
-    font-size: .625rem;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: +1.3px;
-    margin-bottom: 1rem;
+
+  /* Add this CSS to your styles */
+  .searchbar-container {
+    position: relative; /* Make the parent container relative */
   }
-  
-  .searchBar {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  #searchQueryInput {
-    width: 100%;
-    height: 2.8rem;
-    background: #f5f5f5;
-    outline: none;
-    border: none;
-    border-radius: 1.625rem;
-    padding: 0 3.5rem 0 1.5rem;
-    font-size: 1rem;
-  }
-  
-  #searchQuerySubmit {
-    width: 3.5rem;
-    height: 2.8rem;
-    margin-left: -3.5rem;
-    background: none;
-    border: none;
-    outline: none;
-  }
-  
-  #searchQuerySubmit:hover {
-    cursor: pointer;
+
+  .filtered-results {
+    position: absolute; /* Position the results absolutely */
+    top: 100%; /* Position it below the search bar */
+    left: 0; /* Align to the left */
+    right: 0; /* Stretch to the right */
+    z-index: 50; /* Ensure it hovers above other components */
   }

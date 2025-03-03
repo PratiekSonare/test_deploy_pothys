@@ -134,10 +134,23 @@ app.post('/api/products', async (req, res) => {
     }
 });
 
-// Get All Products
+// // Get All Products
+// app.get('/api/products', async (req, res) => {
+//     try {
+//         const products = await Product.find();
+//         res.json(products);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+// Get All Products with optional search
 app.get('/api/products', async (req, res) => {
+    const searchTerm = req.query.search || '';
     try {
-        const products = await Product.find();
+        const products = await Product.find({
+            name: { $regex: searchTerm, $options: 'i' } // Case-insensitive search
+        });
         res.json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
