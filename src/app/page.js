@@ -15,7 +15,13 @@ export default function Home() {
         <Header />
       </header>
       
-      <div className="flex items-center justify-center my-10 z-50">
+      <div className="flex flex-col items-center justify-center my-10 z-50">
+
+        <div className="flex flex-col gap-2 items-center text-4xl my-10">
+          <span className="poppins-medium"><span className="poppins-extrabold text-green-600">Shopping</span> made easy. <span className="poppins-extrabold text-green-600">Grocery</span> at your doorstep.</span>
+          <span>Now at <span className="poppins-extrabold">Puducherry</span>!</span>
+        </div>
+
         <SearchBar 
           onFocus={() => setIsSearchFocused(true)} 
           onBlur={() => setIsSearchFocused(false)} 

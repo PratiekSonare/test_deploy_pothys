@@ -70,3 +70,18 @@
     right: 0; /* Stretch to the right */
     z-index: 50; /* Ensure it hovers above other components */
   }
+
+  .placeholder-animation {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

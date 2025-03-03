@@ -2,6 +2,7 @@
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import '../styles.css'
 
 const SearchBar = ({ onFocus, onBlur }) => {
   const [products, setProducts] = useState([]);  
@@ -10,13 +11,33 @@ const SearchBar = ({ onFocus, onBlur }) => {
   const [showQuantity, setShowQuantity] = useState(Array(20).fill(false));
   const [quantities, setQuantities] = useState(Array(20).fill(1));
 
+    // Placeholder strings
+    const placeholders = [
+      'Search for products...',
+      'Search for \'Maggi\'...',
+      'Search for \'ParleG\'...',
+      'Search for \'Atta\'...',
+      'Find your favorite items...',
+      'Discover new products...',
+      'What are you looking for?'
+    ];
+    
+    const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const [animationClass, setAnimationClass] = useState('');
+
   useEffect(() => {
+
     const fetchProducts = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/products');
         const data = await response.json();
-        setProducts(data);
-        setFilteredProducts(data); 
+
+         // Filter products to only include those with non-zero quantity
+        const availabledata = data.filter(product => product.quantity > 0);
+
+        setProducts(availabledata);
+        setFilteredProducts(availabledata); 
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -24,6 +45,16 @@ const SearchBar = ({ onFocus, onBlur }) => {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prevIndex) => (prevIndex + 1) % placeholders.length);
+      setAnimationClass('placeholder-animation'); // Trigger animation
+      setCurrentPlaceholder(placeholders[placeholderIndex]);
+    }, 1000); // Change every 3 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [placeholderIndex]);
 
   const handleChange = (e) => {
     const value = e.target.value.toLowerCase();
@@ -69,13 +100,14 @@ const SearchBar = ({ onFocus, onBlur }) => {
     });
   };
 
+
   return (
-    <div className='flex flex-col w-1/3 searchbar-container'>
+    <div className='flex flex-col w-1/2 searchbar-container'>
       <div className='flex bg-white searchbar-sdw w-full h-10 rounded-lg p-3'>
         <div className='flex flex-row items-center gap-5 w-full'>
           <img src='/searchicon.svg' alt='search_icon' style={{ height: '24px', width: '24px' }} />
           <input
-            placeholder='Search for products...'
+            placeholder={currentPlaceholder}
             className='bg-transparent h-full w-full border-none text-lg text-black focus:outline-none'
             onChange={handleChange}
             value={searchTerm}
@@ -99,13 +131,13 @@ const SearchBar = ({ onFocus, onBlur }) => {
                       src="https://images.unsplash.com/photo-1674296115670-8f0e92b1fddb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
                       alt='product_image' 
                       style={{width: '15%', height: 'auto'}}
-                      className='w-full h-full object-contain rounded-lg'    
-                    />
+                      className={`bg-transparent h-full w-full border-none text-lg text-black focus:outline-none ${animationClass}`}
+                      />
                     <div className='flex flex-row items-center justify-between w-full text-md'>
                       <div>{product.name}</div>
-                      <div>{product.quantity}</div>
+                      <div>{product.quantity} {product.unit}</div>
                       <Separator orientation="vertical" />
-                      <div>₹{product.price}</div>
+                      <div className='text3'>₹{product.price}</div>
                       <div className='text-green-500'>{product.discount}% off</div>
                       
                       {!showQuantity[index] && (
@@ -132,7 +164,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
                   {index < filteredProducts.length - 1 && <Separator orientation ="horizontal" className="my-2" />}
                 </React.Fragment>
               ))  
-            ) : (
+            ) : ( 
               <div className="p-2 text-gray-500">No products found</div>
             )}
           </div>

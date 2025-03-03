@@ -65,7 +65,7 @@ export default function CarouselSize() {
       >
         <CarouselContent className="flex gap-4">
           {Array.from({ length: 20 }).map((_, index) => (
-            <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[450px] text1">
+            <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[500px] text1">
               <div className="transform rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:shadow-lg overflow-hidden">
                 <div className="relative flex flex-col"> {/* Make this relative to position the badge absolutely */}
                   <img
