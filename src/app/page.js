@@ -86,12 +86,12 @@ export default function Home() {
           <CategoryCardHk/>
         </div>
 
-        {/* <div className="-my-10"/> */}
+        <div className="my-10"/>
 
         <div className="p-5 md:py-5 md:px-40">
           <div className="flex flex-col justify-center items-center">
             <ImageCarousel/>
-            <div className="my-10"></div>
+            <div className="my-5"></div>
             <span className="text-3xl text3">Established in 2024</span>
             <div className="my-3"></div>
             <span className="text-xl text1">Pothy's store has served more than <span className="text2 text-green-600">500+</span> customers across <span className="text2">Puducherry</span>!</span>
@@ -99,48 +99,41 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="my-10"></div>
       </div>
 
     
-      <footer className="bg-gray-900 p-5">
-        
-        <div className="flex flex-row justify-around">
-          {/* other links */}
+      <footer className="bg-gray-900 p-10 text-lg">
+        <div className="flex flex-row justify-around w-full">
+          {/* Pothys Store Links */}
           <div className="flex flex-col text1 text-gray-400">
             <span className="text2 text-white">Pothys Store</span>
             <div className="my-2"></div>
             <span>link1</span>
             <span>link2</span>
             <span>link3</span>
-            <span>link4</span>
-            <span>link5</span>
-            <span>link6</span>
+
           </div>
-  
-          {/* help, contact us */}
+
+          {/* Image and Social Icons */}
+          <div className="flex flex-col items-center gap-5 max-w-xs flex-shrink-0">
+            <img src="/pohtys-white-final.svg" style={{ width: '100%' }} alt="Logo" />
+            <div className="flex flex-row items-center justify-center gap-10">
+              <img src="/google.svg" style={{ width: '8%', filter: 'invert(0.8)' }} alt="Google" />
+              <img src="/iconmonstr-instagram-11.svg" style={{ width: '8%', filter: 'invert(0.8)' }} alt="Instagram" />
+              <img src="/whatsapp.svg" style={{ width: '8%', filter: 'invert(0.8)' }} alt="WhatsApp" />
+            </div>
+          </div>
+
+          {/* Help and Contact Us Links */}
           <div className="flex flex-col text1 text-gray-400">
-          <span className="text2 text-white">Help</span>
+            <span className="text2 text-white">Help</span>
             <div className="my-2"></div>
             <span>FAQs</span>
             <span>Contact Us</span>
             <span>About Us</span>
           </div>
-
-          {/* help, contact us */}
-          <div className="flex flex-col text1 text-gray-400">
-            <img
-              src="pothys-white.svg"
-              alt="logo"
-              style={{width: '20%', height: 'auto'}}></img>
-            <div className="my-2"></div>
-            <span>FAQs</span>
-            <span>Contact Us</span>
-            <span>About Us</span>
-          </div>
-
         </div>
-
-
       </footer>
     </>
       
