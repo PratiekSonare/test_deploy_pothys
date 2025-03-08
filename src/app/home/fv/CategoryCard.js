@@ -25,9 +25,9 @@ const CategoryCard = () => {
         <div className="mb-5 mt-2 flex flex-row gap-10">
             {images.map((image, index) => (
                 <img
+                    key={index}
                     src={image.src}
                     alt={image.alt}
-                    index={index}
                     className='rounded-lg hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
                     style={{width: '22%', height: 'auto'}}>
                 </img>

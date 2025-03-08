@@ -27,7 +27,7 @@ const CategoryCard = () => {
                 <img
                     src={image.src}
                     alt={image.alt}
-                    index={index}
+                    key={index}
                     className='rounded-lg hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
                     style={{width: '22%', height: 'auto'}}>
                 </img>

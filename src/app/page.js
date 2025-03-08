@@ -2,8 +2,7 @@
 import React, {useState} from "react";
 import Header from "./header/Header"
 import SearchBar from "./header/SearchBar";
-import ShadcnCard from "./home/ShadcnCard"
-import './styles.css'
+import ShadcnCard from "./home/ShadcnCard";
 import CategoryCardFv from "./home/fv/CategoryCard";
 import CategoryCardBe from "./home/beverages/CategoryCard";
 import CategoryCardSn from "./home/snacks/CategoryCard";
@@ -12,10 +11,10 @@ import CategoryCardBh from "./home/bh/CategoryCard";
 import CategoryCardHk from "./home/hk/CategoryCard";
 import ImageCarousel from "./home/image_carousel/ImageCarousel";
 
+import './styles.css';
 
 export default function Home() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
 
   return (
     <>
