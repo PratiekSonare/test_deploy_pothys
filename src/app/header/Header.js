@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link'; // Import Link from next/link
-
+import { useCart } from '../cart/CartContext';
 
 const Header = () => {
+
+  const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart } = useCart();
+  
   return (
     <div className='max-w-screen max-h-[150px] bg-white'>
       <div className='flex items-center justify-around p-5'>
@@ -32,7 +35,7 @@ const Header = () => {
                 style={{ width: '60%', height: 'auto' }} 
               />
               <div className='absolute top-5 right-2 transform translate-x-1/2 -translate-y-1/2 p-1 rounded-3xl bg-red-500 text-sm text-white'>
-                <span>10</span>
+                <span>{cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0}</span>
               </div>
             </div>
           </div>

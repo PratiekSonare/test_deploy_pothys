@@ -1,12 +1,14 @@
 "use client"
-import React from 'react';
-import { useCart } from './CartContext'; // Adjust the path as necessary
+import React, {useState} from 'react';
 import { Button } from "@/components/ui/button"; // Import Shadcn UI Button
 import { Card } from "@/components/ui/card"; // Import Shadcn UI Card
 import { Separator } from "@/components/ui/separator"; // Import Shadcn UI Separator
+import { useCart } from './CartContext';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  
+
+  const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart } = useCart();
 
   return (
     <div className="p-5">
@@ -35,7 +37,7 @@ const Cart = () => {
           ))}
           <Separator className="my-4" />
           <div className="flex justify-between">
-            <Button variant="outline" onClick={clearCart}>
+            <Button variant="outline" onClick={""}>
               Clear Cart
             </Button>
             <Button variant="solid" className="bg-blue-600 text-white">

@@ -8,45 +8,54 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  
+  const [cartItems, setCartItems] = useState(() => {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  });
 
-  // Load cart items from localStorage when the component mounts
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(savedCart);
-  }, []);
-
-  // Save cart items to localStorage whenever they change & log them
+  // Update localStorage whenever cartItems change
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
-    console.log("Updated Cart Items:", cartItems); // Logs the latest cart state
   }, [cartItems]);
 
-  const addToCart = (item) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.name === item.name);
-  
+  // Add Product to Cart
+  const addToCart = (product) => {
+    setCartItems((prevCart) => {
+      const existingItem = prevCart.find((item) => item._id === product._id);
       if (existingItem) {
-        // If the product already exists, only update its quantity
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        return prevCart.map((item) =>
+          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
-        // Otherwise, add it as a new product in the cart
-        return [...prevItems, { ...item, quantity: 1 }];
+        return [...prevCart, { ...product, quantity: 1 }];
       }
     });
 
-    console.log(`Added ${item.name} to the cart!`);
+    console.log(`Product added to cart: ${product.name}`)
   };
-  
-  // Update quantity manually (for buttons)
-  const updateQuantity = (id, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: quantity } : item
+
+  // Increment Quantity
+  const incrementQ = (productId) => {
+    setCartItems((prevCart) =>
+      prevCart.map((item) =>
+        item._id === productId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    
+    // console.log(`Quantity updated - Product: ${product.name} - Quantity: ${product.quantity} `)
+  };
+
+  // Decrement Quantity (Remove if quantity becomes 0)
+  const decrementQ = (productId) => {
+    setCartItems((prevCart) =>
+      prevCart
+        .map((item) =>
+          item._id === productId ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0) // Remove item if quantity is 0
+    );
+
+    // console.log(`Quantity updated - Product: ${product.name} - Quantity: ${product.quantity} `)
   };
   
   const removeFromCart = (id) => {
@@ -59,7 +68,7 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart, updateQuantity }}
+      value={{ cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>
