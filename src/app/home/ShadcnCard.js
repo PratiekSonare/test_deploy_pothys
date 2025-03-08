@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Carousel,
   CarouselContent,
@@ -21,6 +22,20 @@ import { Card } from "@/components/ui/card";
 export default function CarouselSize() {
   const [showQuantity, setShowQuantity] = useState(Array(20).fill(false));
   const [quantities, setQuantities] = useState(Array(20).fill(1));
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+      try {
+          const response = await axios.get("http://localhost:5000/api/products/dow-true");
+          setProducts(response.data);
+      } catch (error) {
+          console.error("Error fetching products with dow-true:", error);
+      }
+  };
 
   const incrementQ = (index) => {
     setQuantities((prev) => {
@@ -66,9 +81,9 @@ export default function CarouselSize() {
       >
         <div className="">
           <CarouselContent className="flex gap-4">
-            {Array.from({ length: 20 }).map((_, index) => (
-              <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[450px] text1">
-                <div className="transform rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:shadow-lg overflow-hidden">
+            {products.map((product, index) => (
+              <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 h-[500px] text1">
+                <div className="transform rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:shadow-lg overflow-auto">
                   <div className="relative flex flex-col"> {/* Make this relative to position the badge absolutely */}
                     <img
                       className="w-full object-cover object-center"
@@ -77,24 +92,26 @@ export default function CarouselSize() {
                     />
                     {/* Badge for discount */}
                     <div className="absolute top-2 right-2 bg-green-200 p-1 rounded-lg text-green-500 text-sm">
-                      20% off
+                      {product.discount}% off
                     </div>
                     <div className="p-4">
                       <h2 className="mb-2 text-xl dark:text-white text-gray-900 text2">
-                        Product Name
+                        {product.name}
                       </h2>
                       <p className="mb-2 text-base text-[15px] dark:text-gray-300 text-gray-700">
                         Product description goes here.
                       </p>
                       <div className="">
                         <div className="flex flex-col gap-5">
-                          <div className="flex flex-row items-end">
+                        <div className="flex flex-row items-end">
                             <p className="mr-2 text-xl text2 text-gray-900 dark:text-white">
-                              ₹20.00
+                              ₹{product.discounted_price || product.price}
                             </p>
-                            <p className="text-md mb-[1px] text-base text2 text-gray-500 line-through dark:text-gray-300">
-                              ₹25.00
-                            </p>
+                            {product.discount && (
+                              <p className="text-md mb-[1px] text-base text2 text-gray-500 line-through dark:text-gray-300">
+                                ₹{product.price}
+                              </p>
+                            )}
                           </div>
   
                           <div className="-mb-3 w-full">
@@ -137,9 +154,13 @@ export default function CarouselSize() {
                     </div>
                   )}
                 </div>
+                
               </CarouselItem>
             ))}
           </CarouselContent>
+          <div className="flex justify-center items-center underline text1">
+              <button><span>View All</span></button>
+          </div>
         </div>
         <div className="absolute -top-7 right-[3.2rem] transform -translate-y-1/2">
           <CarouselPrevious className="bg-transparent border-[1px] border-gray-800 text-black hover:bg-gray-800 hover:text-white p-2 rounded-lg" />

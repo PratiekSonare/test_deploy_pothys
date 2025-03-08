@@ -168,6 +168,16 @@ app.get('/api/products/category/:category', async (req, res) => {
     }
 });
 
+// Get Products with dow = true
+app.get('/api/products/dow-true', async (req, res) => {
+    try {
+        const products = await Product.find({ dow: true });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Update Products (Single or Multiple)
 app.put('/api/products', async (req, res) => {
     try {
