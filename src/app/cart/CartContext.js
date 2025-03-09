@@ -21,42 +21,44 @@ export const CartProvider = ({ children }) => {
   // Add Product to Cart
   const addToCart = (product) => {
     setCartItems((prevCart) => {
-      const existingItem = prevCart.find((item) => item._id === product._id);
+      const existingItem = prevCart.find((item) => item._id === product._id && item.quantityType === product.quantityType);
       if (existingItem) {
         return prevCart.map((item) =>
-          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
+          item._id === product._id && item.quantityType === product.quantityType
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        return [...prevCart, { ...product, quantity: 1, quantityType: product.quantityType }];
       }
     });
 
-    console.log(`Product added to cart: ${product.name}`)
+    console.log(`Product added to cart: ${product.name}`);
   };
 
-  // Increment Quantity
-  const incrementQ = (productId) => {
-    setCartItems((prevCart) =>
-      prevCart.map((item) =>
-        item._id === productId ? { ...item, quantity: item.quantity + 1 } : item
+// Increment Quantity
+const incrementQ = (productId, quantityType) => {
+  setCartItems((prevCart) =>
+    prevCart.map((item) =>
+      item._id === productId && item.quantityType === quantityType
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    )
+  );
+};
+
+// Decrement Quantity (Remove if quantity becomes 0)
+const decrementQ = (productId, quantityType) => {
+  setCartItems((prevCart) =>
+    prevCart
+      .map((item) =>
+        item._id === productId && item.quantityType === quantityType
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
       )
-    );
-    
-    // console.log(`Quantity updated - Product: ${product.name} - Quantity: ${product.quantity} `)
-  };
-
-  // Decrement Quantity (Remove if quantity becomes 0)
-  const decrementQ = (productId) => {
-    setCartItems((prevCart) =>
-      prevCart
-        .map((item) =>
-          item._id === productId ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0) // Remove item if quantity is 0
-    );
-
-    // console.log(`Quantity updated - Product: ${product.name} - Quantity: ${product.quantity} `)
-  };
+      .filter((item) => item.quantity > 0) // Remove item if quantity is 0
+  );
+};
   
   const removeFromCart = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));

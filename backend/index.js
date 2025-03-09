@@ -29,20 +29,19 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded f
 
 // Product Schema
 const productSchema = new mongoose.Schema({
+    brand: String,
     name: String,
     price: Number,
-    quantity: Number,
     discount: Number,
     discounted_price: Number,
-    rating: Number,
-    quantity_ordered: Number,
+    quantity: Number,
     unit: String,
-    barcode: String,
+    product_feature: String,
+    product_tags: String,
     avail: Boolean,
-    codenum: String,
     category: String,
+    dow: Boolean,
     imageURL: String,
-    dow: Boolean
 });
 
 // Admin schema
@@ -133,16 +132,6 @@ app.post('/api/products', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-
-// // Get All Products
-// app.get('/api/products', async (req, res) => {
-//     try {
-//         const products = await Product.find();
-//         res.json(products);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
 
 // Get All Products with optional search
 app.get('/api/products', async (req, res) => {

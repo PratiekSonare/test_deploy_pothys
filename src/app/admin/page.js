@@ -36,6 +36,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 
+import ShadcnCard from './ShadcnCard';
+
 export default function AdminDashboard() {
     const { register, handleSubmit, reset, watch } = useForm();
     const [searchTerm, setSearchTerm] = useState("");
@@ -140,17 +142,16 @@ export default function AdminDashboard() {
     const updateProduct = (product) => {
         setEditingProduct(product);
         reset({
+            brand: product.name || "",
             name: product.name || "", 
             price: product.price || 0, 
-            quantity: product.quantity || 0, 
-            unit: product.unit || "kg", 
             discount: product.discount || 0, 
             discounted_price: product.discounted_price || 0, 
-            rating: product.rating || 0, 
-            quantity_ordered: product.quantity_ordered || 0, 
-            barcode: product.barcode || "",
+            quantity: product.quantity || 0, 
+            unit: product.unit || "", 
+            product_feature: product.product_feature || "", 
+            product_tags: product.product_tags || "", 
             imageURL: product.imageURL || "", 
-            codenum: product.codenum || "", 
             category: product.category || "", 
             avail: product.avail !== undefined ? product.avail.toString() : "false", 
             dow: product.dow !== undefined ? product.dow.toString() : "false", 
@@ -184,28 +185,6 @@ export default function AdminDashboard() {
             setCsvFile(null); // Clear the uploaded file
         }
     };
-
-
-    const price = watch("price");
-    const discount = watch("discount");
-    const discountedPrice = watch("discounted_price");
-
-    const [calculatedDiscountedPrice, setCalculatedDiscountedPrice] = useState(0);
-    const [calculatedDiscount, setCalculatedDiscount] = useState(0);
-    
-    useEffect(() => {
-        if (price && discount) {
-            const newDiscountedPrice = price - (price * (discount / 100));
-            setCalculatedDiscountedPrice(newDiscountedPrice);
-        }
-    }, [price, discount]);
-    
-    useEffect(() => {
-        if (discountedPrice && price) {
-            const newDiscount = ((price - discountedPrice) / price) * 100;
-            setCalculatedDiscount(newDiscount);
-        }
-    }, [discountedPrice, price]);
 
     const categories = [
         "Fruits and Vegetables",
@@ -264,15 +243,15 @@ export default function AdminDashboard() {
 
     const form = useForm({
         defaultValues: {
+          brand: "",
           name: "",
           price: "",
+          discount: "",
+          discounted_price: "",
           quantity: "",
           unit: "",
-          discount: "",
-          rating: "",
-          quantity_ordered: "",
-          barcode: "",
-          codenum: "",
+          product_feature: "",
+          product_tags: "",
           imageURL: "",
           category: "",
           dow: "false", // default value for Deal of the Week
@@ -281,45 +260,57 @@ export default function AdminDashboard() {
         },
       });
 
+      const watchForm = form.watch();
+
+      const price = form.watch("price") || 0;
+      const discount = form.watch("discount") || 0;
+      const discountedPrice = price - (price * discount) / 100;
+
+      useEffect(() => {
+        const discountedPrice = price - (price * discount) / 100;
+        form.setValue("discounted_price", discountedPrice.toFixed(2));
+      }, [price, discount]);
+
+
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="p-5 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
 
-
-        <Form {...form}>
-        <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
-            <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
-
-            <div className="grid grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Product Name</FormLabel>
-                        <FormControl>
-                        <Input placeholder="Product Name" required {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Product Price</FormLabel>
-                        <FormControl>
-                        <Input type="number" placeholder="Price" required {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />                
-                <div className="grid grid-cols-[3fr_2fr_1fr] space-x-5">
-                    <div className="">
+            <div className="grid grid-cols-[4fr_1fr] space-x-5">
+                <Form {...form}>
+                <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
+                    <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
+    
+                    <div className="grid grid-cols-2 gap-4">
+                
+                        <FormField
+                            control={form.control}
+                            name="brand"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Product Brand</FormLabel>
+                                <FormControl>
+                                <Input placeholder="Product Brand" required {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+    
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Product Name</FormLabel>
+                                <FormControl>
+                                <Input placeholder="Product Name" required {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+    
                         <FormField
                             control={form.control}
                             name="quantity"
@@ -333,22 +324,47 @@ export default function AdminDashboard() {
                             </FormItem>
                             )}
                         />
-                    </div>
-
+               
+                    <div className="grid grid-cols-[4fr_2fr_4fr] space-x-5">
+    
                         <FormField
-                        control={form.control}
-                        name="rating"
-                        render={({ field }) => (
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Product Price</FormLabel>
+                                <FormControl>
+                                <Input type="number" placeholder="Price" required {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />     
+    
+                        <FormField
+                            control={form.control}
+                            name="discount"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Discount (%)</FormLabel>
+                                <FormControl>
+                                <Input type="number" placeholder="Discount (%)" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+    
+                        {/* Discounted Price - Read-Only */}
                         <FormItem>
-                            <FormLabel>Product Rating</FormLabel>
+                            <FormLabel>Discounted Price</FormLabel>
                             <FormControl>
-                            <Input type="number" step="0.1" placeholder="Rating (1-5)" {...field} />
+                                <Input type="number" value={discountedPrice.toFixed(2)} readOnly />
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
-                        )}
-                    />
-
+    
+                    </div>
+    
                     <FormField
                         control={form.control}
                         name="unit"
@@ -358,161 +374,143 @@ export default function AdminDashboard() {
                             <FormControl>
                             <select {...field} required className="border p-2 rounded w-full">
                                 <option value="kg">kg</option>
-                                <option value="litre">litre</option>
-                                <option value="unit">units</option>
+                                <option value="g">g</option>
+                                <option value="ml">ml</option>
+                                <option value="litre">L</option>
+                                <option value="pcs">pcs</option>
                             </select>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
                     />
-                </div>
-
-                <FormField
+    
+                    <FormField
                     control={form.control}
-                    name="discount"
+                    name="product_feature"
                     render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Discount (%)</FormLabel>
-                        <FormControl>
-                        <Input type="number" placeholder="Discount (%)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                control={form.control}
-                name="quantity_ordered"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Quantity Ordered</FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="Quantity Ordered" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-
-                <FormField
-                control={form.control}
-                name="barcode"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Barcode</FormLabel>
-                    <FormControl>
-                        <Input type="text" placeholder="Barcode" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-
-                <FormField
-                control={form.control}
-                name="codenum"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Code Number</FormLabel>
-                    <FormControl>
-                        <Input type="text" placeholder="Code Number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-
-                <FormField
-                control={form.control}
-                name="imageURL"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                        <Input type="text" placeholder="Image URL" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-
-                <div className="flex flex-row items-center space-x-5 w-full">
-                <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Select Category</FormLabel>
-                        <FormControl>
-                        <select {...field} required className="border p-2 rounded w-full">
-                            {categories.map((category, index) => (
-                            <option key={index} value={category}>
-                                {category}
-                            </option>
-                            ))}
-                        </select>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="dow"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Deal of the Week</FormLabel>
-                        <FormControl>
-                        <select {...field} required className="border p-2 rounded w-full">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="avail"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Availability</FormLabel>
-                        <FormControl>
-                        <select {...field} required className="border p-2 rounded w-full">
-                            <option value="true">Available</option>
-                            <option value="false">Out of Stock</option>
-                        </select>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                </div>
-
-                <FormField
-                control={form.control}
-                name="csv"
-                render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Upload Inventory CSV</FormLabel>
-                            <FormControl>
-                            <Input type="file" accept=".csv" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+                        <FormLabel>Product Feature</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Product Feature" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                     />
+    
+                    <FormField
+                    control={form.control}
+                    name="product_tags"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Product Tags</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Product Tags" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+    
+                    <FormField
+                    control={form.control}
+                    name="imageURL"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Image URL</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Image URL" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+    
+                    <div className="flex flex-row items-center space-x-5 w-full">
+                    <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Select Category</FormLabel>
+                            <FormControl>
+                            <select {...field} required className="border p-2 rounded w-full">
+                                {categories.map((category, index) => (
+                                <option key={index} value={category}>
+                                    {category}
+                                </option>
+                                ))}
+                            </select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+    
+                    <FormField
+                        control={form.control}
+                        name="dow"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Deal of the Week</FormLabel>
+                            <FormControl>
+                            <select {...field} required className="border p-2 rounded w-full">
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                            </select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+    
+                    <FormField
+                        control={form.control}
+                        name="avail"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Availability</FormLabel>
+                            <FormControl>
+                            <select {...field} required className="border p-2 rounded w-full">
+                                <option value="true">Available</option>
+                                <option value="false">Out of Stock</option>
+                            </select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    </div>
+    
+                    <FormField
+                    control={form.control}
+                    name="csv"
+                    render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Upload Inventory CSV</FormLabel>
+                                <FormControl>
+                                <Input type="file" accept=".csv" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                        />
+                    </div>
+                    <Button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
+                    {editingProduct ? "Update Product" : "Add Product"}
+                    </Button>
+                </form>
+                </Form>
+
+                <div className="p-5 bg-white rounded-lg shadow-md flex flex-col justify-center items-center">
+                    <div className="">
+                        <h1 className="mb-5 -mt-10 text-xl font-semibold text-gray-700">Product Card</h1>
+                        <ShadcnCard product={watchForm} />
+                        <div className="-mb-16"></div>
+                    </div>
                 </div>
-                <Button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
-                {editingProduct ? "Update Product" : "Add Product"}
-                </Button>
-        </form>
-        </Form>
+            </div>
 
             {csvFile && (
                 <div className="mb-4">
@@ -619,6 +617,7 @@ export default function AdminDashboard() {
                         </Popover>
                     </div>         
                 </div>    
+
                 <div style={{ height: '500px', overflowY: 'auto' }}>
                     <Table className="w-full border border-gray-300 rounded-lg">
                         <TableHeader className="bg-gray-200">
@@ -636,14 +635,14 @@ export default function AdminDashboard() {
                                     />
                                 </TableHead>
                                 <TableHead className="p-2 border">Name</TableHead>
+                                <TableHead className="p-2 border">Brand</TableHead>
                                 <TableHead className="p-2 border">Price</TableHead>
                                 <TableHead className="p-2 border">Quantity</TableHead>
                                 <TableHead className="p-2 border">Unit</TableHead>
                                 <TableHead className="p-2 border">Discount</TableHead>
                                 <TableHead className="p-2 border">Discounted Price</TableHead>
-                                <TableHead className="p-2 border">Rating</TableHead>
-                                <TableHead className="p-2 border">Quantity Ordered</TableHead>
-                                <TableHead className="p-2 border">Barcode</TableHead>
+                                <TableHead className="p-2 border">Product Feature</TableHead>
+                                <TableHead className="p-2 border">Product Tags</TableHead>
                                 <TableHead className="p-2 border">Availability</TableHead>
                                 <TableHead className="p-2 border">Category</TableHead>
                                 <TableHead className="p-2 border">Image URL</TableHead>
@@ -667,15 +666,15 @@ export default function AdminDashboard() {
                                             }} 
                                         />
                                     </TableCell>
+                                    <TableCell className="p-2 border">{product.brand}</TableCell>
                                     <TableCell className="p-2 border">{product.name}</TableCell>
                                     <TableCell className="p-2 border">₹{product.price}</TableCell>
                                     <TableCell className="p-2 border">{product.quantity}</TableCell>
                                     <TableCell className="p-2 border">{product.unit}</TableCell>
                                     <TableCell className="p-2 border">{product.discount}%</TableCell>
                                     <TableCell className="p-2 border">₹{product.discounted_price}</TableCell>
-                                    <TableCell className="p-2 border">{product.rating} ⭐</TableCell>
-                                    <TableCell className="p-2 border">{product.quantity_ordered}</TableCell>
-                                    <TableCell className="p-2 border">{product.barcode}</TableCell>
+                                    <TableCell className="p-2 border">{product.product_feature}</TableCell>
+                                    <TableCell className="p-2 border">{product.product_tags}</TableCell>
                                     <TableCell className="p-2 border">{product.avail ? "✅ Available" : " ❌ Out of Stock"}</TableCell>
                                     <TableCell className="p-2 border">{product.category}</TableCell>
                                     <TableCell className="p-2 border">{product.imageURL}</TableCell>
