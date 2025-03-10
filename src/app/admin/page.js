@@ -634,8 +634,9 @@ export default function AdminDashboard() {
                                         }} 
                                     />
                                 </TableHead>
-                                <TableHead className="p-2 border">Name</TableHead>
+                                <TableHead className="p-2 border">ID</TableHead>
                                 <TableHead className="p-2 border">Brand</TableHead>
+                                <TableHead className="p-2 border">Name</TableHead>
                                 <TableHead className="p-2 border">Price</TableHead>
                                 <TableHead className="p-2 border">Quantity</TableHead>
                                 <TableHead className="p-2 border">Unit</TableHead>
@@ -666,6 +667,7 @@ export default function AdminDashboard() {
                                             }} 
                                         />
                                     </TableCell>
+                                    <TableCell className="p-2 border">{product._id}</TableCell>
                                     <TableCell className="p-2 border">{product.brand}</TableCell>
                                     <TableCell className="p-2 border">{product.name}</TableCell>
                                     <TableCell className="p-2 border">₹{product.price}</TableCell>

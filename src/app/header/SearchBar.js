@@ -3,6 +3,8 @@ import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import '../styles.css'
+import { useCart } from '../cart/CartContext';
+
 
 const SearchBar = ({ onFocus, onBlur }) => {
   const [products, setProducts] = useState([]);  
@@ -25,6 +27,10 @@ const SearchBar = ({ onFocus, onBlur }) => {
     const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const [animationClass, setAnimationClass] = useState('');
+
+
+    const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart, calculateTotal } = useCart();
+    
 
   useEffect(() => {
 
@@ -61,45 +67,12 @@ const SearchBar = ({ onFocus, onBlur }) => {
     setSearchTerm(value);
 
     const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(value)
+      product.name.toLowerCase().includes(value) ||
+      product.brand.toLowerCase().includes(value)
     );
 
     setFilteredProducts(filtered);
   };
-
-  const handleAddToCart = (index) => {
-    setShowQuantity((prev) => {
-      const newShowQuantity = [...prev];
-      newShowQuantity[index] = true;
-      return newShowQuantity;
-    });
-  };
-  
-  const incrementQ = (index) => {
-    setQuantities((prev) => {
-      const newQuantities = [...prev];
-      newQuantities[index] += 1;
-      return newQuantities;
-    });
-  };
-
-  const decrementQ = (index) => {
-    setQuantities((prev) => {
-      const newQuantities = [...prev];
-      if (newQuantities[index] > 1) {
-        newQuantities[index] -= 1;
-      } else {
-        newQuantities[index] = 1;
-        setShowQuantity((prev) => {
-          const newShowQuantity = [...prev];
-          newShowQuantity[index] = false;
-          return newShowQuantity;
-        });
-      }
-      return newQuantities;
-    });
-  };
-
 
   return (
     <div className='flex flex-col w-1/2 searchbar-container'>
@@ -125,37 +98,50 @@ const SearchBar = ({ onFocus, onBlur }) => {
             </div>
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product, index) => (
-                <React.Fragment key={product.id}>
+                <React.Fragment key={product._id}>
                   <div className='flex flex-row items-center gap-4 hover:bg-gray-200 cursor-pointer px-3 py-2'>
                     <img 
-                      src="https://images.unsplash.com/photo-1674296115670-8f0e92b1fddb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
+                      // src="https://images.unsplash.com/photo-1674296115670-8f0e92b1fddb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
+                      src={product.imageURL}
                       alt='product_image' 
                       style={{width: '15%', height: 'auto'}}
-                      className={`bg-transparent h-full w-full border-none text-lg text-black focus:outline-none ${animationClass}`}
+                      className={`bg-transparent h-full w-full rounded-lg border-none text-lg text-black focus:outline-none ${animationClass}`}
                       />
                     <div className='flex flex-row items-center justify-between w-full text-md'>
-                      <div>{product.name}</div>
-                      <div>{product.quantity} {product.unit}</div>
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-gray-600 text2 text-base'>{product.brand}</div>
+                        <div className='text-black text1 text-lg'>{product.name}</div>
+                      </div>
+                      <div className='text1 text-base'>{product.quantity} {product.unit}</div>
                       <Separator orientation="vertical" />
-                      <div className='text3'>₹{product.price}</div>
-                      <div className='text-green-500'>{product.discount}% off</div>
+                      <div className='flex flex-col items-center justify-center gap-1'>
+                        <div className="flex items-end text1">
+                          <p className="mr-2 text-xl text-gray-900 dark:text-white">
+                            ₹{product.discount > 0 ? product.discounted_price : product.price}
+                          </p>
+                          {product.discount > 0 && (
+                            <p className="text-md text-gray-500 line-through">₹{product.price}</p>
+                          )}
+                        </div>
+                        {product.discount > 0 && <div className='bg-green-200 p-1 rounded-lg text-green-500'><span>{product.discount}% OFF</span></div>} 
+                      </div>
                       
                       {!showQuantity[index] && (
                         <button
-                          onClick={() => handleAddToCart(index)}
-                          className="text-center text-md w-1/5 h-[30px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-[20s] ease-in-out"
+                          onClick={() => addToCart(index)}
+                          className="text-center text-md w-1/5 h-[40px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-[20s] ease-in-out"
                         >
                           <span className="font-bold transition-colors duration-300 ease-in-out">Add</span>
                         </button>
                       )}
 
                       {showQuantity[index] && (
-                        <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-1/5 h-[30px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
-                          <button onClick={() => decrementQ(index)} className="w-1/3 h-full flex items-center justify-center">-</button>
+                        <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-1/5 h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
+                          <button onClick={() => decrementQ(product)} className="w-1/3 h-full flex items-center justify-center">-</button>
                           <button className="w-1/3 h-full flex items-center justify-center">
-                            <span className="font-bold">{quantities[index]}</span>
+                            <span className="font-bold">{product.quantity}</span>
                           </button>
-                          <button onClick={() => incrementQ(index)} className="w-1/3 h-full flex items-center justify-center">+</button>
+                          <button onClick={() => incrementQ(product)} className="w-1/3 h-full flex items-center justify-center">+</button>
                         </div>
                       )}
 

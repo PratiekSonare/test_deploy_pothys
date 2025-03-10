@@ -21,7 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export default function CarouselSize() {
-  const { cartItems, selectedVar, addToCart, incrementQ, decrementQ } = useCart();
+  const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
   const [products, setProducts] = useState([]);
   const [selectedVariants, setSelectedVariants] = useState({});
   const [loading, setLoading] = useState(true); // Loading state
@@ -90,46 +90,56 @@ export default function CarouselSize() {
             const selectedVariant = selectedVariants[productName];
 
             return (
-              <CarouselItem key={productName} className="md:basis-1/3 lg:basis-1/5 h-[500px] text1">
+              <CarouselItem key={productName} className="md:basis-1/2 lg:basis-1/4 text1 w-full">
                 <div className="rounded-lg bg-white dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
                   <div className="relative flex flex-col">
-                    <img
-                      className="w-full object-cover"
-                      style={{ width: 'auto', height: '175px' }}
-                      src={selectedVariant?.imageURL} // Use optional chaining
-                      alt="Product"
-                    />
-                    {selectedVariant?.discount > 0 && (
-                      <div className="absolute top-2 right-2 bg-green-200 p-1 rounded-lg text-green-500 text-sm">
-                        {selectedVariant.discount}% OFF
-                      </div>
-                    )}
-                    <div className="p-4">
-                    <h2 className="text2 text-lg dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
-                    <h2 className="mb-2 text-xl dark:text-white text-gray-900">{productName}</h2>
-                    <div className="flex items-end">
-                        <p className="mr-2 text-xl text-gray-900 dark:text-white">
-                          ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}
-                        </p>
+                      <div className="p-5">
                         {selectedVariant?.discount > 0 && (
-                          <p className="text-md text-gray-500 line-through">₹{selectedVariant.price}</p>
+                          <div className="absolute top-6 right-6 bg-green-200 p-1 rounded-lg text-green-500 text-sm">
+                            {selectedVariant.discount}% OFF
+                          </div>
                         )}
+                        <div className="flex justify-center items-center rounded-lg p-2 border-gray-500 border-[1px]">
+                          <img
+                            className="w-full object-cover rounded-lg"
+                            style={{ width: 'auto', height: '175px' }}
+                            src={selectedVariant?.imageURL} // Use optional chaining
+                            alt="Product"
+                          />
+                        </div>
+                      </div>
+
+                    <div className="p-4">
+                      <h2 className="text2 text-base dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
+                      <div className="flex flex-row items-end space-x-1 mb-2">
+                        <h2 className="text1 text-lg/6 dark:text-white text-gray-900">{productName}</h2>
+                        {selectedVariant?.product_feature && (
+                              <p className="text-sm text1 text-gray-400">{selectedVariant?.product_feature}</p>
+                        )}
+                      </div>
+                      <div className="flex  items-end">
+                          <p className="mr-2 text-xl text-gray-900 dark:text-white">
+                            ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}
+                          </p>
+                          {selectedVariant?.discount > 0 && (
+                            <p className="text-md text-gray-500 line-through">₹{selectedVariant?.price}</p>
+                          )}
                       </div>
 
                       <div className="mt-4 -mb-4">
                         <Select onValueChange={(value) => {
-                          const variant = productVariants.find(v => v.quantity.toString() === value);
+                          const variant = productVariants.find(v => v._id.toString() === value);
                           setSelectedVariants(prev => ({ ...prev, [productName]: variant }));
                         }}>
                         <SelectTrigger className="w-full h-[40px] bg-gray-300 opacity-80">
-                          <span>{selectedVariants[productName]?.quantity} {selectedVariants[productName]?.unit}</span>
+                          <span>{selectedVariants[productName]?.quantity} {selectedVariants[productName]?.unit} {selectedVariants?.product_feature ? ` - ${selectedVariants?.product_feature}` : ''}</span>
                         </SelectTrigger>
                           <SelectContent>
                           {productVariants.map((variant, index) => (
-                          <div key={`${variant._id}-${variant.quantity}-${variant.price}-${productName}`}>
-                            <SelectItem className="" value={variant.quantity.toString()}>
+                          <div key={`${variant._id}`}>
+                            <SelectItem className="" key={variant._id} value={variant._id}>
                               <div className="flex flex-col space-y-1 w-full">
-                                <p>{variant.quantity} {variant.unit}</p> 
+                                <span>{variant.quantity} {variant.unit} <span className="text-xs justify-end">{variant.product_feature ? `- ${variant.product_feature}` : ''}</span></span> 
 
                                 <div className="flex flex-row justify-center items-center space-x-2">
                                   <div className="text-xs bg-green-200 p-1 rounded-lg text-green-500">
@@ -189,7 +199,7 @@ export default function CarouselSize() {
           })}
         </CarouselContent>
 
-        <div className="flex justify-center items-center underline text1">
+        <div className="flex mt-5 -mb-5 justify-center items-center underline text1">
           <button>
             <span>View All</span>
           </button>

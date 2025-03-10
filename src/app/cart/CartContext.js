@@ -8,21 +8,32 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    return JSON.parse(localStorage.getItem("cart")) || [];
-  });
+  const [cartItems, setCartItems] = useState([]);
+  const [selectedVariants, setSelectedVariants] = useState({});
 
-  const [selectedVariants, setSelectedVariants] = useState(() => {
-    return JSON.parse(localStorage.getItem("selectedVariants")) || {};
-  });
+
+  // Load from localStorage on mount (client-side only)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      const storedVariants = JSON.parse(localStorage.getItem("selectedVariants")) || {};
+
+      setCartItems(storedCart);
+      setSelectedVariants(storedVariants);
+    }
+  }, []);
 
   // Update localStorage whenever cartItems change
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    }
   }, [cartItems]);
 
   useEffect(() => {
-    localStorage.setItem("selectedVariants", JSON.stringify(selectedVariants));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedVariants", JSON.stringify(selectedVariants));
+    }
   }, [selectedVariants]);
 
   // Add Product to Cart
@@ -50,9 +61,6 @@ export const CartProvider = ({ children }) => {
       ...prev,
       [product._id]: quantityType,
     }));
-
-    console.log("Product added to cart:", product);
-    console.log("Expected quantityType:", quantityType);
   };
 
   // Increment Quantity
@@ -93,9 +101,29 @@ export const CartProvider = ({ children }) => {
     setSelectedVariants({});
   };
 
+    // ✅ Calculate Total Cart Price
+    const calculateTotal = () => {
+      const delivery_charges = 2;
+    
+      const subtotal = cartItems.reduce((total, item) => {
+        const price = item.discount > 0 ? item.discounted_price : item.price;
+        return total + price * item.quantity;
+      }, 0);
+    
+      return cartItems.length > 0 ? subtotal + delivery_charges : 0;
+    };
+
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart }}
+      value={{
+        cartItems,
+        addToCart,
+        incrementQ,
+        decrementQ,
+        removeFromCart,
+        clearCart,
+        calculateTotal
+      }}
     >
       {children}
     </CartContext.Provider>
