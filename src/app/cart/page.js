@@ -56,7 +56,8 @@ const Cart = () => {
                   </img>
                   <div className='flex-1 ml-5'>
                     <h2 className="text-lg font-semibold">{item.name}</h2>
-                    <p className="text-gray-600">Price: ₹{item.price}</p>
+                    {item.discount >0 && (<p className="text-gray-600">Discounted Price: ₹{item.discounted_price}</p>)}
+                    <p className="text-gray-600 line-through">Price: ₹{item.price}</p>
                     <p className="text-gray-600">Quantity: {item.quantity}</p>
                   </div>
 

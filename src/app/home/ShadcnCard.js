@@ -143,7 +143,10 @@ export default function CarouselSize() {
                   {!cartItem ? (
                     <div className="flex justify-center p-3">
                       <button
-                        onClick={() => addToCart({ ...selectedVariant, quantityType: selectedVariant.quantity})}
+                        onClick={() => addToCart({
+                          ...selectedVariant,
+                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                        })}
                         className="p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
                       >
                         <span className="font-bold">Add</span>
@@ -152,11 +155,19 @@ export default function CarouselSize() {
                   ) : (
                     <div className="flex justify-center p-3 transition-opacity duration-500 ease-in-out opacity-100 text-lg">
                       <div className="flex flex-row h-[40px] justify-around w-full rounded-lg bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-300">
-                        <button onClick={() => decrementQ(selectedVariant?._id, selectedVariant?.unit)}> - </button>
+                        <button onClick={() => decrementQ({
+                          ...selectedVariant,
+                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                        })}> - </button>
+
                         <button>
                           <span className="font-bold">{quantity}</span>
                         </button>
-                        <button onClick={() => incrementQ(selectedVariant?._id, selectedVariant?.unit)}> + </button>
+
+                        <button onClick={() => incrementQ({
+                          ...selectedVariant,
+                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                        })}> + </button>
                       </div>
                     </div>
                   )}
