@@ -8,9 +8,12 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
+  });
+
+  const [selectedVariants, setSelectedVariants] = useState(() => {
+    return JSON.parse(localStorage.getItem("selectedVariants")) || {};
   });
 
   // Update localStorage whenever cartItems change
@@ -18,9 +21,12 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  useEffect(() => {
+    localStorage.setItem("selectedVariants", JSON.stringify(selectedVariants));
+  }, [selectedVariants]);
+
   // Add Product to Cart
   const addToCart = (product) => {
-
     const quantityType = `${product.quantity} ${product.unit}`; // e.g., "500 g"
 
     setCartItems((prevCart) => {
@@ -39,60 +45,52 @@ export const CartProvider = ({ children }) => {
       }
     });
 
+    // Store selected variant
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [product._id]: quantityType,
+    }));
+
     console.log("Product added to cart:", product);
     console.log("Expected quantityType:", quantityType);
-};
+  };
 
+  // Increment Quantity
+  const incrementQ = (product) => {
+    setCartItems((prevCart) =>
+      prevCart.map((item) =>
+        item._id === product._id && item.quantityType === product.quantityType
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
 
-// Increment Quantity
-const incrementQ = (product) => {
-  console.log("Incrementing product:", product);
+  // Decrement Quantity (Remove if quantity becomes 0)
+  const decrementQ = (product) => {
+    setCartItems((prevCart) => {
+      const updatedCart = prevCart.map((item) =>
+        item._id === product._id && item.quantityType === product.quantityType
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      );
 
-  setCartItems((prevCart) => {
-    console.log("Previous cart items:", prevCart);
-
-    const updatedCart = prevCart.map((item) => {
-      if (item._id === product._id && item.quantityType === product.quantityType) {
-        console.log(`Incrementing quantity for: ${item.quantityType}`);
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
+      return updatedCart.filter((item) => item.quantity > 0);
     });
+  };
 
-    console.log("Cart after increment:", updatedCart);
-    return updatedCart;
-  });
-};
-
-
-// Decrement Quantity (Remove if quantity becomes 0)
-const decrementQ = (product) => {
-  console.log("Decrementing product:", product);
-
-  setCartItems((prevCart) => {
-    const updatedCart = prevCart.map((item) => {
-      if (item._id === product._id && item.quantityType === product.quantityType) {
-        console.log(`Decrementing quantity for: ${item.quantityType}`);
-        return { ...item, quantity: item.quantity - 1 };
-      }
-      return item;
-    });
-
-    // Remove items with quantity 0
-    const filteredCart = updatedCart.filter((item) => item.quantity > 0);
-
-    console.log("Cart after decrement:", filteredCart);
-    return filteredCart;
-  });
-};
-
-  
   const removeFromCart = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
+    setSelectedVariants((prev) => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
   };
 
   const clearCart = () => {
     setCartItems([]);
+    setSelectedVariants({});
   };
 
   return (

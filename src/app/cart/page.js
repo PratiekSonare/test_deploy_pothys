@@ -64,14 +64,14 @@ const Cart = () => {
                   <div className='flex flex-row gap-2'>
                     <Button
                       variant="outline"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item._id)}
                       aria-label={`Remove ${item.name} from cart`}
                     >
                       Quantity Button
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item._id)}
                     >
                       Remove
                     </Button>
@@ -81,7 +81,7 @@ const Cart = () => {
             ))}
             <Separator className="my-4" />
             <div className="flex justify-between">
-              <Button variant="outline" onClick={""}>
+              <Button variant="outline" onClick={clearCart()}>
                 Clear Cart
               </Button>
               <Button variant="solid" className="bg-blue-600 text-white">

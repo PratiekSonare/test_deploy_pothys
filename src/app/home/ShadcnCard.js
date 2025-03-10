@@ -21,7 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export default function CarouselSize() {
-  const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
+  const { cartItems, selectedVar, addToCart, incrementQ, decrementQ } = useCart();
   const [products, setProducts] = useState([]);
   const [selectedVariants, setSelectedVariants] = useState({});
   const [loading, setLoading] = useState(true); // Loading state
@@ -55,8 +55,20 @@ export default function CarouselSize() {
       // Initialize selectedVariants with the first variant of each product
       const initialVariants = {};
       Object.keys(groupedProducts).forEach(productName => {
-        initialVariants[productName] = groupedProducts[productName][0]; // Set the first product as the default variant
+
+        const ItemsInCart = cartItems.find(item => item.name === productName)
+
+        if (ItemsInCart) {
+          // Set the variant from the cart if it exists
+          initialVariants[productName] = groupedProducts[productName].find(
+            variant => variant._id === ItemsInCart._id
+          ) || groupedProducts[productName][0]; // Fallback to first variant if not found
+        } else {
+          // Otherwise, set the first variant as default
+          initialVariants[productName] = groupedProducts[productName][0];
+        }
       });
+
       setSelectedVariants(initialVariants);
     }
   }, [products]); // Runs only when products update
