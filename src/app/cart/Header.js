@@ -8,40 +8,30 @@ const Header = () => {
   
   return (
     <div className='max-w-screen max-h-[150px] bg-white'>
-      <div className='flex items-center justify-around p-5'>
-        
-        {/* Empty div to take up space on the left */}
-        <div className="flex-grow"></div>
-
-        {/* Logo */}
-        <div className="flex justify-center items-center">
+      <div className="grid grid-cols-3 items-center p-5 px-10">
+        {/* Cart Icon */}
+        <Link href="/" className="flex justify-start">
           <img 
-            src='/pothys-2template.svg' 
-            alt='logo'
-            style={{ width: '60%', height: 'auto' }} 
+            src="/arrow.svg" 
+            alt="cart"
+            className="w-8 h-auto" 
+          />
+        </Link>
+
+        {/* Logo (Centered) */}
+        <div className="flex justify-center">
+          <img 
+            src="/pothys-2template.svg" 
+            alt="logo"
+            className="w-40 h-auto" 
           />
         </div>
 
-        {/* Empty div to take up space on the left */}
-        <div className="flex-grow"></div>
-
-        {/* Cart */}
-        <Link href='/'>
-          <div className="relative text-center text-lg">
-            <div className='flex items-center bg-red-300 rounded-lg p-2 cursor-pointer'>
-              <img 
-                src='/shoppingcart.svg' 
-                alt='cart'
-                style={{ width: '60%', height: 'auto' }} 
-              />
-              <div className='absolute top-5 right-2 transform translate-x-1/2 -translate-y-1/2 p-1 rounded-3xl bg-red-500 text-sm text-white'>
-                <span>{cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0}</span>
-              </div>
-            </div>
-          </div>
-        </Link>
+        {/* Empty Space to Balance Layout */}
+        <div></div>
         
-      </div>      
+      </div>
+            
     </div>
   );
 }

@@ -17,13 +17,20 @@ import {
 }
  from '@/components/ui/form';
 
+import {
+HoverCard,
+HoverCardContent,
+HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
 import { Input } from "@/components/ui/input";
 import Header from './Header';
 import '../styles.css'
 
 const Cart = () => {
   
-  const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart, calculateTotal } = useCart();
+  const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart, calculateTotal, calculateProductQuantities } = useCart();
+  const productQuantities = calculateProductQuantities();
 
   const form = useForm({
           defaultValues: {
@@ -51,8 +58,18 @@ const Cart = () => {
                     <span className='text1 p-2'>Clear Cart</span>
             </button>
           </div>
+
           {cartItems.length === 0 ? (
-            <p>Your cart is empty.</p>
+            <div className='flex flex-col items-center justify-center p-36 card-sdw bg-white rounded-lg'>
+              <p className='text0 text-lg'>Your cart is empty.</p>
+              <img
+                src='/sad-svgrepo-com.svg'
+                alt='sad'
+                className=''
+                style={{width: '15%'}}>
+              </img>
+            </div>
+
           ) : (
             <div>
               {cartItems.map((product, index) => (
@@ -71,12 +88,14 @@ const Cart = () => {
   
                       <div className='ml-5'>
                         <h2 className="text1 text-gray-600 text-base font-semibold -mb-2">{product.brand}</h2>
-                        <h2 className="text2 text-lg font-semibold">{product.name}</h2>                
+                        <h2 className="text2 text-lg font-semibold ">{product.name}</h2>                
+                        <h2 className="text0 text-xs self-end">{product.quantityType}</h2>                
+                        {/* <h2 className="text0 text-xs self-end">{product.quantity} {product.unit}</h2>                 */}
                       </div> 
                     </div>
         
                     <div className='flex items-center justify-center'>
-                      <div className='grid grid-cols-[2fr_1fr_2fr] grid-rows-1 items-center gap-5'>
+                      <div className='grid grid-cols-[2fr_1fr_1fr_2fr] grid-rows-1 items-center gap-5'>
     
                         <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-full h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
                           <button onClick={() => decrementQ(product)} className="w-1/3 h-full flex items-center justify-center">-</button>
@@ -94,6 +113,13 @@ const Cart = () => {
                           </button>
                         </div>
     
+                        <div className='flex flex-col'>
+                          <span className='text-xs text0 self-end text-gray-600'>Quantity:</span>
+                          <span className='self-end text2 text-lg text-black tracking-tighter'>
+                            {productQuantities[product._id] || product.quantity} x {product.quantityType}
+                          </span>
+                        </div>
+
                         <div>
                           <div className='flex flex-col'>
                             <p className='text-xs text0 self-end  text-gray-600'>Discounted/Final Price:</p> 
@@ -115,6 +141,35 @@ const Cart = () => {
                 <div className='flex flex-col px-5'>
                   <span className='text1 text-gray-600 text-lg self-end'>Total:</span> 
                   <span className='text2 text-2xl self-end'>₹{calculateTotal()}</span>
+
+                  <div className='self-end'>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button variant="link" className='p-0'><span className='text-xs text0 text-gray-500'>+ View Price Breakdown</span></Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-55">
+                        <div className='flex flex-col gap-2 text0 text-xs'>
+                          <div className='flex flex-row justify-between'>
+                            <span className='text-gray-400'>+Delivery Charges</span>
+                            <span className='text-gray-600'>₹2</span>
+                          </div>
+                          <div className='flex flex-row justify-between'>
+                            <span className='text-gray-400'>+CGST</span>
+                            <span className='text-gray-600'>₹(cgst)</span>
+                          </div>
+                          <div className='flex flex-row justify-between'>
+                            <span className='text-gray-400'>+SGST</span>
+                            <span className='text-gray-600'>₹(sgst)</span>
+                          </div>
+                          <div className='flex flex-row justify-between'>
+                            <span className='text-gray-400'>+Convenience Fee</span>
+                            <span className='text-gray-600'>₹(c_fee)</span>
+                          </div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+
                 </div>
               </div>
               <Separator className="my-4" />
@@ -124,9 +179,9 @@ const Cart = () => {
         </div>
   
         <div className='p-5'>
-          <h1 className="text-2xl font-bold mb-4">Customer Details</h1>
+          <h1 className="text-2xl font-bold mb-4 text3">Customer Details</h1>
   
-            <div className='space-y-5'>
+            <div className='space-y-5 text0'>
               <Form {...form}>
                 <FormField 
                   control={form.control}
@@ -171,19 +226,21 @@ const Cart = () => {
                 />
               </Form>
   
-              <div className='flex flex-row gap-4'>
-  
-                <div className='rounded-lg p-5 flex flex-col items-center bg-transparent border-2 border-blue-500 hover:bg-blue-500 transition-colors duration-200 ease-in-out'>
-                  <img src='/cash.svg' alt='cashicon' style={{width: '20%'}}></img>
-                  <span>Cash on Delivery</span>
+              <div className='flex flex-col gap-2'>
+                <span>Select Payment Type</span>
+                <div className='flex flex-row gap-4'>
+                  <div className='rounded-lg p-5 flex flex-col items-center bg-transparent border-2 border-blue-500 hover:bg-blue-500 transition-colors duration-200 ease-in-out'>
+                    <img src='/cash.svg' alt='cashicon' style={{width: '20%'}}></img>
+                    <span>Cash on Delivery</span>
+                  </div>
+    
+                  <div className='rounded-lg p-5 flex flex-col items-center bg-transparent border-2 border-blue-500 hover:bg-blue-500 transition-colors duration-200 ease-in-out'>
+                    <img src='/qr-code.svg' alt='qricon' style={{width: '20%'}}></img>
+                    <span>UPI</span>
+                  </div>
                 </div>
   
-                <div className='rounded-lg p-5 flex flex-col items-center bg-transparent border-2 border-blue-500 hover:bg-blue-500 transition-colors duration-200 ease-in-out'>
-                  <img src='/qr-code.svg' alt='qricon' style={{width: '20%'}}></img>
-                  <span>UPI</span>
-                </div>
-  
-                </div>
+              </div>
   
           </div>
   
