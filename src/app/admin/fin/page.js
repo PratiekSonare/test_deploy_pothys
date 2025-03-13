@@ -15,6 +15,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import '../../styles.css'
+import Header from './Header';
 
 const FinanceDashboard = () => {
     const [transactions, setTransactions] = useState([]);
@@ -116,6 +117,12 @@ const FinanceDashboard = () => {
 
 
     return (
+        <>
+        
+        <header className="top-0 header-sdw">
+            <Header />
+        </header>
+
         <div className="container mx-auto p-4">
 
             <div className='my-10'>
@@ -304,6 +311,8 @@ const FinanceDashboard = () => {
                 </div>
             </div>
         </div>
+    </>
+       
     );
 };
 
