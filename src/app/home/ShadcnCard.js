@@ -21,10 +21,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export default function CarouselSize() {
-  const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
+  const { cartItems, selectedVar, addToCart, incrementQ, decrementQ } = useCart();
   const [products, setProducts] = useState([]);
   const [selectedVariants, setSelectedVariants] = useState({});
   const [loading, setLoading] = useState(true); // Loading state
+  const [isVariantSelected, setIsVariantSelected] = useState(false); // New state to track variant selection
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,7 +42,6 @@ export default function CarouselSize() {
     fetchProducts();
   }, []);
 
-  // Group products by name and initialize selectedVariants
   useEffect(() => {
     if (products.length > 0) {
       const groupedProducts = products.reduce((acc, product) => {
@@ -51,32 +51,50 @@ export default function CarouselSize() {
         acc[product.name].push(product);
         return acc;
       }, {});
-
-      // Initialize selectedVariants with the first variant of each product
+  
       const initialVariants = {};
       Object.keys(groupedProducts).forEach(productName => {
-
-        const ItemsInCart = cartItems.find(item => item.name === productName)
-
+        const ItemsInCart = cartItems.find(item => item.name === productName);
+  
         if (ItemsInCart) {
-          // Set the variant from the cart if it exists
-          initialVariants[productName] = groupedProducts[productName].find(
-            variant => variant._id === ItemsInCart._id
-          ) || groupedProducts[productName][0]; // Fallback to first variant if not found
+          initialVariants[productName] = {
+            ...groupedProducts[productName].find(variant => variant._id === ItemsInCart._id) 
+            || groupedProducts[productName][0], // Fallback to first variant if not found
+            quantityType: `${ItemsInCart.quantity} ${ItemsInCart.unit}`
+          };
         } else {
-          // Otherwise, set the first variant as default
-          initialVariants[productName] = groupedProducts[productName][0];
+          const firstVariant = groupedProducts[productName][0];
+          initialVariants[productName] = {
+            ...firstVariant,
+            quantityType: `${firstVariant.quantity} ${firstVariant.unit}`
+          };
         }
       });
-
+  
       setSelectedVariants(initialVariants);
     }
-  }, [products]); // Runs only when products update
+  }, [products, cartItems]); // Add cartItems dependency to ensure updates
+  
 
   // Render loading state
   if (loading) {
     return <div>Loading...</div>; // You can customize this loading state
   }
+
+  const handleAddToCart = (variant) => {
+    const existingItem = cartItems.find(item => item.name === variant.name);
+    
+    if (existingItem) {
+      // If the product already exists in the cart, do not allow adding a different quantity
+      alert(`You have already added ${existingItem.quantityType} of ${variant.name}. Please update the quantity instead.`);
+      return;
+    }
+  
+    addToCart({
+      ...variant,
+      quantityType: `${variant.quantity} ${variant.unit}`
+    });
+  };
 
   return (
     <div className="relative w-full">
@@ -90,56 +108,52 @@ export default function CarouselSize() {
             const selectedVariant = selectedVariants[productName];
 
             return (
-              <CarouselItem key={productName} className="md:basis-1/2 lg:basis-1/4 text1 w-full">
+              <CarouselItem key={productName} className="md:basis-1/3 lg:basis-1/5 text1 h-full ">
                 <div className="rounded-lg bg-white dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
                   <div className="relative flex flex-col">
-                      <div className="p-5">
-                        {selectedVariant?.discount > 0 && (
-                          <div className="absolute top-6 right-6 bg-green-200 p-1 rounded-lg text-green-500 text-sm">
-                            {selectedVariant.discount}% OFF
-                          </div>
-                        )}
-                        <div className="flex justify-center items-center rounded-lg p-2 border-gray-500 border-[1px]">
-                          <img
-                            className="w-full object-cover rounded-lg"
-                            style={{ width: 'auto', height: '175px' }}
-                            src={selectedVariant?.imageURL} // Use optional chaining
-                            alt="Product"
-                          />
-                        </div>
+                    <div className="flex justify-center items-center rounded-lg p-2">
+                      <div className="border-gray-500 border-[1px] p-2 rounded-lg">
+                        <img
+                          className="w-full object-cover rounded-lg "
+                          style={{ width: 'auto', height: '175px' }}
+                          src={selectedVariant?.imageURL} // Use optional chaining
+                          alt="Product"
+                        />
                       </div>
-
+                    </div>
+                    {selectedVariant?.discount > 0 && (
+                      <div className="absolute top-2 right-2 bg-green-200 p-1 rounded-lg text-green-500 text-sm">
+                        {selectedVariant.discount}% OFF
+                      </div>
+                    )}
                     <div className="p-4">
-                      <h2 className="text2 text-base dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
-                      <div className="flex flex-row items-end space-x-1 mb-2">
-                        <h2 className="text1 text-lg/6 dark:text-white text-gray-900">{productName}</h2>
-                        {selectedVariant?.product_feature && (
-                              <p className="text-sm text1 text-gray-400">{selectedVariant?.product_feature}</p>
+                    <h2 className="text2 text-lg dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
+                    <h2 className="mb-2 text-xl dark:text-white text-gray-900">{productName}</h2>
+                    <div className="flex items-end">
+                        <p className="mr-2 text-xl text-gray-900 dark:text-white">
+                          ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}
+                        </p>
+                        {selectedVariant?.discount > 0 && (
+                          <p className="text-md text-gray-500 line-through">₹{selectedVariant.price}</p>
                         )}
-                      </div>
-                      <div className="flex  items-end">
-                          <p className="mr-2 text-xl text-gray-900 dark:text-white">
-                            ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}
-                          </p>
-                          {selectedVariant?.discount > 0 && (
-                            <p className="text-md text-gray-500 line-through">₹{selectedVariant?.price}</p>
-                          )}
                       </div>
 
                       <div className="mt-4 -mb-4">
                         <Select onValueChange={(value) => {
-                          const variant = productVariants.find(v => v._id.toString() === value);
+                          const variant = productVariants.find(v => v.quantity.toString() === value);
                           setSelectedVariants(prev => ({ ...prev, [productName]: variant }));
+                          setIsVariantSelected(true); // Set to true when a variant is selected
+
                         }}>
                         <SelectTrigger className="w-full h-[40px] bg-gray-300 opacity-80">
-                          <span>{selectedVariants[productName]?.quantity} {selectedVariants[productName]?.unit} {selectedVariants?.product_feature ? ` - ${selectedVariants?.product_feature}` : ''}</span>
+                          <span>{selectedVariants[productName]?.quantity} {selectedVariants[productName]?.unit}</span>
                         </SelectTrigger>
                           <SelectContent>
                           {productVariants.map((variant, index) => (
-                          <div key={`${variant._id}`}>
-                            <SelectItem className="" key={variant._id} value={variant._id}>
+                          <div key={`${variant._id}-${variant.quantity}-${variant.price}-${productName}`}>
+                            <SelectItem className="" value={variant.quantity.toString()}>
                               <div className="flex flex-col space-y-1 w-full">
-                                <span>{variant.quantity} {variant.unit} <span className="text-xs justify-end">{variant.product_feature ? `- ${variant.product_feature}` : ''}</span></span> 
+                                <p>{variant.quantity} {variant.unit}</p> 
 
                                 <div className="flex flex-row justify-center items-center space-x-2">
                                   <div className="text-xs bg-green-200 p-1 rounded-lg text-green-500">
@@ -199,7 +213,7 @@ export default function CarouselSize() {
           })}
         </CarouselContent>
 
-        <div className="flex mt-5 -mb-5 justify-center items-center underline text1">
+        <div className="flex justify-center items-center underline text1 mt-5 -mb-5">
           <button>
             <span>View All</span>
           </button>

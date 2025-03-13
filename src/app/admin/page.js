@@ -618,7 +618,7 @@ export default function AdminDashboard() {
                     </div>         
                 </div>    
 
-                <div style={{ height: '500px', overflowY: 'auto' }}>
+                <div className="" style={{ height: '500px', overflowY: 'auto' }}>
                     <Table className="w-full border border-gray-300 rounded-lg">
                         <TableHeader className="bg-gray-200">
                             <TableRow>

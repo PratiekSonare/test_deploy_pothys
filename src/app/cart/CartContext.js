@@ -56,12 +56,13 @@ export const CartProvider = ({ children }) => {
       }
     });
 
-    // Store selected variant
+    // ✅ Store selected variant correctly using product name as key
     setSelectedVariants((prev) => ({
       ...prev,
-      [product._id]: quantityType,
+      [product.name]: product, // Store the whole selected product variant
     }));
-  };
+};
+
 
   // Increment Quantity
   const incrementQ = (product) => {
@@ -101,26 +102,17 @@ export const CartProvider = ({ children }) => {
     setSelectedVariants({});
   };
 
-  // ✅ Calculate Total Cart Price
-  const calculateTotal = () => {
-    const delivery_charges = 2;
-  
-    const subtotal = cartItems.reduce((total, item) => {
-      const price = item.discount > 0 ? item.discounted_price : item.price;
-      return total + price * item.quantity;
-    }, 0);
-  
-    return cartItems.length > 0 ? subtotal + delivery_charges : 0;
-  };
-
-  const calculateProductQuantities = () => {
-    return cartItems.reduce((acc, item) => {
-      const key = `${item._id}`; // Unique key for each product type
-      acc[key] = (acc[key] || 0) + item.quantity;
-      return acc;
-    }, {});
-  };
-  
+    // ✅ Calculate Total Cart Price
+    const calculateTotal = () => {
+      const delivery_charges = 2;
+    
+      const subtotal = cartItems.reduce((total, item) => {
+        const price = item.discount > 0 ? item.discounted_price : item.price;
+        return total + price * item.quantity;
+      }, 0);
+    
+      return cartItems.length > 0 ? subtotal + delivery_charges : 0;
+    };
 
   return (
     <CartContext.Provider
@@ -131,8 +123,7 @@ export const CartProvider = ({ children }) => {
         decrementQ,
         removeFromCart,
         clearCart,
-        calculateTotal,
-        calculateProductQuantities
+        calculateTotal
       }}
     >
       {children}

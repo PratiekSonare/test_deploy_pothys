@@ -7,6 +7,8 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import csv from 'csv-parser'; // Ensure you have this package installed
 import fs from 'fs';
+// import { v4 as uuidv4 } from 'uuid';
+
 
 dotenv.config();
 const app = express();
@@ -52,16 +54,28 @@ const adminSchema = new mongoose.Schema({
 
 // Transaction Schema
 const transactionSchema = new mongoose.Schema({
-    transactionId: { type: String, required: true },
-    products: [{ 
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-        quantity: Number,
-        price: Number,
-        discounted_price: Number,
-    }],
-    totalAmount: Number,
-    paymentMethod: String, // e.g., 'credit_card', 'cash_on_delivery'
-    createdAt: { type: Date, default: Date.now },
+    transaction_id: { type: String, required: true, unique: true },
+    date_time: { type: Date, default: Date.now },
+    status: { type: String, enum: ["success", "failure"], required: true },
+    payment_method: { type: String, enum: ["UPI", "Credit Card", "Net Banking", "Wallet"], required: true },
+    total_amount: { type: Number, required: true },
+    cartItems: [
+        {
+            _id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+            brand: { type: String, required: true },
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            discount: { type: Number, required: true },
+            discounted_price: { type: Number, required: true },
+            quantity: { type: Number, required: true },
+            unit: { type: String, required: true },
+        },
+    ],
+    customer: {  // Change from array to object
+        customer_name: { type: String, required: true },
+        phone: { type: Number, required: true },
+        address: { type: String, required: true },
+    }
 });
 
 
@@ -247,40 +261,40 @@ app.post('/api/products/upload', upload.single('file'), async (req, res) => {
         });
 });
 
-// Endpoint to handle transactions
-app.post('/api/transactions', async (req, res) => {
-    const transactions = req.body; // Expecting an array of transactions
-
+app.post("/api/transactions", async (req, res) => {
     try {
-        if (!Array.isArray(transactions) || transactions.length === 0) {
-            return res.status(400).json({ message: "Invalid data format. Expected an array of transactions." });
-        }
+        const { cartItems, total_amount, payment_method, customer } = req.body;
 
-        const transactionsToInsert = transactions.map(transaction => ({
-            transactionId: `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, // Unique ID for each
-            products: transaction.products,
-            totalAmount: transaction.products.reduce((total, product) => {
-                return total + (product.discounted_price || product.price) * product.quantity;
-            }, 0),
-            paymentMethod: transaction.paymentMethod,
-        }));
+        // Generate a unique transaction ID
+        const transaction_id = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
 
-        const savedTransactions = await Transaction.insertMany(transactionsToInsert);
+        // Create a new transaction entry
+        const newTransaction = new Transaction({
+            transaction_id,
+            cartItems,  // ✅ Storing cart items inside transaction
+            total_amount,
+            payment_method: "UPI", // Since you're not integrating a payment gateway yet
+            customer,
+            status: "success"
+        });
 
-        res.status(201).json(savedTransactions);
+        await newTransaction.save();
+
+        res.status(201).json({ success: true, transaction_id, message: "Transaction recorded successfully." });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
 
 
 // Endpoint to get all transactions
-app.get('/api/transactions', async (req, res) => {
+app.get("/api/transactions", async (req, res) => {
     try {
-        const transactions = await Transaction.find().populate('products.productId');
-        res.json(transactions);
+        const transactions = await Transaction.find();
+        res.status(200).json({ success: true, transactions });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: "Error fetching transactions", error: error.message });
     }
 });
 
