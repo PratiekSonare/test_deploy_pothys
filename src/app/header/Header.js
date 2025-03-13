@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link'; // Import Link from next/link
 import { useCart } from '../cart/CartContext';
+import '../styles.css'
 
 const Header = () => {
 
@@ -28,15 +29,23 @@ const Header = () => {
         {/* Cart */}
         <Link href='/cart'>
           <div className="relative text-center text-lg">
-            <div className='flex items-center bg-red-300 rounded-lg p-2 cursor-pointer'>
-              <img 
-                src='/shoppingcart.svg' 
-                alt='cart'
-                style={{ width: '60%', height: 'auto' }} 
-              />
-              <div className='absolute top-4 right-2 transform translate-x-1/2 -translate-y-1/2 p-1 rounded-3xl bg-red-500'>
-                <span className='text-md text-white'> {cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0} </span>
-              </div>
+            <div className='flex flex-col items-center justify-center cursor-pointer'>
+
+                <div className='absolute top-5 right-0'>
+                  <div className='p-2 bg-black flex justify-center items-center rounded-md' style={{ width: '25px', height: '25px' }}>
+                    <span className='text-md text-white text3'> {cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0} </span>
+                  </div>
+                </div>
+
+                <div className='w-3/4 p-2 rounded-lg bg-red-400'>
+                  <img 
+                    src='/shoppingcart.svg' 
+                    alt='cart'
+                    style={{ width: '100%', height: 'auto' }} 
+                    className='w-1/2'
+                  />
+                </div>
+
             </div>
           </div>
         </Link>

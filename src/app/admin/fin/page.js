@@ -19,6 +19,7 @@ import '../../styles.css'
 const FinanceDashboard = () => {
     const [transactions, setTransactions] = useState([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
+    const [monthlyRevenue, setMonthlyRevenue] = useState(0);
     const [dailyData, setDailyData] = useState([]);
     const [showRevenue, setShowRevenue] = useState(true);
     const [newTransaction, setNewTransaction] = useState({
@@ -31,14 +32,15 @@ const FinanceDashboard = () => {
             address: ''
         }
     });
-    const [selectedTransaction, setSelectedTransaction] = useState(null);
-    
-    // New state for search and filters
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortField, setSortField] = useState('date_time'); // Default sort by date
-    const [sortOrder, setSortOrder] = useState('desc'); // Default sort order
+    const [sortField, setSortField] = useState('date_time');
+    const [sortOrder, setSortOrder] = useState('desc');
     const [dailyRevenue, setDailyRevenue] = useState({});
 
+    // New state for date filters
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    
     useEffect(() => {
         fetchTransactions();
     }, []);
@@ -52,7 +54,15 @@ const FinanceDashboard = () => {
             const revenue = response.data.transactions.reduce((total, txn) => total + txn.total_amount, 0);
             setTotalRevenue(revenue);
 
-            // Prepare daily data for the graph
+            // Calculate monthly revenue
+            const currentMonth = new Date().getMonth();
+            const monthlyRevenue = response.data.transactions.reduce((total, txn) => {
+                const txnDate = new Date(txn.date_time);
+                return txnDate.getMonth() === currentMonth ? total + txn.total_amount : total;
+            }, 0);
+            setMonthlyRevenue(monthlyRevenue);
+
+            // Prepare daily revenue data
             const dailyRevenue = {};
             response.data.transactions.forEach(txn => {
                 const date = new Date(txn.date_time).toLocaleDateString();
@@ -62,6 +72,9 @@ const FinanceDashboard = () => {
                 dailyRevenue[date].total += txn.total_amount;
                 dailyRevenue[date].count += 1;
             });
+
+            // Set dailyRevenue state
+            setDailyRevenue(dailyRevenue);
 
             // Convert dailyRevenue object to array
             const dailyArray = Object.keys(dailyRevenue).map(date => ({
@@ -76,28 +89,31 @@ const FinanceDashboard = () => {
         }
     };
 
-    // Function to handle sorting
     const handleSort = (field) => {
         const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortField(field);
         setSortOrder(order);
-    };  
+    };
 
-    // Filter and sort transactions based on search term and selected sort field
     const filteredTransactions = transactions
-        .filter(txn => 
-            txn.customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            txn.transaction_id.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        .filter(txn => {
+            const txnDate = new Date(txn.date_time);
+            const isWithinDateRange = (!startDate || txnDate >= new Date(startDate)) && (!endDate || txnDate <= new Date(endDate));
+            return (
+                (txn.customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                txn.transaction_id.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                isWithinDateRange
+            );
+        })
         .sort((a, b) => {
             const aValue = sortField === 'date_time' ? new Date(a.date_time) : a[sortField];
             const bValue = sortField === 'date_time' ? new Date(b.date_time) : b[sortField];
             return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
         });
 
-        const currentDate = new Date().toLocaleDateString(); // Format the current date
-        const todayRevenue = dailyRevenue[currentDate] ? dailyRevenue[currentDate].total : 0; // Get today's revenue or default to 0
-        
+    const currentDate = new Date().toLocaleDateString();
+    const todayRevenue = dailyRevenue[currentDate] ? dailyRevenue[currentDate].total : 0;
+
 
     return (
         <div className="container mx-auto p-4">
@@ -105,7 +121,8 @@ const FinanceDashboard = () => {
             <div className='my-10'>
                 <h1 className="text3 text-3xl font-bold mb-4">Finance Dashboard</h1>
                 <h2 className="text1 text-xl">Total Revenue: <span className='text3'>₹{totalRevenue.toFixed(2)}</span></h2>
-                <h2 className="text1 text-xl">Daily Revenue: <span className='text3'>₹{todayRevenue.toFixed(2)}</span></h2>
+                <h2 className="text1 text-xl">Total Monthly Revenue: <span className='text3'>₹{monthlyRevenue.toFixed(2)}</span></h2>
+                <h2 className="text1 text-xl">Today Daily Revenue: <span className='text3'>₹{todayRevenue.toFixed(2)}</span></h2>
             </div>
 
 
@@ -146,117 +163,145 @@ const FinanceDashboard = () => {
                 <h1 className='text2 text-2xl my-3'>Transactions</h1>
 
                 {/* Search and Filter Section */}
-                <div className="mb-4 flex flex-col items-start">
-                    <span className='text0 text-lg text-gray-600'>Filter:</span>
-                    <input
-                        type="text"
-                        placeholder="Search by Customer Name or Transaction ID"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="text0 border p-2 mb-2 w-full text-base"
-                    />
+                <div className='flex flex-row gap-2 items-center justify-between my-5'>
+                    <div className="flex flex-col items-start w-full">
+                        <span className='text0 text-lg text-gray-600'>Filter:</span>
+                        <input
+                            type="text"
+                            placeholder="Search by Customer Name or Transaction ID"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="text0 border p-2 w-full text-base"
+                        />
+                    </div>
+    
+                    <div className="flex flex-row gap-2">
+                        <div className='flex flex-col'>
+                            <span className='text0 text-lg text-gray-600'>Start Date</span>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="border p-2"
+                            />
+                        </div>
+                        <div className='flex flex-col'>
+                            <span className='text0 text-lg text-gray-600'>End Date</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="border p-2"
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                <span className='text0 text-lg text-gray-600'>Click on the header for ascending/descending order:</span>
+
+                <span className='text0 text-lg text-gray-600'>Click on the header for sorting:</span>
                 {/* Transactions Table */}
-                <Table className="w-full border border-gray-300 rounded-lg">
-                    <TableHeader className="bg-gray-200">
-                    <TableRow className='text2 text-md'>
-                        <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('transaction_id')}>
-                            <div className='flex flex-row justify-between items-center'>
-                                <span>Transaction ID</span>
-                                {sortField === 'transaction_id' && (sortOrder === 'asc' ? (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
-                                ) : (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
-                                ))}
-                            </div>
-                        </TableHead>
-                        <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('total_amount')}>
-                            <div className='flex flex-row justify-between items-center'>
-                                <span>Total Amount</span>
-                                {sortField === 'total_amount' && (sortOrder === 'asc' ? (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
-                                ) : (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
-                                ))}
-                            </div>
-                        </TableHead>
-                        <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('payment_method')}>
-                            <div className='flex flex-row justify-between items-center'>
-                                <span>Payment Method</span>
-                                {sortField === 'payment_method' && (sortOrder === 'asc' ? (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
-                                ) : (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
-                                ))}
-                            </div>
-                        </TableHead>
-                        <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('date_time')}>
-                            <div className='flex flex-row justify-between items-center'>
-                                <span>Date</span>
-                                {sortField === 'date_time' && (sortOrder === 'asc' ? (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
-                                ) : (
-                                    <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
-                                ))}
-                            </div>
-                        </TableHead>
-                        <TableHead className="p-2 border" style={{ width: '150px' }} >Customer Info</TableHead>
-                        <TableHead className="p-2 border" style={{ width: '150px' }} >Cart Items</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredTransactions.map((txn) => (
-                            <TableRow key={txn.transaction_id}>
-                                <TableCell className="border p-2">{txn.transaction_id}</TableCell>
-                                <TableCell className="border p-2">₹ {txn.total_amount.toFixed(2)}</TableCell>
-                                <TableCell className="border p-2">{txn.payment_method}</TableCell>
-                                <TableCell className="border p-2">{new Date(txn.date_time).toLocaleString()}</TableCell>
-                                <TableCell className="border p-2">
-                                    <Dialog>
-                                        <DialogTrigger>
-                                            <span>View Customer Info</span>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Customer Information</DialogTitle>
-                                                <DialogDescription>
-                                                    <div className='flex flex-col'>
-                                                        <span>Name: {txn.customer.customer_name}</span>
-                                                        <span>Phone: {txn.customer.phone}</span>
-                                                        <span>Address: {txn.customer.address}</span>
-                                                    </div>
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                        </DialogContent>
-                                    </Dialog>
-                                </TableCell>
-                                <TableCell className="border p-2">
-                                    <Dialog>
-                                        <DialogTrigger>
-                                            <span>View Cart Items</span>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Cart Items</DialogTitle>
-                                                <DialogDescription>
-                                                    <ul>
-                                                        {txn.cartItems.map(item => (
-                                                            <li key={item._id}>
-                                                                {item.name} - {item.quantity} x ₹{item.price.toFixed(2)}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                        </DialogContent>
-                                    </Dialog>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <div className='h-1/2 overflow-y-scroll'>
+                    <Table className="w-full border border-gray-300 bg-white rounded-lg">
+                        <TableHeader className="bg-gray-200">
+                        <TableRow className='text2 text-md'>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('transaction_id')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Transaction ID</span>
+                                    {sortField === 'transaction_id' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('total_amount')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Total Amount</span>
+                                    {sortField === 'total_amount' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('payment_method')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Payment Method</span>
+                                    {sortField === 'payment_method' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Date</span>
+                                    {sortField === 'date_time' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border" style={{ width: '10px' }} >Customer Info</TableHead>
+                            <TableHead className="p-2 border" style={{ width: '30px' }} >Cart Items</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredTransactions.map((txn) => (
+                                <TableRow key={txn.transaction_id}>
+                                    <TableCell className="border p-2">{txn.transaction_id}</TableCell>
+                                    <TableCell className="border p-2">₹ {txn.total_amount.toFixed(2)}</TableCell>
+                                    <TableCell className="border p-2">{txn.payment_method}</TableCell>
+                                    <TableCell className="border p-2">{new Date(txn.date_time).toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">
+                                        <Dialog>
+                                            <DialogTrigger>
+                                                <img src='/report.svg' style={{width: '15%'}} alt='report'></img>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Customer Information</DialogTitle>
+                                                    <DialogDescription>
+                                                        <div className='flex flex-col'>
+                                                            <span>Name: {txn.customer.customer_name}</span>
+                                                            <span>Phone: {txn.customer.phone}</span>
+                                                            <span>Address: {txn.customer.address}</span>
+                                                        </div>
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </TableCell>
+                                    <TableCell className="border p-2">
+                                        <Dialog>
+                                            <DialogTrigger>
+                                                <img src='/shoppingcart.svg' style={{width: '50%'}} alt='report'></img>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Cart Items</DialogTitle>
+                                                    <DialogDescription>
+                                                        <div>
+                                                            <ul>
+                                                                {txn.cartItems.map(item => (
+                                                                    <li key={item._id}>
+                                                                        {item.name} - {item.quantity} x ₹{item.price.toFixed(2)}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </div>
     );
