@@ -31,7 +31,7 @@ const Header = () => {
           <div className="relative text-center text-lg">
             <div className='flex flex-col items-center justify-center cursor-pointer'>
 
-                <div className='absolute top-5 right-0'>
+                <div className='absolute top-5 -right-1'>
                   <div className='p-2 bg-black flex justify-center items-center rounded-md' style={{ width: '25px', height: '25px' }}>
                     <span className='text-md text-white text3'> {cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0} </span>
                   </div>
