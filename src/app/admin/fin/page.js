@@ -37,11 +37,42 @@ const FinanceDashboard = () => {
     const [sortField, setSortField] = useState('date_time');
     const [sortOrder, setSortOrder] = useState('desc');
     const [dailyRevenue, setDailyRevenue] = useState({});
+    const [timeFrame, setTimeFrame] = useState('daily'); // 'daily' or 'monthly'
 
     // New state for date filters
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     
+    const prepareData = (transactions) => {
+        const revenueData = {};
+    
+        transactions.forEach(txn => {
+            const date = new Date(txn.date_time);
+            const key = timeFrame === 'monthly' ? 
+                date.toLocaleString('default', { month: 'long', year: 'numeric' }) : 
+                date.toLocaleDateString('en-GB'); // Use 'en-GB' for dd/mm/yyyy format
+    
+            if (!revenueData[key]) {
+                revenueData[key] = { total: 0, count: 0 };
+            }
+            revenueData[key].total += txn.total_amount;
+            revenueData[key].count += 1;
+        });
+    
+        const preparedData = Object.keys(revenueData).map(key => ({
+            date: key,
+            total: revenueData[key].total,
+            count: revenueData[key].count,
+            dateObject: new Date(key.split('/').reverse().join('-')), // Convert dd/mm/yyyy to yyyy-mm-dd for correct parsing
+        }));
+    
+        // Sort the data in ascending order
+        preparedData.sort((a, b) => a.dateObject - b.dateObject);
+    
+        return preparedData;
+    };
+
+
     useEffect(() => {
         fetchTransactions();
     }, []);
@@ -85,6 +116,11 @@ const FinanceDashboard = () => {
             }));
 
             setDailyData(dailyArray);
+
+        // Prepare revenue data based on the selected time frame
+        const preparedData = prepareData(response.data.transactions);
+        setDailyData(preparedData);
+
         } catch (error) {
             console.error('Error fetching transactions:', error);
         }
@@ -115,6 +151,14 @@ const FinanceDashboard = () => {
     const currentDate = new Date().toLocaleDateString();
     const todayRevenue = dailyRevenue[currentDate] ? dailyRevenue[currentDate].total : 0;
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(amount);
+    };
 
     return (
         <>
@@ -127,9 +171,21 @@ const FinanceDashboard = () => {
 
             <div className='my-10'>
                 <h1 className="text3 text-3xl font-bold mb-4">Finance Dashboard</h1>
-                <h2 className="text1 text-xl">Total Revenue: <span className='text3'>₹{totalRevenue.toFixed(2)}</span></h2>
-                <h2 className="text1 text-xl">Total Monthly Revenue: <span className='text3'>₹{monthlyRevenue.toFixed(2)}</span></h2>
-                <h2 className="text1 text-xl">Today Daily Revenue: <span className='text3'>₹{todayRevenue.toFixed(2)}</span></h2>
+                <div className='flex flex-row justify-around'>
+
+                    <div className='flex flex-col gap-2 border-[1px] border-black p-5 rounded-lg'>
+                        <h2 className="text1 text-xl text-gray-600">Total Revenue: </h2>
+                        <span className='text3 text-2xl text-black'>{formatCurrency(totalRevenue)}</span>
+                    </div>
+                    <div className='flex flex-col gap-2 border-[1px] border-black p-5 rounded-lg'>
+                        <h2 className="text1 text-xl text-gray-600">This Month's Revenue: </h2>
+                        <span className='text3 text-2xl text-black'>{formatCurrency(monthlyRevenue)}</span>
+                    </div>
+                    <div className='flex flex-col gap-2 border-[1px] border-black p-5 rounded-lg'>
+                        <h2 className="text1 text-xl text-gray-600">Today's Revenue: </h2>
+                        <span className='text3 text-2xl text-black'>{formatCurrency(todayRevenue)}</span>
+                    </div>
+                </div>
             </div>
 
 
@@ -139,13 +195,24 @@ const FinanceDashboard = () => {
                     {/* Revenue or Transaction Count Chart */}
                     <h2 className="text-xl text3 mb-2">{showRevenue ? 'Daily Revenue' : 'Number of Transactions'}</h2>
                     {/* Button to toggle between revenue and transaction count */}
-                    <div className="mb-4">
-                        <Button onClick={() => setShowRevenue(true)} className={`mr-2 ${showRevenue ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
-                            Show Revenue
-                        </Button>
-                        <Button onClick={() => setShowRevenue(false)} className={`mr-2 ${!showRevenue ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
-                            Show Transactions
-                        </Button>
+                    <div className='flex flex-row gap-2'>
+                        <div className="mb-4">
+                            <Button onClick={() => setShowRevenue(true)} className={`mr-2 ${showRevenue ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                                Show Revenue
+                            </Button>
+                            <Button onClick={() => setShowRevenue(false)} className={`mr-2 ${!showRevenue ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                                Show Transactions
+                            </Button>
+                        </div>
+    
+                        <div className="mb-4">
+                            <Button onClick={() => { setTimeFrame('daily'); fetchTransactions(); }} className={`mr-2 ${timeFrame === 'daily' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                                <span className='text-xs'>Daily</span>
+                            </Button>
+                            <Button onClick={() => { setTimeFrame('monthly'); fetchTransactions(); }} className={`mr-2 ${timeFrame === 'monthly' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                                <span className='text-xs'>Monthly</span>
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -207,7 +274,7 @@ const FinanceDashboard = () => {
 
                 <span className='text0 text-lg text-gray-600'>Click on the header for sorting:</span>
                 {/* Transactions Table */}
-                <div className='h-1/2 overflow-y-scroll'>
+                <div className='h-1/3 overflow-y-scroll'>
                     <Table className="w-full border border-gray-300 bg-white rounded-lg">
                         <TableHeader className="bg-gray-200">
                         <TableRow className='text2 text-md'>
@@ -231,7 +298,7 @@ const FinanceDashboard = () => {
                                     ))}
                                 </div>
                             </TableHead>
-                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('payment_method')}>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '50px' }} onClick={() => handleSort('payment_method')}>
                                 <div className='flex flex-row justify-between items-center'>
                                     <span>Payment Method</span>
                                     {sortField === 'payment_method' && (sortOrder === 'asc' ? (
@@ -251,8 +318,18 @@ const FinanceDashboard = () => {
                                     ))}
                                 </div>
                             </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '100px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Customer Name</span>
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Delivery Address</span>
+                                </div>
+                            </TableHead>
                             <TableHead className="p-2 border" style={{ width: '10px' }} >Customer Info</TableHead>
-                            <TableHead className="p-2 border" style={{ width: '30px' }} >Cart Items</TableHead>
+                            <TableHead className="p-2 border" style={{ width: '10px' }} >Cart Items</TableHead>
                         </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -262,20 +339,20 @@ const FinanceDashboard = () => {
                                     <TableCell className="border p-2">₹ {txn.total_amount.toFixed(2)}</TableCell>
                                     <TableCell className="border p-2">{txn.payment_method}</TableCell>
                                     <TableCell className="border p-2">{new Date(txn.date_time).toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">{txn.customer.customer_name.toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">{txn.customer.address.toLocaleString()}</TableCell>
                                     <TableCell className="border p-2">
                                         <Dialog>
                                             <DialogTrigger>
-                                                <img src='/report.svg' style={{width: '15%'}} alt='report'></img>
+                                                <img src='/report.svg' style={{width: '25%'}} alt='report'></img>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
                                                     <DialogTitle>Customer Information</DialogTitle>
                                                     <DialogDescription>
-                                                        <div className='flex flex-col'>
-                                                            <span>Name: {txn.customer.customer_name}</span>
-                                                            <span>Phone: {txn.customer.phone}</span>
-                                                            <span>Address: {txn.customer.address}</span>
-                                                        </div>
+                                                        <li>Name: {txn.customer.customer_name}</li>
+                                                        <li>Phone: {txn.customer.phone}</li>
+                                                        <li>Address: {txn.customer.address}</li>
                                                     </DialogDescription>
                                                 </DialogHeader>
                                             </DialogContent>
@@ -284,21 +361,17 @@ const FinanceDashboard = () => {
                                     <TableCell className="border p-2">
                                         <Dialog>
                                             <DialogTrigger>
-                                                <img src='/shoppingcart.svg' style={{width: '50%'}} alt='report'></img>
+                                                <img src='/shoppingcart.svg' style={{width: '60%'}} alt='report'></img>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
                                                     <DialogTitle>Cart Items</DialogTitle>
                                                     <DialogDescription>
-                                                        <div>
-                                                            <ul>
-                                                                {txn.cartItems.map(item => (
-                                                                    <li key={item._id}>
-                                                                        {item.name} - {item.quantity} x ₹{item.price.toFixed(2)}
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
+                                                            {txn.cartItems.map(item => (
+                                                                <li key={item._id}>
+                                                                    {item.name} - {item.quantity} x ₹{item.price.toFixed(2)}
+                                                                </li>
+                                                            ))}
                                                     </DialogDescription>
                                                 </DialogHeader>
                                             </DialogContent>

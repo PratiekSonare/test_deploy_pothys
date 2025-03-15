@@ -90,7 +90,7 @@ const Cart = () => {
       setLoading(false);
     }
   };
-  
+
 
   return (
 
@@ -120,7 +120,7 @@ const Cart = () => {
             </div>
 
           ) : (
-            <div className='h-3/4 flex flex-col'>
+            <div className='h- flex flex-col'>
   <div className='overflow-y-scroll flex-grow'>
     {cartItems.map((product, index) => (
       <Card key={`${product._id}-${product.quantityType}` || index} className="mb-4 p-4">
@@ -140,7 +140,7 @@ const Cart = () => {
             </div> 
           </div>
           <div className='flex items-center justify-center'>
-            <div className='grid grid-cols-[2fr_1fr_1fr_2fr] grid-rows-1 items-center gap-5'>
+            <div className='grid grid-cols-[2fr_1fr_1fr_1fr] grid-rows-1 items-center gap-5'>
               <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-full h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
                 <button onClick={() => decrementQ(product)} className="w-1/3 h-full flex items-center justify-center">-</button>
                 <button className="w-1/3 h-full flex items-center justify-center">
@@ -161,8 +161,8 @@ const Cart = () => {
               </div>
               <div>
                 <div className='flex flex-col'>
-                  <p className='text-xs text0 self-end text-gray-600'>Discounted/Final Price:</p> 
-                  <span className='self-end text2 text-lg text-black'>₹{ product.discount > 0 ? product.discounted_price : product.price }</span> 
+                  <p className='text-xs text0 self-end text-gray-600'>Final Price:</p> 
+                  <span className='self-end text2 text-lg text-black'>₹{( product.discount > 0 ? product.quantity * product.discounted_price : product.quantity * product.price ).toFixed(2)}</span> 
                 </div>
                 </div>    
               </div>
@@ -180,7 +180,7 @@ const Cart = () => {
           </div>
           <Separator orientation='vertical' className="my-4" />              
           <div className='flex flex-col px-5'>
-            <span className='text1 text-gray-600 text-lg self-end'>Total:</span> 
+            <span className='text1 text-gray-600 text-lg self-end mt-4'>Total:</span> 
             <span className='text2 text-2xl self-end'>₹{total_amount.toFixed(2)}</span>
             <div className='self-end'>
               <HoverCard>

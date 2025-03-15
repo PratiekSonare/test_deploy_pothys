@@ -150,7 +150,7 @@ export default function CarouselSize() {
                         </SelectTrigger>
                           <SelectContent>
                           {productVariants.map((variant, index) => (
-                          <div key={`${variant._id}-${variant.quantity}-${variant.price}-${productName}`}>
+                          <div key={`${variant._id}`}>
                             <SelectItem className="" value={variant.quantity.toString()}>
                               <div className="flex flex-col space-y-1 w-full">
                                 <p>{variant.quantity} {variant.unit}</p> 
