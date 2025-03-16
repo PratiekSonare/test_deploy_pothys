@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .invoice-box {
+            width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .invoice-details, .billing-info {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .invoice-details td, .billing-info td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .summary {
+            text-align: right;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">Tax Invoice</div>
+        <h1><strong>SK Super Market</strong></h1> <br>
+        151/1 SSM Complex, Tamil Nadu <br>
+        Phone: 6360529172 <br>
+        GSTIN: 33KARPK3018P1Z2
+
+        <table class="billing-info">
+            <tr>
+                <td>
+                    <strong>Invoice Details</strong><br>
+                    No: 13<br>
+                    Date: 23/01/2025<br>
+                    Time: 03:10 PM<br>
+                    Place of Supply: 33-Tamil Nadu
+                </td>
+            </tr>
+        </table>
+        <table class="items-table">
+            <tr>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>HSN/SAC</th>
+                <th>MRP (₹)</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Price/Unit (₹)</th>
+                <th>GST (₹)</th>
+                <th>Amount (₹)</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>R S Pathi Tailam-5ml</td>
+                <td>8908004097007</td>
+                <td>₹35.00</td>
+                <td>1</td>
+                <td>1000</td>
+                <td>₹32.50</td>
+                <td>₹1.63 (5%)</td>
+                <td>₹34.13</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>R S Pathy MARUTHU 20ML</td>
+                <td>8908004097014</td>
+                <td>₹80.00</td>
+                <td>1</td>
+                <td>1000</td>
+                <td>₹77.00</td>
+                <td>₹9.24 (12%)</td>
+                <td>₹86.24</td>
+            </tr>
+        </table>
+        <div class="summary">
+            <strong>Sub Total: ₹120.37</strong><br>
+            Round Off: -₹0.37<br>
+            <strong>Total: ₹120.00</strong>
+        </div>
+        <div class="footer">Thanks for doing business with us!</div>
+    </div>
+</body>
+</html>
