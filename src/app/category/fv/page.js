@@ -6,7 +6,7 @@ import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './BevCards'
+import FVCards from './FVCards'
 
 const page = () => {
   
