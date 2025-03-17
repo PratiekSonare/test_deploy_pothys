@@ -6,8 +6,9 @@ import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './FVCards'
+import FVCards from './CHCards'
 import axios from 'axios'
+import CHCards from './CHCards'
 
 
 const discountOptions = [
@@ -30,7 +31,7 @@ const page = () => {
     useEffect(() => {
         const fetchProducts = async () => {
           try {
-            const encodedCategory = encodeURIComponent("Fruits and Vegetables");
+            const encodedCategory = encodeURIComponent("Cleaning and Household");
             const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
@@ -63,6 +64,7 @@ const page = () => {
       useEffect(() => {
         console.log("Filtered Products: ", filteredProducts);
       }, [filteredProducts])
+
 
 
       const categories = [
@@ -216,7 +218,7 @@ const page = () => {
                                 <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
                             </div>
                         ) : (
-                            <FVCards products={filteredProducts} />
+                            <CHCards products={filteredProducts} />
                         )}
                     </div>
                 </div>

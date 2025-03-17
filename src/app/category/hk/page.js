@@ -6,8 +6,9 @@ import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './FVCards'
+import FVCards from './HKCards'
 import axios from 'axios'
+import HKCards from './HKCards'
 
 
 const discountOptions = [
@@ -30,7 +31,7 @@ const page = () => {
     useEffect(() => {
         const fetchProducts = async () => {
           try {
-            const encodedCategory = encodeURIComponent("Fruits and Vegetables");
+            const encodedCategory = encodeURIComponent("Home and Kitchen");
             const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
@@ -65,17 +66,17 @@ const page = () => {
       }, [filteredProducts])
 
 
-      const categories = [
-        { name: "Fruits and Vegetables", route: "/category/fv" },
-        { name: "Beverages", route: "/category/beverages" },
-        { name: "Daily Staples", route: "/category/ds" },
-        { name: "Cleaning and Household", route: "/category/ch" },
-        { name: "Beauty and Hygiene", route: "/category/bh" },
-        { name: "Home and Kitchen", route: "/category/hk" },
-        { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
-        { name: "Eggs, Meat and Fish", route: "/category/emf" },
-        { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
-      ]
+  const categories = [
+    "Fruits and Vegetables",
+    "Beverages",
+    "Daily Staples",
+    "Cleaning and Household",
+    "Beauty and Hygiene",
+    "Home and Kitchen",
+    "Foodgrains, Oil and Masala",
+    "Eggs, Meat and Fish",
+    "Bakery, Cakes and Dairy"
+  ]
 
   const samplebrands = [
     "brand1",
@@ -120,16 +121,11 @@ const page = () => {
                         <div className='bg-white px-10 py-5 rounded-lg card-sdw'>
                             <p className='text3 text-2xl mb-2'>Categories</p>
                             {categories.map((category, index) => (
-                                <button 
-                                    key={index} 
-                                    className='block relative w-fit' 
-                                    onClick={() => (router.push(category.route))}>
-
+                                <button key={index} className='block relative w-fit'>
                                     <p className='text0 text-base text-gray-600 mt-2 cursor-pointer group'>
-                                        {category.name}
+                                        {category}
                                         <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
                                     </p>
-
                                 </button>
                             ))}
                         </div>
@@ -216,7 +212,7 @@ const page = () => {
                                 <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
                             </div>
                         ) : (
-                            <FVCards products={filteredProducts} />
+                            <HKCards products={filteredProducts} />
                         )}
                     </div>
                 </div>

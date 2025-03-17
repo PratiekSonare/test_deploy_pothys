@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/u
 const ProductCard = ({ productVariants }) => {
   const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
@@ -24,15 +25,24 @@ const ProductCard = ({ productVariants }) => {
   const handleVariantChange = (value) => {
     const variant = productVariants.find(v => v.quantity.toString() === value);
     setSelectedVariant(variant);
+    setLoading(true); // Reset loading when a new variant is selected
+
   };
 
   return (
-    <div className="container mx-auto grid grid-cols-1 gap-4">
+    <div className="container mx-auto grid grid-cols-1 gap-4 text0 w-[260px]">
       <div className="rounded-lg bg-white dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
         <div className="relative flex flex-col">
           <div className="flex justify-center items-center rounded-lg p-2">
             <div className="border-gray-500 border-[1px] p-2 rounded-lg">
-              <img className="w-full object-cover rounded-lg" style={{ width: 'auto', height: '175px' }} src={selectedVariant?.imageURL} alt={selectedVariant?.name} />
+              <img 
+                className="w-full object-cover rounded-lg" 
+                style={{ width: 'auto', height: '175px' }} 
+                src={selectedVariant?.imageURL} 
+                alt={selectedVariant?.name}
+                onLoad={() => setLoading(false)}
+                onError={() => setLoading(false)}
+              />
             </div>
           </div>
           {selectedVariant?.discount > 0 && (
@@ -86,18 +96,28 @@ const ProductCard = ({ productVariants }) => {
         {/* Add to Cart Button */}
         {!cartItems.some(item => item._id === selectedVariant?._id) ? (
           <div className="flex justify-center p-3">
-            <button onClick={() => addToCart(selectedVariant)} className="p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition">
+            <button 
+              onClick={() => addToCart(selectedVariant)} 
+              className="flex items-center justify-center p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
+            >
               <span className="font-bold">Add</span>
             </button>
           </div>
+
         ) : (
           <div className="flex justify-center p-3">
-            <div className="flex flex-row h-[40px] justify-around w-full rounded-lg bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition">
-              <button onClick={() => decrementQ(selectedVariant)}>-</button>
+            <div className="flex flex-row h-[40px] justify-around text-lg w-full rounded-lg bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition">
+              <button onClick={() => decrementQ({
+                ...selectedVariant,
+                quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+              })}>-</button>
               <button>
                 <span className="font-bold">{cartItems.find(item => item._id === selectedVariant?._id)?.quantity || 1}</span>
               </button>
-              <button onClick={() => incrementQ(selectedVariant)}>+</button>
+              <button onClick={() => incrementQ({
+                ...selectedVariant,
+                quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+              })}>+</button>
             </div>
           </div>
         )}

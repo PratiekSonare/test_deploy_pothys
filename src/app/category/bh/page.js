@@ -1,29 +1,82 @@
 "use client"
 import Header from '../../header/Header'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../styles.css'
 import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './BHCards'
+import axios from 'axios'
+import BHCards from './BHCards'
+
+
+const discountOptions = [
+    { id: "fiftyPercent", label: "50% and more off" },
+    { id: "thirtyPercent", label: "30% and more off" },
+    { id: "dealOfTheWeek", label: "Deal of the Week" },
+  ];
 
 const page = () => {
   
     const [showAll, setShowAll] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedDiscounts, setSelectedDiscounts] = useState({
+        fiftyPercent: false,
+        thirtyPercent: false,
+        dealOfTheWeek: false,
+    });
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+          try {
+            const encodedCategory = encodeURIComponent("Beauty and Hygiene");
+            const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
+            setProducts(response.data);
+            console.log('respone data: ', response.data);
+            console.log('respone data brand: ', response.data.brand);
+          } catch (error) {
+            console.error("Error fetching products:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchProducts();
+      }, []);
+
+      const handleDiscountChange = (discountType) => {
+        setSelectedDiscounts((prev) => ({
+          ...prev,
+          [discountType]: !prev[discountType],
+        }));
+      };
+    
+      const filteredProducts = products.filter(product => {
+        const meetsFiftyPercent = selectedDiscounts.fiftyPercent ? product.discount > 50 : true;
+        const meetsThirtyPercent = selectedDiscounts.thirtyPercent ? product.discount > 30 : true;
+        const meetsDealOfTheWeek = selectedDiscounts.dealOfTheWeek ? product.dow === true : true;
+    
+        return meetsFiftyPercent && meetsThirtyPercent && meetsDealOfTheWeek;
+      });
+
+      useEffect(() => {
+        console.log("Filtered Products: ", filteredProducts);
+      }, [filteredProducts])
 
 
-  const categories = [
-    "Fruits and Vegetables",
-    "Beverages",
-    "Daily Staples",
-    "Cleaning and Household",
-    "Beauty and Hygiene",
-    "Home and Kitchen",
-    "Foodgrains, Oil and Masala",
-    "Eggs, Meat and Fish",
-    "Bakery, Cakes and Dairy"
-  ]
+
+      const categories = [
+        { name: "Fruits and Vegetables", route: "/category/fv" },
+        { name: "Beverages", route: "/category/beverages" },
+        { name: "Daily Staples", route: "/category/ds" },
+        { name: "Cleaning and Household", route: "/category/ch" },
+        { name: "Beauty and Hygiene", route: "/category/bh" },
+        { name: "Home and Kitchen", route: "/category/hk" },
+        { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
+        { name: "Eggs, Meat and Fish", route: "/category/emf" },
+        { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+      ]
 
   const samplebrands = [
     "brand1",
@@ -44,7 +97,8 @@ const page = () => {
     "Deal of the Week"
   ]
 
-  const visibleBrands = (samplebrands.length > 5 && showAll) ? samplebrands : samplebrands.slice(0, 5);
+    const uniqueBrands = [...new Set(products.map(product => product.brand))];
+    const visibleBrands = (uniqueBrands.length > 5 && showAll) ? uniqueBrands : uniqueBrands.slice(0, 5);
 
   
   return (
@@ -67,11 +121,16 @@ const page = () => {
                         <div className='bg-white px-10 py-5 rounded-lg card-sdw'>
                             <p className='text3 text-2xl mb-2'>Categories</p>
                             {categories.map((category, index) => (
-                                <button key={index} className='block relative w-fit'>
+                                <button 
+                                    key={index} 
+                                    className='block relative w-fit' 
+                                    onClick={() => (router.push(category.route))}>
+
                                     <p className='text0 text-base text-gray-600 mt-2 cursor-pointer group'>
-                                        {category}
+                                        {category.name}
                                         <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
                                     </p>
+
                                 </button>
                             ))}
                         </div>
@@ -84,7 +143,9 @@ const page = () => {
                                 <div className='flex flex-col mb-2'>
                                     <p className='text1 text-lg mb-2 text-gray-800'>Availability</p>
                                     <div className='flex flex-row items-center text0 space-x-2 ml-4'>
-                                        <Checkbox id="out-of-stock" />
+                                        <Checkbox 
+                                            id="out-of-stock" 
+                                        />
                                         <label
                                             htmlFor="out-of-stock"
                                             className="text-gray-600 text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -113,7 +174,7 @@ const page = () => {
                                     ))}
 
                                     {/* Show More / Show Less Button */}
-                                    {samplebrands.length > 5 && (
+                                    {visibleBrands.length > 5 && (
                                         <div className='flex items-center justify-center'>
                                             <button 
                                                 className="text3 text-blue-600 text-sm mt-2"
@@ -124,35 +185,22 @@ const page = () => {
                                         </div>
                                     )}
                                 </div>
-
-                                <Separator className='my-2' />
-
-                                {/* Price */}
-                                <div className='flex flex-col mb-2'>
-                                    <p className='text1 text-lg mb-2 text-gray-800'>Price</p>
-                                    <Slider
-                                        defaultValue={[50]}
-                                        max={100}
-                                        step={1}
-                                        className='w-full self-center'
-                                    />
-                                </div>
                                 
                                 <Separator className='my-2' />
 
                                 {/* Discount */}
                                 <div className='flex flex-col mb-2'>
-                                    <p className='text1 text-lg mb-2 text-gray-800'>Discount</p>
-
-                                    {discounts.map((discount, index) => (
-                                        <div key={discount} className='flex flex-row items-center text0 space-x-2 ml-4 mt-2'>
-                                            <Checkbox id={`brand-${index}`} />
-                                            <label
-                                                htmlFor={`brand-${index}`}
-                                                className="text-gray-600 text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >
-                                                {discount}
-                                            </label>
+                                    <p className='text1 text-lg text-gray-800'>Discount</p>
+                                    {discountOptions.map((option) => (
+                                        <div key={option.id} className='flex flex-row items-center text0 space-x-2 ml-4 mt-2'>
+                                        <Checkbox
+                                            id={option.id}
+                                            checked={selectedDiscounts[option.id]}
+                                            onCheckedChange={() => handleDiscountChange(option.id)}
+                                        />
+                                        <label htmlFor={option.id} className="text-gray-600 text-sm leading-none">
+                                            {option.label}
+                                        </label>
                                         </div>
                                     ))}
                                 </div>
@@ -162,8 +210,15 @@ const page = () => {
 
                     </div>
 
-                    <div className=''>
-                        <FVCards />
+                    {/* Product Cards Section */}
+                    <div>
+                        {loading ? (
+                            <div className="flex justify-center items-center">
+                                <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+                            </div>
+                        ) : (
+                            <BHCards products={filteredProducts} />
+                        )}
                     </div>
                 </div>
             </div>

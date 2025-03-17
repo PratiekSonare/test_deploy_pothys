@@ -6,8 +6,14 @@ import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './FVCards'
+import FVCards from './BCDCards'
 import axios from 'axios'
+import CHCards from './BCDCards'
+import DSCards from './BCDCards'
+import FOMCards from './BCDCards'
+import EMFCards from './BCDCards'
+import BCDCards from './BCDCards'
+import { useRouter } from 'next/navigation'
 
 
 const discountOptions = [
@@ -27,10 +33,12 @@ const page = () => {
         dealOfTheWeek: false,
     });
 
+    const router = useRouter();
+
     useEffect(() => {
         const fetchProducts = async () => {
           try {
-            const encodedCategory = encodeURIComponent("Fruits and Vegetables");
+            const encodedCategory = encodeURIComponent("Bakery, Cakes and Dairy");
             const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
@@ -65,17 +73,17 @@ const page = () => {
       }, [filteredProducts])
 
 
-      const categories = [
-        { name: "Fruits and Vegetables", route: "/category/fv" },
-        { name: "Beverages", route: "/category/beverages" },
-        { name: "Daily Staples", route: "/category/ds" },
-        { name: "Cleaning and Household", route: "/category/ch" },
-        { name: "Beauty and Hygiene", route: "/category/bh" },
-        { name: "Home and Kitchen", route: "/category/hk" },
-        { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
-        { name: "Eggs, Meat and Fish", route: "/category/emf" },
-        { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
-      ]
+  const categories = [
+    { name: "Fruits and Vegetables", route: "/category/fv" },
+    { name: "Beverages", route: "/category/beverages" },
+    { name: "Daily Staples", route: "/category/ds" },
+    { name: "Cleaning and Household", route: "/category/ch" },
+    { name: "Beauty and Hygiene", route: "/category/bh" },
+    { name: "Home and Kitchen", route: "/category/hk" },
+    { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
+    { name: "Eggs, Meat and Fish", route: "/category/emf" },
+    { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+  ]
 
   const samplebrands = [
     "brand1",
@@ -216,7 +224,7 @@ const page = () => {
                                 <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
                             </div>
                         ) : (
-                            <FVCards products={filteredProducts} />
+                            <BCDCards products={filteredProducts} />
                         )}
                     </div>
                 </div>

@@ -3,30 +3,16 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../ProductCard";
+import NoItem from "../NoItem";
 
-export default function FVCards() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function FVCards({products}) {
+  // Log the products whenever they change
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const encodedCategory = encodeURIComponent("Fruits and Vegetables");
-        const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
-        setProducts(response.data);
-        console.log('server response data: ', response.data)
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
+    console.log('Filtered Products in FVCards:', products);
+  }, [products]);
 
-    fetchProducts();
-  }, []);
-
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!products || products.length === 0) {
+    return <NoItem />;
   }
 
   const groupedProducts = products.reduce((acc, item) => {
@@ -48,7 +34,7 @@ export default function FVCards() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {Object.keys(groupedProducts).map(productName => (
           <ProductCard key={productName} productVariants={groupedProducts[productName]} />
         ))};

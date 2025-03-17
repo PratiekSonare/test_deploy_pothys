@@ -29,7 +29,7 @@ export default function CHCards({products}) {
 
       <div className="block relative w-fit">
         <p className="text3 text-3xl font-bold mb-4 cursor-pointer group">
-          Beverages
+          Cleaning and Household
           <span className="absolute left-0 bottom-0 w-0 h-[4px] bg-black transition-all duration-300 group-hover:w-full"></span>
         </p>
       </div>

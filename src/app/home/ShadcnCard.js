@@ -113,12 +113,14 @@ export default function CarouselSize() {
                   <div className="relative flex flex-col">
                     <div className="flex justify-center items-center rounded-lg p-2">
                       <div className="border-gray-500 border-[1px] p-2 rounded-lg">
-                        <img
-                          className="w-full object-cover rounded-lg "
-                          style={{ width: 'auto', height: '175px' }}
-                          src={selectedVariant?.imageURL} // Use optional chaining
-                          alt="Product"
-                        />
+                      <img 
+                        className="w-full object-cover rounded-lg" 
+                        style={{ width: 'auto', height: '175px' }} 
+                        src={selectedVariant?.imageURL} 
+                        alt={selectedVariant?.name}
+                        onLoad={() => setLoading(false)}
+                        onError={() => setLoading(false)}
+                      />
                       </div>
                     </div>
                     {selectedVariant?.discount > 0 && (
@@ -183,7 +185,7 @@ export default function CarouselSize() {
                           ...selectedVariant,
                           quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
                         })}
-                        className="p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
+                        className="flex justify-center items-center p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
                       >
                         <span className="font-bold">Add</span>
                       </button>

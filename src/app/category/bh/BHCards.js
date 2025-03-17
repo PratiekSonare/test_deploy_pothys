@@ -3,30 +3,16 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../ProductCard";
+import NoItem from "../NoItem";
 
-export default function BHCards() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function BHCards({products}) {
+  // Log the products whenever they change
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const encodedCategory = encodeURIComponent("Beauty and Hygiene");
-        const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
-        setProducts(response.data);
-        console.log('server response data: ', response.data)
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
+    console.log('Filtered Products in FVCards:', products);
+  }, [products]);
 
-    fetchProducts();
-  }, []);
-
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!products || products.length === 0) {
+    return <NoItem />;
   }
 
   const groupedProducts = products.reduce((acc, item) => {
@@ -36,6 +22,7 @@ export default function BHCards() {
     acc[item.name].push(item);
     return acc;
   }, {});
+
 
 
   return (
