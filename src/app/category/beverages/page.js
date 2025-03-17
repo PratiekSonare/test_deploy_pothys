@@ -8,6 +8,7 @@ import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
 import axios from 'axios'
 import BevCards from './BevCards'
+import { useRouter } from 'next/navigation'
 
 const discountOptions = [
     { id: "fiftyPercent", label: "50% and more off" },
@@ -17,6 +18,8 @@ const discountOptions = [
 
 const page = () => {
   
+    const router = useRouter();
+
     const [showAll, setShowAll] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -74,6 +77,8 @@ const page = () => {
         { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
         { name: "Eggs, Meat and Fish", route: "/category/emf" },
         { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+        { name: "Snacks", route: "/category/snacks" },
+
       ]
 
   const samplebrands = [
@@ -98,6 +103,7 @@ const page = () => {
     const uniqueBrands = [...new Set(products.map(product => product.brand))];
     const visibleBrands = (uniqueBrands.length > 5 && showAll) ? uniqueBrands : uniqueBrands.slice(0, 5);
 
+    
   
   return (
     <>

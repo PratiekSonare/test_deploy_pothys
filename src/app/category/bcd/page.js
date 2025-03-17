@@ -83,6 +83,8 @@ const page = () => {
     { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
     { name: "Eggs, Meat and Fish", route: "/category/emf" },
     { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+    { name: "Snacks", route: "/category/snacks" },
+
   ]
 
   const samplebrands = [

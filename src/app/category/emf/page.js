@@ -12,6 +12,7 @@ import CHCards from './EMFCards'
 import DSCards from './EMFCards'
 import FOMCards from './EMFCards'
 import EMFCards from './EMFCards'
+import { useRouter } from 'next/navigation'
 
 
 const discountOptions = [
@@ -22,6 +23,7 @@ const discountOptions = [
 
 const page = () => {
   
+    const router = useRouter();
     const [showAll, setShowAll] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -79,6 +81,8 @@ const page = () => {
         { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
         { name: "Eggs, Meat and Fish", route: "/category/emf" },
         { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+        { name: "Snacks", route: "/category/snacks" },
+
       ]
 
   const samplebrands = [

@@ -6,10 +6,11 @@ import Footer from '@/app/footer/Footer'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
-import FVCards from './CHCards'
+import FVCards from './SnackCards'
 import axios from 'axios'
-import CHCards from './CHCards'
+import HKCards from './SnackCards'
 import { useRouter } from 'next/navigation'
+import SnackCards from './SnackCards'
 
 
 const discountOptions = [
@@ -34,7 +35,7 @@ const page = () => {
     useEffect(() => {
         const fetchProducts = async () => {
           try {
-            const encodedCategory = encodeURIComponent("Cleaning and Household");
+            const encodedCategory = encodeURIComponent("Home and Kitchen");
             const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
@@ -69,7 +70,6 @@ const page = () => {
       }, [filteredProducts])
 
 
-
       const categories = [
         { name: "Fruits and Vegetables", route: "/category/fv" },
         { name: "Beverages", route: "/category/beverages" },
@@ -81,7 +81,6 @@ const page = () => {
         { name: "Eggs, Meat and Fish", route: "/category/emf" },
         { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
         { name: "Snacks", route: "/category/snacks" },
-
       ]
 
   const samplebrands = [
@@ -223,7 +222,7 @@ const page = () => {
                                 <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
                             </div>
                         ) : (
-                            <CHCards products={filteredProducts} />
+                            <SnackCards products={filteredProducts} />
                         )}
                     </div>
                 </div>

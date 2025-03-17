@@ -8,6 +8,7 @@ import { Separator } from '../../../components/ui/separator'
 import { Slider } from '../../../components/ui/slider'
 import axios from 'axios'
 import BHCards from './BHCards'
+import { useRouter } from 'next/navigation'
 
 
 const discountOptions = [
@@ -18,6 +19,8 @@ const discountOptions = [
 
 const page = () => {
   
+    const router = useRouter();
+
     const [showAll, setShowAll] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -76,6 +79,8 @@ const page = () => {
         { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
         { name: "Eggs, Meat and Fish", route: "/category/emf" },
         { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+        { name: "Snacks", route: "/category/snacks" },
+
       ]
 
   const samplebrands = [
