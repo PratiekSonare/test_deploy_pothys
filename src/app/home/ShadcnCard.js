@@ -78,7 +78,9 @@ export default function CarouselSize() {
 
   // Render loading state
   if (loading) {
-    return <div>Loading...</div>; // You can customize this loading state
+    return <div className="flex justify-center items-center">
+              <div className="w-12 h-12 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+          </div>; // You can customize this loading state
   }
 
   const handleAddToCart = (variant) => {
@@ -130,7 +132,17 @@ export default function CarouselSize() {
                     )}
                     <div className="p-4">
                     <h2 className="text2 text-lg dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
-                    <h2 className="mb-2 text-xl dark:text-white text-gray-900">{productName}</h2>
+                      
+                      <h2
+                        className="mb-2 text-lg dark:text-white text-gray-900 relative group"
+                        title={productName} // Tooltip for accessibility
+                      >
+                        {productName.length > 18 ? `${productName.slice(0, 18)}...` : productName}
+                        <span className="absolute opacity-0 group-hover:opacity-100 bg-blue-600 text-white text-sm px-2 py-1 rounded-md transition-opacity duration-300 -top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                          {productName}
+                        </span>
+                      </h2>             
+
                     <div className="flex items-end">
                         <p className="mr-2 text-xl text-gray-900 dark:text-white">
                           ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}

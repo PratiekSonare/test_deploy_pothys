@@ -29,12 +29,12 @@ export default function SnackCards({products}) {
 
       <div className="block relative w-fit">
         <p className="text3 text-3xl font-bold mb-4 cursor-pointer group">
-          Fruits and Vegetables
+          Snacks
           <span className="absolute left-0 bottom-0 w-0 h-[4px] bg-black transition-all duration-300 group-hover:w-full"></span>
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-4 gap-x-0 gap-y-10">
         {Object.keys(groupedProducts).map(productName => (
           <ProductCard key={productName} productVariants={groupedProducts[productName]} />
         ))};

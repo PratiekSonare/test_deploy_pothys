@@ -3,35 +3,55 @@ import Link from 'next/link'; // Import Link from next/link
 import { useCart } from '../cart/CartContext';
 
 const Header = () => {
-
   const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart } = useCart();
   
   return (
     <div className='max-w-screen max-h-[150px] bg-white'>
-      <div className="grid grid-cols-3 items-center p-5 px-10">
-        {/* Cart Icon */}
-        <Link href="/" className="flex justify-start">
-          <img 
-            src="/arrow.svg" 
-            alt="cart"
-            className="w-8 h-auto" 
-          />
-        </Link>
+      <div className='grid grid-cols-3 items-center p-5'>
 
-        {/* Logo (Centered) */}
-        <div className="flex justify-center">
+        {/* Left Icon (e.g., Cart Icon) */}
+        <div className="flex justify-start">
+          <Link href="/">
+            <img 
+              src="/arrow.svg" 
+              alt="cart"
+              className="w-8 h-auto" 
+            />
+          </Link>
+        </div>
+
+        {/* Logo */}
+        <div className="flex justify-center items-center">
           <img 
-            src="/pothys-2template.svg" 
-            alt="logo"
-            className="w-40 h-auto" 
+            src='/pothys-2template.svg' 
+            alt='logo'
+            style={{ width: '30%', height: 'auto' }} 
           />
         </div>
 
-        {/* Empty Space to Balance Layout */}
-        <div></div>
+        {/* Right Icons (e.g., Phone and Form Icons) */}
+        <div className='flex justify-end space-x-4'>
+          <div className='p-2 rounded-lg bg-red-400 flex items-center justify-center'>
+            <Link href='/contact-us'>
+              <img 
+                src='/phone-calling-svgrepo-com.svg' 
+                alt='phone'
+                className='w-5 h-auto' // Adjust size as needed
+              />
+            </Link>
+          </div>
+          <div className='p-2 rounded-lg bg-blue-400 flex items-center justify-center'>
+            <Link href='/feedback'>
+              <img 
+                src='/form-svgrepo-com.svg' 
+                alt='form'
+                className='w-5 h-auto' // Adjust size as needed
+              />
+            </Link>
+          </div>
+        </div>
         
-      </div>
-            
+      </div>      
     </div>
   );
 }

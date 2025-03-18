@@ -28,6 +28,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import Header from './Header';
 import '../styles.css'
+import Footer from '../footer/Footer';
 
 const Cart = () => {
   
@@ -273,6 +274,10 @@ const Cart = () => {
           </div>        
         </div>
       </div>
+
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 };

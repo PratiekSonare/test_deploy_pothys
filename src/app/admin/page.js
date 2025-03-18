@@ -222,7 +222,8 @@ export default function AdminDashboard() {
         const value = event.target.value;
         setSearchTerm(value);
         const filtered = products.filter(product => 
-            product.name.toLowerCase().includes(value.toLowerCase())
+            product.name.toLowerCase().includes(value.toLowerCase()) ||
+            product.brand.toLowerCase().includes(value.toLowerCase())
         );
         setFilteredProducts(filtered);
     };
@@ -562,7 +563,7 @@ export default function AdminDashboard() {
                         <div className="flex my-4 flex-grow">
                             <input 
                                 type="text" 
-                                placeholder="Search by Product Name" 
+                                placeholder="Search by Product Name / Brand" 
                                 value={searchTerm} 
                                 onChange={handleSearchChange} 
                                 className="border p-2 rounded w-full"

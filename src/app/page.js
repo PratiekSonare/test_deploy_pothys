@@ -6,7 +6,7 @@ import ShadcnCard from "./home/ShadcnCard";
 import CategoryCardFv from "./home/fv/CategoryCard";
 import CategoryCardBe from "./home/beverages/CategoryCard";
 import CategoryCardSn from "./home/snacks/CategoryCard";
-import CategoryCardCl from "./home/cleaning/CategoryCard";
+import CategoryCardCl from "./home/ch/CategoryCard";
 import CategoryCardBh from "./home/bh/CategoryCard";
 import CategoryCardHk from "./home/hk/CategoryCard";
 import ImageCarousel from "./home/image_carousel/ImageCarousel";
@@ -45,12 +45,13 @@ export default function Home() {
           </div>
         </div>
   
-        <div className="p-5 md:py-5 md:px-40">
+        {/* popular now */}
+        {/* <div className="p-5 md:py-5 md:px-40">
           <div className="flex flex-col bg-gray-100 rounded-lg px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
             <span className="text-[30px] items-start text3 mt-5">POPULAR NOW</span>
             <div className="mb-5 mt-2"><ShadcnCard /></div>
           </div>
-        </div>
+        </div> */}
 
         <div className="p-5 md:py-5 md:px-40">
           <CategoryCardFv/>

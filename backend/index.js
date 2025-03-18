@@ -160,16 +160,30 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// Get Products by Category (Supports Multiple Categories)
+// Get Products by Category
 app.get('/api/products/category/:category', async (req, res) => {
     try {
-        const categories = req.params.category.split(',');
-        const products = await Product.find({ category: { $in: categories } });
+        const category = req.params.category; // Decode safely
+
+        const products = await Product.find({ category: category });
+
         res.json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+// // Get Products by Category (Supports Multiple Categories)
+// app.get('/api/products/category/:category', async (req, res) => {
+//     try {
+//         const categories = req.params.category.split(',');
+//         const products = await Product.find({ category: { $in: categories } });
+//         res.json(products);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
 
 // Get Products with dow = true
 app.get('/api/products/dow-true', async (req, res) => {

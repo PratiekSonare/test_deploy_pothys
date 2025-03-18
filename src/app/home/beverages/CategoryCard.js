@@ -1,3 +1,6 @@
+import { Router } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const CategoryCard = () => {
@@ -28,19 +31,23 @@ const CategoryCard = () => {
             alt: "beverages"
         },
     ]
+
+    const router = useRouter();
+
   return (
     <div className="flex flex-col bg-transparent rounded-lg py-5">
         <span className="text-[30px] items-start text3">Beverages</span>
         <div className="mb-5 mt-2 flex flex-row gap-5">
-            {images.map((image, index) => (
-                <img
-                    src={image.src}
-                    alt={image.alt}
-                    key={index}
-                    className='rounded-lg hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
-                    style={{width: '15%', height: 'auto'}}>                    
-                </img>
-            ))}
+                {images.map((image, index) => (
+                    <img
+                        src={image.src}
+                        alt={image.alt}
+                        key={index}
+                        className='rounded-lg hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
+                        style={{width: '15%', height: 'auto'}}
+                        onClick={() => router.push('/category/beverages')}>                    
+                    </img>
+                ))}
         </div>
     </div>
   )

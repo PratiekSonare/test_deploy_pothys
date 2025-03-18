@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const images = [
@@ -18,7 +19,11 @@ const images = [
         alt: "fv"
     },
 ]
+
+
 const CategoryCard = () => {
+    const router = useRouter();
+
   return (
     <div className="flex flex-col bg-transparent rounded-lg py-5">
         <span className="text-[30px] items-start text3">Fruits and Veggies</span>
@@ -29,7 +34,8 @@ const CategoryCard = () => {
                     src={image.src}
                     alt={image.alt}
                     className='rounded-lg hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
-                    style={{width: '22%', height: 'auto'}}>
+                    style={{width: '22%', height: 'auto'}}
+                    onClick={() => router.push('/category/fv')}>                    
                 </img>
             ))}
         </div>

@@ -52,7 +52,17 @@ const ProductCard = ({ productVariants }) => {
           )}
           <div className="p-4">
             <h2 className="text-lg dark:text-white text-gray-600">{selectedVariant?.brand}</h2>
-            <h2 className="mb-2 text-xl dark:text-white text-gray-900">{selectedVariant?.name}</h2>
+              
+              <h2
+                className="mb-2 text-lg dark:text-white text-gray-900 relative group"
+                title={selectedVariant?.name} // Tooltip for accessibility
+              >
+                {selectedVariant?.name.length > 18 ? `${selectedVariant?.name.slice(0, 18)}...` : selectedVariant?.name}
+                <span className="absolute opacity-0 group-hover:opacity-100 bg-blue-600 text-white text-sm px-2 py-1 rounded-md transition-opacity duration-300 -top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                  {selectedVariant?.name}
+                </span>
+              </h2>            
+            
             <div className="flex items-end">
               <p className="mr-2 text-xl text-gray-900 dark:text-white">
                 ₹{selectedVariant?.discount > 0 ? selectedVariant.discounted_price : selectedVariant?.price}

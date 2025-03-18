@@ -1,5 +1,5 @@
 "use client"
-import Header from '../../header/Header'
+import Header from '../Header'
 import React, { useEffect, useState } from 'react'
 import '../../styles.css'
 import Footer from '@/app/footer/Footer'
@@ -36,7 +36,7 @@ const page = () => {
     useEffect(() => {
         const fetchProducts = async () => {
           try {
-            const encodedCategory = encodeURIComponent("Eggs, Meat and Fish");
+            const encodedCategory = encodeURIComponent("Eggs and Meat");
             const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
@@ -59,8 +59,8 @@ const page = () => {
       };
     
       const filteredProducts = products.filter(product => {
-        const meetsFiftyPercent = selectedDiscounts.fiftyPercent ? product.discount > 50 : true;
-        const meetsThirtyPercent = selectedDiscounts.thirtyPercent ? product.discount > 30 : true;
+        const meetsFiftyPercent = selectedDiscounts.fiftyPercent ? product.discount >= 50 : true;
+        const meetsThirtyPercent = selectedDiscounts.thirtyPercent ? product.discount >= 30 : true;
         const meetsDealOfTheWeek = selectedDiscounts.dealOfTheWeek ? product.dow === true : true;
     
         return meetsFiftyPercent && meetsThirtyPercent && meetsDealOfTheWeek;
@@ -78,11 +78,10 @@ const page = () => {
         { name: "Cleaning and Household", route: "/category/ch" },
         { name: "Beauty and Hygiene", route: "/category/bh" },
         { name: "Home and Kitchen", route: "/category/hk" },
-        { name: "Foodgrains, Oil and Masala", route: "/category/fom" },
-        { name: "Eggs, Meat and Fish", route: "/category/emf" },
-        { name: "Bakery, Cakes and Dairy", route: "/category/bcd" },
+        { name: "Oil and Masala", route: "/category/fom" },
+        { name: "Eggs and Meat", route: "/category/emf" },
+        { name: "Bakery and Dairy", route: "/category/bcd" },
         { name: "Snacks", route: "/category/snacks" },
-
       ]
 
   const samplebrands = [
