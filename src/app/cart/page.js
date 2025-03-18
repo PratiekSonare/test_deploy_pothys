@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import Header from './Header';
 import '../styles.css'
 import Footer from '../footer/Footer';
+import generateInvoice from '../invoice/page';
 
 const Cart = () => {
   
@@ -47,13 +48,21 @@ const Cart = () => {
     },
   });
 
+  const handleTransactionSuccess = async (transactionData) => {
+    // Assuming transactionData is the response from your transaction API
+    const { transaction_id, date_time, payment_method, total_amount, cartItems, customer } = transactionData;
+  
+    // Call the function to generate the invoice
+    generateInvoice(transaction_id, date_time, payment_method, total_amount, cartItems, customer);
+  };
+
   const handleTransaction = async (data) => {
     console.log("Customer data:", data); // Debugging line
     console.log("Cart Items:", cartItems);
     console.log("Total Amount:", total_amount);
-
+  
     setLoading(true);
-
+  
     try {
       const response = await fetch('http://localhost:5000/api/transactions', {
         method: "POST",
@@ -66,26 +75,36 @@ const Cart = () => {
           status: "success"
         })
       });
-
-         // Log the raw response for debugging
-    console.log("Response status:", response.status); // Log the response status
-    console.log("Response headers:", response.headers); // Log the response headers
-
-    const result = await response.json();
-
-    // Log the parsed result
-    console.log("Response data:", result); // Log the response data
-
+  
+      const result = await response.json();
+  
+      // Log the parsed result
+      console.log("Response data:", result); // Log the response data
+  
       if (result.success) {
         alert(`Transaction successful! Transaction ID: ${result.transaction_id}`);
-        router.push('/');
+        
+        // Call handleTransactionSuccess with the transaction data
+        handleTransactionSuccess({
+          transaction_id: result.transaction_id,
+          date_time: new Date(), // You can adjust this based on your backend response
+          payment_method: "UPI", // Assuming this is static for now
+          total_amount,
+          cartItems,
+          customer: data
+        });
+  
+        // Open a new tab with the invoice URL, passing the transaction ID
+        const invoiceUrl = `/invoice?transaction_id=${result.transaction_id}`; // Adjust the URL as needed
+        window.open(invoiceUrl, '_blank'); // Open the invoice in a new tab
+  
+        // router.push('/'); // Redirect to home
         clearCart();
-
       } else {
         alert(`Transaction failed. Reason: ${result.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Transaction failed: ', error)
+      console.error('Transaction failed: ', error);
       alert('An error occurred while processing the transaction.');
     } finally {
       setLoading(false);
@@ -265,9 +284,15 @@ const Cart = () => {
                     )}  
                   />
   
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Processing...' : 'Complete Transaction'}
-                  </Button>
+                  <div>
+                    <Button
+                     className='flex flex-row justify-center items-center rounded-lg h-[40px] bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out' 
+                     type="submit" 
+                     disabled={loading}
+                     >
+                      {loading ? 'Processing...' : 'Complete Transaction'}
+                    </Button>
+                  </div>
                 </form>
               </Form>
   

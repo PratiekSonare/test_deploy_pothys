@@ -302,15 +302,31 @@ app.post("/api/transactions", async (req, res) => {
 });
 
 
-// Endpoint to get all transactions
+// Endpoint to get all transactions / according to id if specified
 app.get("/api/transactions", async (req, res) => {
     try {
+        const { transaction_id } = req.query; // Get transaction_id from query params
+
+        if (transaction_id) {
+            // Fetch a single transaction if transaction_id is provided
+            const transaction = await Transaction.findOne({ transaction_id });
+
+            if (!transaction) {
+                return res.status(404).json({ success: false, message: "Transaction not found" });
+            }
+
+            return res.status(200).json({ success: true, transaction });
+        }
+
+        // If no transaction_id is provided, fetch all transactions
         const transactions = await Transaction.find();
         res.status(200).json({ success: true, transactions });
+
     } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching transactions", error: error.message });
     }
 });
+
 
 // Start the server
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));

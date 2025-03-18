@@ -1,47 +1,36 @@
-"use client"
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import '../styles.css'
+import '../styles.css';
 import { useCart } from '../cart/CartContext';
-
 
 const SearchBar = ({ onFocus, onBlur }) => {
   const [products, setProducts] = useState([]);  
   const [filteredProducts, setFilteredProducts] = useState([]); 
   const [searchTerm, setSearchTerm] = useState('');
-  const [showQuantity, setShowQuantity] = useState(Array(20).fill(false));
-  const [quantities, setQuantities] = useState(Array(20).fill(1));
+  const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
 
-    // Placeholder strings
-    const placeholders = [
-      'Search for products...',
-      'Search for \'Maggi\'...',
-      'Search for \'ParleG\'...',
-      'Search for \'Atta\'...',
-      'Find your favorite items...',
-      'Discover new products...',
-      'What are you looking for?'
-    ];
-    
-    const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
-    const [placeholderIndex, setPlaceholderIndex] = useState(0);
-    const [animationClass, setAnimationClass] = useState('');
-
-
-    const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart, calculateTotal } = useCart();
-    
+  // Placeholder strings
+  const placeholders = [
+    'Search for products...',
+    'Search for \'Maggi\'...',
+    'Search for \'ParleG\'...',
+    'Search for \'Atta\'...',
+    'Find your favorite items...',
+    'Discover new products...',
+    'What are you looking for?'
+  ];
+  
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [animationClass, setAnimationClass] = useState('');
 
   useEffect(() => {
-
     const fetchProducts = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/products');
         const data = await response.json();
-
-         // Filter products to only include those with non-zero quantity
         const availabledata = data.filter(product => product.quantity > 0);
-
         setProducts(availabledata);
         setFilteredProducts(availabledata); 
       } catch (error) {
@@ -97,61 +86,73 @@ const SearchBar = ({ onFocus, onBlur }) => {
               <span className='ml-2'><span className='text-gray-700'>Showing results for</span> '{searchTerm}'</span>
             </div>
             {filteredProducts.length > 0 ? (
-              filteredProducts.map((product, index) => (
-                <React.Fragment key={product._id}>
-                  <div className='flex flex-row items-center gap-4 hover:bg-gray-200 cursor-pointer px-3 py-2'>
-                    <img 
-                      // src="https://images.unsplash.com/photo-1674296115670-8f0e92b1fddb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
-                      src={product.imageURL}
-                      alt='product_image' 
-                      style={{width: '15%', height: 'auto'}}
-                      className={`bg-transparent h-full w-full rounded-lg border-none text-lg text-black focus:outline-none ${animationClass}`}
+              filteredProducts.map((product, index) => {
+                const cartItem = cartItems.find(item => item._id === product._id);
+                const quantity = cartItem ? cartItem.quantity : 1;
+
+                return (
+                  <React.Fragment key={product._id}>
+                    <div className='flex flex-row items-center gap-4 hover:bg-gray-200 cursor-pointer px-3 py-2'>
+                      <img 
+                        src={product.imageURL}
+                        alt='product_image' 
+                        style={{width: '15%', height: 'auto'}}
+                        className={`bg-transparent h-full w-full rounded-lg border-none text-lg text-black focus:outline-none ${animationClass}`}
                       />
-                    <div className='flex flex-row items-center justify-between w-full text-md'>
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-gray-600 text2 text-base'>{product.brand}</div>
-                        <div className='text-black text1 text-lg'>{product.name}</div>
-                      </div>
-                      <div className='text1 text-base'>{product.quantity} {product.unit}</div>
-                      <Separator orientation="vertical" />
-                      <div className='flex flex-col items-center justify-center gap-1'>
-                        <div className="flex items-end text1">
-                          <p className="mr-2 text-xl text-gray-900 dark:text-white">
-                            ₹{product.discount > 0 ? product.discounted_price : product.price}
-                          </p>
-                          {product.discount > 0 && (
-                            <p className="text-md text-gray-500 line-through">₹{product.price}</p>
-                          )}
+                      <div className='flex flex-row items-center justify-between w-full text-md'>
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-gray-600 text2 text-base'>{product.brand}</div>
+                          <div className='text-black text1 text-lg'>{product.name}</div>
                         </div>
-                        {product.discount > 0 && <div className='bg-green-200 p-1 rounded-lg text-green-500'><span>{product.discount}% OFF</span></div>} 
-                      </div>
-                      
-                      {!showQuantity[index] && (
-                        <button
-                          onClick={() => addToCart(index)}
-                          className="text-center text-md w-1/5 h-[40px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-[20s] ease-in-out"
-                        >
-                          <span className="font-bold transition-colors duration-300 ease-in-out">Add</span>
-                        </button>
-                      )}
-
-                      {showQuantity[index] && (
-                        <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-1/5 h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
-                          <button onClick={() => decrementQ(product)} className="w-1/3 h-full flex items-center justify-center">-</button>
-                          <button className="w-1/3 h-full flex items-center justify-center">
-                            <span className="font-bold">{product.quantity}</span>
+                        <div className='text1 text-base'>{product.quantity} {product.unit}</div>
+                        <Separator orientation="vertical" />
+                        <div className='flex flex-col items-center justify-center gap-1'>
+                          <div className="flex items-end text1">
+                            <p className="mr-2 text-xl text-gray-900 dark:text-white">
+                              ₹{product.discount > 0 ? product.discounted_price : product.price}
+                            </p>
+                            {product.discount > 0 && (
+                              <p className="text-md text-gray-500 line-through">₹{product.price}</p>
+                            )}
+                          </div>
+                          {product.discount > 0 && <div className='bg-green-200 p-1 rounded-lg text-green-500'><span>{product.discount}% OFF</span></div>} 
+                        </div>
+                        
+                        {!cartItem ? (
+                          <button
+                            onClick={() => {
+                              addToCart({
+                                ...product,
+                                quantityType: `${product?.quantity} ${product?.unit}`
+                              });
+                            }}
+                            className="text-center text-md w-1/5 h-[40px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-[20s] ease-in-out"
+                          >
+                            <span className="font-bold transition-colors duration-300 ease-in-out">Add</span>
                           </button>
-                          <button onClick={() => incrementQ(product)} className="w-1/3 h-full flex items-center justify-center">+</button>
-                        </div>
-                      )}
-
+                        ) : (
+                          <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-1/5 h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
+                            <button onClick={() => decrementQ({
+                              ...product,
+                              quantityType: `${product?.quantity} ${product?.unit}`
+                            })} className="w-1/3 h-full flex items-center justify-center">-</button>
+                            <button className="w-1/3 h-full flex items-center justify-center">
+                              <span className="font-bold">{quantity}</span>
+                            </button>
+                            <button onClick={() => incrementQ({
+                              ...product,
+                              quantityType: `${product?.quantity} ${product?.unit}`
+                            })} className="w-1/3 h-full flex items-center justify-center">+</button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {index < filteredProducts.length - 1 && <Separator orientation ="horizontal" className="my-2" />}
-                </React.Fragment>
-              ))  
+                    {index < filteredProducts.length - 1 && <Separator orientation ="horizontal" className="my-2" />}
+                  </React.Fragment>
+                );
+              })  
             ) : ( 
-              <div className="p-2 text-gray-500">No products found</div>
+              <div className="p-2 text-gray-500 text0">No products found</div>
             )}
           </div>
         </div>
@@ -160,4 +161,4 @@ const SearchBar = ({ onFocus, onBlur }) => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

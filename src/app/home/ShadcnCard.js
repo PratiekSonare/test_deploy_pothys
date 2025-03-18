@@ -195,7 +195,7 @@ export default function CarouselSize() {
                       <button
                         onClick={() => addToCart({
                           ...selectedVariant,
-                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                          quantityType: `${selectedVariant?.quantity} ${selectedVariant?.unit}`
                         })}
                         className="flex justify-center items-center p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
                       >
@@ -207,7 +207,7 @@ export default function CarouselSize() {
                       <div className="flex flex-row h-[40px] justify-around w-full rounded-lg bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-300">
                         <button onClick={() => decrementQ({
                           ...selectedVariant,
-                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                          quantityType: `${selectedVariant?.quantity} ${selectedVariant?.unit}`
                         })}> - </button>
 
                         <button>
@@ -216,7 +216,7 @@ export default function CarouselSize() {
 
                         <button onClick={() => incrementQ({
                           ...selectedVariant,
-                          quantityType: `${selectedVariant.quantity} ${selectedVariant.unit}`
+                          quantityType: `${selectedVariant?.quantity} ${selectedVariant?.unit}`
                         })}> + </button>
                       </div>
                     </div>
