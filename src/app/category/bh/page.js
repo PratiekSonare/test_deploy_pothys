@@ -34,7 +34,12 @@ const page = () => {
         const fetchProducts = async () => {
           try {
             const encodedCategory = encodeURIComponent("Beauty and Hygiene");
-            const response = await axios.get(`https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`);
+            const response = await axios.get(
+                `https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`,
+                {
+                    withCredentials: true,
+                }
+            );            
             setProducts(response.data);
             console.log('respone data: ', response.data);
             console.log('respone data brand: ', response.data.brand);

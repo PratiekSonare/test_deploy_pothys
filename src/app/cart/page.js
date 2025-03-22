@@ -77,7 +77,7 @@ const Cart = () => {
       });
   
       const result = await response.json();
-  
+      
       // Log the parsed result
       console.log("Response data:", result); // Log the response data
   

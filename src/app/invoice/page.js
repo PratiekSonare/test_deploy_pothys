@@ -261,7 +261,7 @@ const InvoiceContent = ({ transactionData, pdfRef }) => {
                     ₹ {item.price.toFixed(2)}
                   </td>
                   <td style={{ padding: "10px", borderRight: "1px solid black" }}>
-                    {item.quantity} {item.unit}
+                    {item.quantityType}
                   </td>
                   <td style={{ padding: "10px", borderRight: "1px solid black" }}>
                     ₹ {(item.price - item.discounted_price).toFixed(2)}
@@ -308,33 +308,33 @@ const InvoiceContent = ({ transactionData, pdfRef }) => {
             <tbody>
               {/* Example Tax Data */}
               <tr>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097007</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>32.50</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
-                <td style={{ padding: "10px" }}>1.63</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px" }}>NA</td>
               </tr>
               <tr>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097014</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>77.00</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
-                <td style={{ padding: "10px" }}>9.24</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px" }}>NA</td>
               </tr>
             </tbody>
             <tfoot>
               <tr style={{ borderTop: "2px solid black", fontWeight: "bold", backgroundColor: "#f2f2f2" }}>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>TOTAL</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>109.50</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}></td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>5.43</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}></td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>5.43</td>
-                <td style={{ padding: "10px" }}>10.87</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px" }}>NA</td>
               </tr>
             </tfoot>
           </table>

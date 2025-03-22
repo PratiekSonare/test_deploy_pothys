@@ -30,7 +30,12 @@ export default function CarouselSize() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://pothys-backend.onrender.com/api/products/dow-true");
+        const response = await axios.get(
+                          "https://pothys-backend.onrender.com/api/products/dow-true",
+                          {
+                            withCredentials: true,
+                          }
+                        );
         setProducts(response.data);
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
