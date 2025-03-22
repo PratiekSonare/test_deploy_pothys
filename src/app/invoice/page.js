@@ -155,22 +155,30 @@ import { useRouter, useSearchParams } from "next/navigation";
 
             <tbody>
                 <tr>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097007</td>
+                {/* <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097007</td>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>32.50</td>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
                 <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
-                <td style={{ padding: "10px" }}>1.63</td>
+                <td style={{ padding: "10px" }}>1.63</td> */}
+
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px" }}>NA</td>
                 </tr>
                 <tr>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097014</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>77.00</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
-                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
-                <td style={{ padding: "10px" }}>9.24</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>NA</td>
+                <td style={{ padding: "10px" }}>NA</td>
                 </tr>
             </tbody>
 

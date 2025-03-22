@@ -98,7 +98,7 @@ const Cart = () => {
         const invoiceUrl = `/invoice?transaction_id=${result.transaction_id}`; // Adjust the URL as needed
         window.open(invoiceUrl, '_blank'); // Open the invoice in a new tab
   
-        // router.push('/'); // Redirect to home
+        router.push('/'); // Redirect to home
         clearCart();
       } else {
         alert(`Transaction failed. Reason: ${result.message || 'Unknown error'}`);
