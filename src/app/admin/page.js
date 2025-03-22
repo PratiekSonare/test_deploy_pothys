@@ -61,7 +61,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/products");
+            const response = await axios.get("https://pothys-backend.onrender.com/api/products");
             setProducts(response.data);
             setFilteredProducts(response.data);
         } catch (error) {
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
 
     const addProduct = async (data) => {
         try {
-            const response = await axios.post("http://localhost:5000/api/products", data);
+            const response = await axios.post("https://pothys-backend.onrender.com/api/products", data);
             console.log("Response:", response.data);
             fetchProducts();
             reset();
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
     const updateProductData = async (data) => {
         const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put('http://localhost:5000/api/products', updatedData); // Send updated data in the body
+            await axios.put('https://pothys-backend.onrender.com/api/products', updatedData); // Send updated data in the body
             console.log('PUT Request successful!');
             fetchProducts(); // Refresh the product list
             reset(); // Reset the form
@@ -124,11 +124,11 @@ export default function AdminDashboard() {
         try {
             if (selectedProducts.length > 0) {
                 // Send the array of selected product IDs to the server
-                await axios.delete("http://localhost:5000/api/products", { data: selectedProducts });
+                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: selectedProducts });
                 fetchProducts(); // Refresh the product list
                 console.log("Products removed successfully!");
             } else {
-                await axios.delete("http://localhost:5000/api/products", { data: { _id: productIdToDelete } });
+                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: { _id: productIdToDelete } });
                 fetchProducts();
                 console.log("Product removed successfully!");
             }
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
         formData.append("file", csvFile);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/products/upload", formData, {
+            const response = await axios.post("https://pothys-backend.onrender.com/api/products/upload", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

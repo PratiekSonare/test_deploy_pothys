@@ -33,7 +33,7 @@ const page = () => {
         const fetchProducts = async () => {
           try {
             const encodedCategory = encodeURIComponent("Beverages");
-            const response = await axios.get(`http://localhost:5000/api/products/category/${encodedCategory}`);
+            const response = await axios.get(`https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`);
             setProducts(response.data);
             console.log('respone data: ', response.data);
             console.log('respone data brand: ', response.data.brand);
