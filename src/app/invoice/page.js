@@ -273,6 +273,150 @@ const InvoiceContent = ({ transactionData, pdfRef }) => {
               ))}
             </tbody>
           </table>
+
+          {/* Tax Summary */}
+          <h4 className="text-md font-semibold my-2">Tax Summary:</h4>
+          <table
+            width="100%"
+            cellPadding="5"
+            style={{
+              borderCollapse: "collapse",
+              textAlign: "left",
+              width: "100%",
+              border: "1px solid black",
+              fontSize: "0.75rem", // text-xs equivalent
+            }}
+          >
+            <thead>
+              <tr style={{ borderBottom: "2px solid black", backgroundColor: "#f2f2f2" }}>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>HSN/SAC</th>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>Taxable Amount (₹)</th>
+                <th colSpan="2" style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>CGST</th>
+                <th colSpan="2" style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>SGST</th>
+                <th style={{ padding: "10px", fontWeight: "bold" }}>Total Tax (₹)</th>
+              </tr>
+              <tr style={{ borderBottom: "1px solid black", backgroundColor: "#f9f9f9" }}>
+                <th style={{ borderRight: "1px solid black" }}></th>
+                <th style={{ borderRight: "1px solid black" }}></th>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>Rate (%)</th>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>Amt (₹)</th>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>Rate (%)</th>
+                <th style={{ padding: "10px", fontWeight: "bold", borderRight: "1px solid black" }}>Amt (₹)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Example Tax Data */}
+              <tr>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097007</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>32.50</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>2.5</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>0.81</td>
+                <td style={{ padding: "10px" }}>1.63</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>8908004097014</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>77.00</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>6</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>4.62</td>
+                <td style={{ padding: "10px" }}>9.24</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style={{ borderTop: "2px solid black", fontWeight: "bold", backgroundColor: "#f2f2f2" }}>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>TOTAL</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>109.50</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}></td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>5.43</td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}></td>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>5.43</td>
+                <td style={{ padding: "10px" }}>10.87</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {/* Payment Mode */}
+          <table
+            width="100%"
+            cellPadding="5"
+            style={{
+              borderCollapse: "collapse",
+              textAlign: "left",
+              width: "100%",
+              fontSize: "0.75rem", // text-xs equivalent
+              border: "1px solid black"
+            }}
+          >
+            <tbody>
+              <tr style={{ borderBottom: "1px solid black", fontWeight: "bold" }}>
+                <td style={{ padding: "5px", width: "50%", borderRight: "1px solid black", backgroundColor: "#f2f2f2" }}>Payment Mode:</td>
+                <td style={{ padding: "5px", textAlign: "left" }}>Cash</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Bank Details */}
+          <table
+            width="100%"
+            cellPadding="5"
+            style={{
+              borderCollapse: "collapse",
+              textAlign: "left",
+              width: "100%",
+              fontSize: "0.75rem", // text-xs equivalent
+              border: "1px solid black"
+            }}
+          >
+            <thead>
+              <tr style={{ borderBottom: "2px solid black", backgroundColor: "#f2f2f2", fontWeight: "bold" }}>
+                <th style={{ padding: "5px", borderRight: "1px solid black" }}>Bank Details:</th>
+                <th style={{ padding: "5px" }}>For SK Supermarket:</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: "1px solid black" }}>
+                <td style={{ padding: "10px", borderRight: "1px solid black" }}>
+                  <p><strong>Name:</strong> HDFC BANK, BANGALORE - VIJAYANAGAR</p>
+                  <p><strong>Account No.:</strong> 50100534953269</p>
+                  <p><strong>IFSC Code:</strong> HDFC0000312</p>
+                  <p><strong>Account Holder:</strong> PREM KUMAR</p>
+                </td>
+                <td style={{ padding: "10px", height: 'auto', verticalAlign: "bottom" }}>
+                  <p style={{}}>Authorized Signatory / Date</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Terms & Conditions */}
+          <table
+            width="100%"
+            cellPadding="5"
+            style={{
+              borderCollapse: "collapse",
+              textAlign: "left",
+              width: "100%",
+              fontSize: "0.75rem", // Equivalent to text-xs
+              border: "1px solid black"
+            }}
+          >
+            <thead>
+              <tr style={{ borderBottom: "2px solid black", backgroundColor: "#f2f2f2" }}>
+                <th style={{ padding: "5px", fontWeight: "bold" }}>Terms & Conditions:</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ padding: "5px", verticalAlign: "bottom" }}>
+                  Thank you for doing business with us!
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </Suspense>
