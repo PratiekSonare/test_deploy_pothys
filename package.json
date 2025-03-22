@@ -6,9 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next export"
-  },
+    "lint": "next lint"
+    },
   "dependencies": {
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-checkbox": "^1.1.4",
