@@ -88,9 +88,37 @@ const Product = mongoose.model('Product', productSchema, 'productlist');
 const Admin = mongoose.model("Admin", adminSchema, 'admin');
 const Transaction = mongoose.model('Transaction', transactionSchema, 'transactions');
 
+    // AUTH / MIDDLEWARE (IMPORTANT) 
+
+// Fake Admin Credentials (Replace with DB-stored credentials)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync("admin", 10); // Hash the password
+
+const verifyAdmin = (req, res, next) => {
+    const token = req.header("Authorization")?.split(" ")[1]; // Get token from Bearer
+
+    if (!token) {
+      return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      next(); // Proceed to the actual API route
+    } catch (error) {
+      res.status(400).json({ message: "Invalid Token" });
+    }
+};
+
+// Example protected route
+app.get("/api/admin/protected", (req, res) => {
+  res.json({ message: "Welcome to the admin area!" });
+});
 
 // API Routes
-app.post("/api/admin/login", async (req, res) => {
+app.post("/api/admin/login", verifyAdmin, async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -162,18 +190,6 @@ app.get('/api/products/category/:category', async (req, res) => {
     }
 });
 
-// // Get Products by Category (Supports Multiple Categories)
-// app.get('/api/products/category/:category', async (req, res) => {
-//     try {
-//         const categories = req.params.category.split(',');
-//         const products = await Product.find({ category: { $in: categories } });
-//         res.json(products);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
-
-
 // Get Products with dow = true
 app.get('/api/products/dow-true', async (req, res) => {
     try {
@@ -185,7 +201,7 @@ app.get('/api/products/dow-true', async (req, res) => {
 });
 
 // Update Products (Single or Multiple)
-app.put('/api/products', async (req, res) => {
+app.put('/api/products', verifyAdmin, async (req, res) => {
     try {
         if (Array.isArray(req.body)) {
             const updatedProducts = await Promise.all(
@@ -204,7 +220,7 @@ app.put('/api/products', async (req, res) => {
 });
 
 // Delete Products (Single or Multiple or Clear All)
-app.delete('/api/products', async (req, res) => {
+app.delete('/api/products', verifyAdmin, async (req, res) => {
     try {
         // Check if the request body contains a flag to clear all products
         if (req.body.clearAll) {
@@ -229,7 +245,7 @@ app.delete('/api/products', async (req, res) => {
 });
 
 // Endpoint to handle CSV upload
-app.post('/api/products/upload', upload.single('file'), async (req, res) => {
+app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req, res) => {
     const results = [];
 
     // Check if a file was uploaded
@@ -292,7 +308,7 @@ app.post("/api/transactions", async (req, res) => {
 
 
 // Endpoint to get all transactions / according to id if specified
-app.get("/api/transactions", async (req, res) => {
+app.get("/api/transactions", verifyAdmin, async (req, res) => {
     try {
         const { transaction_id } = req.query; // Get transaction_id from query params
 
