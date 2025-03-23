@@ -104,8 +104,8 @@ export default function CarouselSize() {
   };
 
   return (
-    <div className="relative w-full hidden md:block">
-      <Carousel opts={{ align: "start", slidesToScroll: 4 }} className="w-full h-full">
+    <div className="relative w-full md:hidden block ml-2">
+      <Carousel opts={{ align: "start", slidesToScroll: 1 }} className="w-full h-full">
         <CarouselContent className="flex gap-4">
           {Object.keys(selectedVariants).map((productName) => {
             const productVariants = products.filter(product => product.name === productName);
@@ -115,8 +115,8 @@ export default function CarouselSize() {
             const selectedVariant = selectedVariants[productName];
 
             return (
-              <CarouselItem key={productName} className="md:basis-1/3 lg:basis-1/5 text1 h-full ">
-                <div className="rounded-lg bg-white dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
+              <CarouselItem key={productName} className="basis-11/12 md:basis-1/3 lg:basis-1/5 text1">
+                <div className="rounded-lg bg-white  dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
                   <div className="relative flex flex-col">
                     <div className="flex justify-center items-center rounded-lg p-2">
                       <div className="border-gray-500 border-[1px] p-2 rounded-lg">
@@ -238,10 +238,10 @@ export default function CarouselSize() {
           </button>
         </div>
 
-        <div className="absolute -top-7 right-[3.2rem] transform -translate-y-1/2">
+        <div className="absolute -top-6 right-[1.6rem] transform -translate-y-1/2 scale-75">
           <CarouselPrevious className="bg-transparent border-[1px] border-gray-800 text-black hover:bg-gray-800 hover:text-white p-2 rounded-lg" />
         </div>
-        <div className="absolute -top-7 right-[3.5rem] transform -translate-y-1/2">
+        <div className="absolute -top-6 right-[2.5rem] transform -translate-y-1/2 scale-75">
           <CarouselNext className="bg-transparent border-[1px] border-gray-800 text-black hover:bg-gray-800 hover:text-white p-2 rounded-lg" />
         </div>
       </Carousel>

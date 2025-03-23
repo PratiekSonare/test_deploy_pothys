@@ -1,42 +1,37 @@
 import React from 'react';
 import Link from 'next/link'; // Import Link from next/link
-import { useCart } from '../cart/CartContext';
-import { useRouter } from 'next/navigation';
+import { useCart } from './CartContext';
 
 const Header = () => {
   const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart } = useCart();
   
-  const router = useRouter();
-
   return (
-    <div className='hidden md:block max-w-screen max-h-[150px] bg-white'>
+    <div className='flex md:hidden max-w-screen max-h-[150px] bg-white'>
       <div className='grid grid-cols-3 items-center p-5'>
 
         {/* Left Icon (e.g., Cart Icon) */}
-        <div className="flex justify-start">
+        <div className="flex justify-start scale-90">
           <Link href="/">
             <img 
               src="/arrow.svg" 
               alt="cart"
-              className="w-8 h-auto cursor-pointer" 
-              onClick={() => router.push('/')}
+              className="w-8 h-auto" 
             />
           </Link>
         </div>
 
         {/* Logo */}
         <div className="flex justify-center items-center">
-          
           <img 
             src='/pothys-2template.svg' 
             alt='logo'
-            style={{ width: '30%', height: 'auto' }} 
+            style={{ width: '100%', height: 'auto' }} 
           />
         </div>
 
-        {/* Right Icons (e.g., Phone and Form Icons) */}
-        <div className='flex justify-end space-x-4'>
-          <div className='p-2 rounded-lg bg-red-400 flex items-center justify-center'>
+        {/* Right Icons (e.g., Phone and Form Icons)
+        <div className='flex justify-end space-x-1 scale-75'>
+          <div className='p-2 rounded-lg bg-red-400 flex items-center justify-end'>
             <Link href='/contact-us'>
               <img 
                 src='/phone-calling-svgrepo-com.svg' 
@@ -55,7 +50,8 @@ const Header = () => {
             </Link>
           </div>
         </div>
-        
+         */}
+         
       </div>      
     </div>
   );

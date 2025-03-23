@@ -1,5 +1,5 @@
 "use client"
-import React, {createContext, useState} from 'react';
+import React, { createContext, useState } from 'react';
 import { Button } from "@/components/ui/button"; // Import Shadcn UI Button
 import { Card } from "@/components/ui/card"; // Import Shadcn UI Card
 import { Separator } from "@/components/ui/separator"; // Import Shadcn UI Separator
@@ -15,7 +15,7 @@ import {
   FormMessage,
   FormField,
 }
- from '@/components/ui/form';
+  from '@/components/ui/form';
 
 import {
   HoverCard,
@@ -23,16 +23,20 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 
 import { Input } from "@/components/ui/input";
 import Header from './Header';
 import '../styles.css'
 import Footer from '../footer/Footer';
 import generateInvoice from '../invoice/page';
+import HeaderParent from './HeaderParent';
+import CartProducts from './CartProducts';
+import CartParent from './CartParent';
+import FooterParent from '../footer/FooterParent';
 
 const Cart = () => {
-  
+
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -51,7 +55,7 @@ const Cart = () => {
   const handleTransactionSuccess = async (transactionData) => {
     // Assuming transactionData is the response from your transaction API
     const { transaction_id, date_time, payment_method, total_amount, cartItems, customer } = transactionData;
-  
+
     // Call the function to generate the invoice
     generateInvoice(transaction_id, date_time, payment_method, total_amount, cartItems, customer);
   };
@@ -60,9 +64,9 @@ const Cart = () => {
     console.log("Customer data:", data); // Debugging line
     console.log("Cart Items:", cartItems);
     console.log("Total Amount:", total_amount);
-  
+
     setLoading(true);
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/transactions', {
         method: "POST",
@@ -75,15 +79,15 @@ const Cart = () => {
           status: "success"
         })
       });
-  
+
       const result = await response.json();
-      
+
       // Log the parsed result
       console.log("Response data:", result); // Log the response data
-  
+
       if (result.success) {
         alert(`Transaction successful! Transaction ID: ${result.transaction_id}`);
-        
+
         // Call handleTransactionSuccess with the transaction data
         handleTransactionSuccess({
           transaction_id: result.transaction_id,
@@ -93,11 +97,11 @@ const Cart = () => {
           cartItems,
           customer: data
         });
-  
+
         // Open a new tab with the invoice URL, passing the transaction ID
         const invoiceUrl = `/invoice?transaction_id=${result.transaction_id}`; // Adjust the URL as needed
         window.open(invoiceUrl, '_blank'); // Open the invoice in a new tab
-  
+
         router.push('/'); // Redirect to home
         clearCart();
       } else {
@@ -114,196 +118,86 @@ const Cart = () => {
 
   return (
 
-    <>
-      <header className="top-0 header-sdw">
-        <Header />
+    <div className='overflow-x-hidden w-screen'>
+      <header className="top-0 header-sdw w-full">
+        <HeaderParent />
       </header>
-  
-      <div className='p-10 grid grid-cols-[1fr_1fr] space-x-10'>
-        <div className="p-5">
-          <div className='flex justify-between'>
-            <h1 className="text-2xl font-bold mb-4 text3">Your Cart</h1>
-            <button onClick={clearCart} className='flex flex-row justify-center items-center rounded-lg h-[40px] bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
-                    <span className='text1 p-2'>Clear Cart</span>
-            </button>
-          </div>
 
-          {cartItems.length === 0 ? (
-            <div className='flex flex-col items-center justify-center p-36 card-sdw bg-white rounded-lg'>
-              <p className='text0 text-lg'>Your cart is empty.</p>
-              <img
-                src='/sad-svgrepo-com.svg'
-                alt='sad'
-                className=''
-                style={{width: '15%'}}>
-              </img>
-            </div>
+      <div className='p-2 md:p-10 grid grid-rows-2 md:grid-cols-2 space-y-10 md:space-x-10'>
 
-          ) : (
-            <div className='h- flex flex-col'>
-  <div className='overflow-y-scroll flex-grow'>
-    {cartItems.map((product, index) => (
-      <Card key={`${product._id}-${product.quantityType}` || index} className="mb-4 p-4">
-        <div className="grid grid-cols-[1fr_2fr]">
-          <div className='flex items-center justify-start rounded-lg flex-shrink'>
-            <img 
-              src={product.imageURL} 
-              alt="cartproduct"
-              key={product._id || index}
-              className='w-full object-cover rounded-lg'
-              style={{width: '25%', height: 'auto'}}                    
-            />
-            <div className='ml-5'>
-              <h2 className="text1 text-gray-600 text-base font-semibold -mb-2">{product.brand}</h2>
-              <h2 className="text2 text-lg font-semibold ">{product.name}</h2>                
-              <h2 className="text0 text-xs self-end">{product.quantityType}</h2>                
-            </div> 
-          </div>
-          <div className='flex items-center justify-center'>
-            <div className='grid grid-cols-[2fr_1fr_1fr_1fr] grid-rows-1 items-center gap-5'>
-              <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-full h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
-                <button onClick={() => decrementQ(product)} className="w-1/3 h-full flex items-center justify-center">-</button>
-                <button className="w-1/3 h-full flex items-center justify-center">
-                  <span className="font-bold">{product.quantity}</span>
-                </button>
-                <button onClick={() => incrementQ(product)} className="w-1/3 h-full flex items-center justify-center">+</button>
-              </div>
-              <div className='flex flex-row text-lg justify-center items-center rounded-lg w-full h-[40px] bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
-                <button onClick={() => removeFromCart(product._id)}>
-                  <span className='text1 text-sm p-2'>Remove</span>
-                </button>
-              </div>
-              <div className='flex flex-col'>
-                <span className='text-xs text0 self-end text-gray-600'>Quantity:</span>
-                <span className='self-end text2 text-lg text-black tracking-tighter'>
-                  {product.quantity} x {product.quantityType}
-                </span>
-              </div>
-              <div>
-                <div className='flex flex-col'>
-                  <p className='text-xs text0 self-end text-gray-600'>Final Price:</p> 
-                  <span className='self-end text2 text-lg text-black'>₹{( product.discount > 0 ? product.quantity * product.discounted_price : product.quantity * product.price ).toFixed(2)}</span> 
-                </div>
-                </div>    
-              </div>
-            </div>
-          </div>
-        </Card>
-      ))}
-      <Separator className="mt-4 mb-2" />  
-    </div>
+        {/* cart */}
+        <CartParent />
 
-        <div className="flex justify-between">
-          <div className='flex flex-col items-center justify-center'>
-            <span className='text1 text-gray-600 text-lg'>You're saving a total of</span> 
-            <span className='text2 text-green-400 text-2xl'>₹(saved_price)!</span>
-          </div>
-          <Separator orientation='vertical' className="my-4" />              
-          <div className='flex flex-col px-5'>
-            <span className='text1 text-gray-600 text-lg self-end mt-4'>Total:</span> 
-            <span className='text2 text-2xl self-end'>₹{total_amount.toFixed(2)}</span>
-            <div className='self-end'>
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Button variant="link" className='p-0'><span className='text-xs text0 text-gray-500'>+ View Price Breakdown</span></Button>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-55">
-                  <div className='flex flex-col gap-2 text0 text-xs'>
-                    <div className='flex flex-row justify-between'>
-                      <span className='text-gray-400'>+Delivery Charges</span>
-                      <span className='text-gray-600'>₹2</span>
-                    </div>
-                    <div className='flex flex-row justify-between'>
-                      <span className='text-gray-400'>+CGST</span>
-                      <span className='text-gray-600'>₹(cgst)</span>
-                    </div>
-                    <div className='flex flex-row justify-between'>
-                      <span className='text-gray-400'>+SGST</span>
-                      <span className='text-gray-600'>₹(sgst)</span>
-                    </div>
-                    <div className='flex flex-row justify-between'>
-                      <span className='text-gray-400'>+Convenience Fee</span>
-                      <span className='text-gray-600'>₹(c_fee)</span>
-                    </div>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
-            </div>
-          </div>
-        </div>
-        <Separator className="my-2" />
-      </div>
-          )}
-        </div>
-  
-        <div className='p-5'>
+        {/* customer form */}
+        <div className=" px-2 md:p-5">
           <h1 className="text-2xl font-bold mb-4 text3">Customer Details</h1>
-  
-            <div className='space-y-5 text0'>
-              <Form {...form} >
-                <form onSubmit={form.handleSubmit(handleTransaction)} className='space-y-5 text0'>
-                  <FormField 
-                    control={form.control}
-                    name="customer_name"
-                    render={({field}) => (
-                      <FormItem>
-                        <FormLabel>Customer Name</FormLabel>
-                        <FormControl>
+
+          <div className='space-y-5 text0 w-11/12 md:w-full md:block'>
+            <Form {...form} >
+              <form onSubmit={form.handleSubmit(handleTransaction)} className='space-y-5 text0'>
+                <FormField
+                  control={form.control}
+                  name="customer_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Customer Name</FormLabel>
+                      <FormControl>
                         <Input placeholder="Customer Name" required {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}  
-                  />
-    
-                  <FormField 
-                    control={form.control}
-                    name="phone"
-                    render={({field}) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
                         <Input type="number" placeholder="Phone Number (+91)" required {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}  
-                  />
-    
-                  <FormField 
-                    control={form.control}
-                    name="address"
-                    render={({field}) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
                         <Input placeholder="403, Shanti Niketan, Puducherry - 400000" required {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}  
-                  />
-  
-                  <div>
-                    <Button
-                     className='flex flex-row justify-center items-center rounded-lg h-[40px] bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out' 
-                     type="submit" 
-                     disabled={loading}
-                     >
-                      {loading ? 'Processing...' : 'Complete Transaction'}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-  
-          </div>        
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div>
+                  <Button
+                    className='flex flex-row justify-center items-center rounded-lg h-[40px] bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out'
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : 'Complete Transaction'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+
+          </div>
         </div>
+
       </div>
 
       <footer>
-        <Footer />
+        <FooterParent />
       </footer>
-    </>
+    </div>
   );
 };
 

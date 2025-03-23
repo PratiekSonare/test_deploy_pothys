@@ -38,7 +38,7 @@ export default function CarouselDemo() {
         {images.map((image, index) => (
           <CarouselItem key={index}>
             <div className="flex items-center justify-center p-0">
-              <Card className="w-3/4 h-auto">
+              <Card className="w-full md:w-3/4 h-auto">
                 <CardContent className="w-full h-full p-0">
                   <img
                     src={image.src}
@@ -51,10 +51,10 @@ export default function CarouselDemo() {
           </CarouselItem>
         ))}
       </CarouselContent>
-        <div className="absolute top-1/2 left-[5rem] transform -translate-y-1/2">
+        <div className="hidden md:block absolute top-1/2 left-[5rem] transform -translate-y-1/2">
             <CarouselPrevious className="bg-transparent border-[1px] border-gray-800 text-black hover:bg-gray-800 hover:text-white p-2 rounded-lg" />
         </div>
-        <div className="absolute top-1/2 right-[5rem] transform -translate-y-1/2">
+        <div className="hidden md:block absolute top-1/2 right-[5rem] transform -translate-y-1/2">
             <CarouselNext className="bg-transparent border-[1px] border-gray-800 text-black hover:bg-gray-800 hover:text-white p-2 rounded-lg" />
         </div>
     </Carousel>

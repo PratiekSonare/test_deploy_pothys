@@ -9,29 +9,24 @@ const Header = () => {
   const { cartItems, addToCart, incrementQ, decrementQ, removeFromCart, clearCart } = useCart();
   
   return (
-    <div className='hidden md:block max-w-screen max-h-[150px] bg-white'>
-      <div className='flex items-center justify-around p-5'>
+    <div className='flex md:hidden max-w-screen max-h-[150px] bg-white'>
+      <div className='flex items-center justify-between p-5'>
         
-        {/* Empty div to take up space on the left */}
-        <div className="flex-grow"></div>
-
         {/* Logo */}
-        <div className="flex justify-center items-center">
+        <div className="flex justify-start items-center">
           <img 
             src='/pothys-2template.svg' 
             alt='logo'
-            style={{ width: '60%', height: 'auto' }} 
-            className='w-1/4 md:w-full'
+            style={{ width: '40%', height: 'auto' }} 
+            className=''
           />
         </div>
 
-        {/* Empty div to take up space on the left */}
-        <div className="flex-grow"></div>
 
         {/* Cart */}
         <Link href='/cart'>
           <div className="relative text-center text-lg">
-            <div className='flex flex-col items-center justify-center cursor-pointer'>
+            <div className='flex flex-col items-center justify-center cursor-pointer scale-75'>
 
                 <div className='absolute top-5 -right-1'>
                   <div className='p-2 bg-black flex justify-center items-center rounded-md' style={{ width: '25px', height: '25px' }}>

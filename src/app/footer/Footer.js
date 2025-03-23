@@ -3,7 +3,7 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 p-10 text-lg">
+    <footer className="hidden md:block max-w-screen bg-gray-900 p-10 text-lg">
     <div className="flex flex-row justify-around w-full">
       {/* Pothys Store Links */}
       <div className="flex flex-col text1 text-gray-400">
@@ -38,4 +38,4 @@ const Footer = () => {
   )
 }
 
-export default Footer
+export default Footer;
