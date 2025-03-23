@@ -77,9 +77,15 @@ const FinanceDashboard = () => {
         fetchTransactions();
     }, []);
 
+    const token = localStorage.getItem("adminToken"); // Retrieve the token from local storage
+
     const fetchTransactions = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/transactions");
+            const response = await axios.get("http://localhost:5000/api/transactions", {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
+            });
             setTransactions(response.data.transactions);
             
             // Calculate total revenue

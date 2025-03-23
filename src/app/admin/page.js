@@ -93,7 +93,11 @@ export default function AdminDashboard() {
 
     const addProduct = async (data) => {
         try {
-            const response = await axios.post("http://localhost:5000/api/products", data);
+            const response = await axios.post("http://localhost:5000/api/products", data, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
+            });
             console.log("Response:", response.data);
             fetchProducts();
             reset();
@@ -106,7 +110,11 @@ export default function AdminDashboard() {
     const updateProductData = async (data) => {
         const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put('http://localhost:5000/api/products', updatedData); // Send updated data in the body
+            await axios.put('http://localhost:5000/api/products', updatedData, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
+            }); // Send updated data in the body
             console.log('PUT Request successful!');
             fetchProducts(); // Refresh the product list
             reset(); // Reset the form
@@ -131,11 +139,19 @@ export default function AdminDashboard() {
         try {
             if (selectedProducts.length > 0) {
                 // Send the array of selected product IDs to the server
-                await axios.delete("http://localhost:5000/api/products", { data: selectedProducts });
+                await axios.delete("http://localhost:5000/api/products", { data: selectedProducts }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
+                });
                 fetchProducts(); // Refresh the product list
                 console.log("Products removed successfully!");
             } else {
-                await axios.delete("http://localhost:5000/api/products", { data: { _id: productIdToDelete } });
+                await axios.delete("http://localhost:5000/api/products", { data: { _id: productIdToDelete } }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
+                });
                 fetchProducts();
                 console.log("Product removed successfully!");
             }
@@ -181,6 +197,7 @@ export default function AdminDashboard() {
             const response = await axios.post("http://localhost:5000/api/products/upload", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
             });
             console.log("Products uploaded successfully:", response.data);
