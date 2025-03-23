@@ -54,13 +54,19 @@ export default function AdminDashboard() {
     const [selectedProducts, setSelectedProducts] = useState([]); // State to track selected products for deletion
     const [filterOption, setFilterOption] = useState(""); // State for filter option
     const [multipleUpdate, setMultipleUpdate] = useState(false); // State for bulk discount
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        fetchProducts();
+        if (typeof window !== "undefined") {
+            setToken(localStorage.getItem("adminToken"));
+        }
     }, []);
 
-    const token = localStorage.getItem("adminToken"); // Retrieve the token from local storage
-
+    useEffect(() => {
+        if (token) {
+            fetchProducts();
+        }
+    }, [token]);
 
     const fetchProducts = async () => {
         try {

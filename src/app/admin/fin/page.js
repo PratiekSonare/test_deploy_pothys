@@ -42,7 +42,10 @@ const FinanceDashboard = () => {
     // New state for date filters
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    
+
+    //token
+    const [token, setToken] = useState(null);
+
     const prepareData = (transactions) => {
         const revenueData = {};
     
@@ -72,12 +75,17 @@ const FinanceDashboard = () => {
         return preparedData;
     };
 
-
     useEffect(() => {
-        fetchTransactions();
+        if (typeof window !== "undefined") {
+            setToken(localStorage.getItem("adminToken"));
+        }
     }, []);
 
-    const token = localStorage.getItem("adminToken"); // Retrieve the token from local storage
+    useEffect(() => {
+        if (token) {
+            fetchProducts();
+        }
+    }, [token]);
 
     const fetchTransactions = async () => {
         try {
