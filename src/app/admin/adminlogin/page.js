@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation"; // Assuming you're using Next.js
@@ -7,32 +7,29 @@ export default function AdminLogin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [showPopup, setShowPopup] = useState(false); // State for popup visibility
+    const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        setError("");
+        setError(""); 
 
         try {
-            const response = await axios.post("https://pothys-backend.onrender.com/api/admin/login", {
+            const response = await axios.post("http://localhost:5000/api/admin/login", {
                 username,
                 password,
             });
 
-            if (response.data.success) {
-                // Store token or user info in local storage or context
-                localStorage.setItem("adminToken", response.data.token); // Example token
-                setShowPopup(true); // Show the popup
-                setTimeout(() => {
-                    router.push("/admin"); // Redirect to admin dashboard after 2 seconds
-                }, 2000);
-            } else {
-                setError("Invalid credentials");
-            }
+            // Assuming the response contains the token directly
+            localStorage.setItem("adminToken", response.data.token);
+            setShowPopup(true);
+            setTimeout(() => {
+                router.push("/admin");
+            }, 2000);   
         } catch (err) {
             console.error("Login error:", err);
-            setError("An error occurred. Please try again.");
+            // Display specific error message from the server
+            setError(err.response?.data?.message || "An error occurred. Please try again.");
         }
     };
 

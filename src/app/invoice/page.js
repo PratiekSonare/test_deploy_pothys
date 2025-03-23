@@ -34,7 +34,7 @@ const SearchParamsWrapper = ({ setTransactionData }) => {
       const fetchTransactionData = async () => {
         try {
           const response = await fetch(
-            `https://pothys-backend.onrender.com/api/transactions?transaction_id=${transactionId}`
+            `http://localhost:5000/api/transactions?transaction_id=${transactionId}`
           );
           const data = await response.json();
           if (data.success) {

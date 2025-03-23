@@ -79,7 +79,7 @@ const FinanceDashboard = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await axios.get("https://pothys-backend.onrender.com/api/transactions");
+            const response = await axios.get("http://localhost:5000/api/transactions");
             setTransactions(response.data.transactions);
             
             // Calculate total revenue

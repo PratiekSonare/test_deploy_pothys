@@ -7,26 +7,22 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import csv from 'csv-parser'; // Ensure you have this package installed
 import fs from 'fs';
+import bcrypt from 'bcrypt';
 // import { v4 as uuidv4 } from 'uuid';
 
 
 dotenv.config();
 const app = express();
 
-// Middleware
-app.use(
-    cors({
-      origin: "https://pothys.onrender.com", // Allow only your frontend
-      methods: "GET,POST,PUT,DELETE",
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization"],
-    })
-  );
+const corsOptions = {
+    origin: ['https://pothys.onrender.com', 'http://localhost:3000'], // Replace with your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
-
-
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -88,7 +84,6 @@ const transactionSchema = new mongoose.Schema({
     }
 });
 
-
 const Product = mongoose.model('Product', productSchema, 'productlist');
 const Admin = mongoose.model("Admin", adminSchema, 'admin');
 const Transaction = mongoose.model('Transaction', transactionSchema, 'transactions');
@@ -124,22 +119,6 @@ app.post("/api/admin/login", async (req, res) => {
     }
 });
 
-// Middleware to protect routes
-const authenticate = (req, res, next) => {
-    const token = req.headers["authorization"];
-    if (!token) return res.status(403).send("A token is required for authentication");
-
-    jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(401).send("Invalid Token");
-        req.user = decoded; // Store the decoded token in the request object
-        next(); // Proceed to the next middleware or route handler
-    });
-};
-
-// Protected admin route
-app.get("/api/admin", authenticate, (req, res) => {
-    res.send("Welcome to the admin dashboard!");
-});
 
 // Add Products (Single or Multiple)
 app.post('/api/products', async (req, res) => {

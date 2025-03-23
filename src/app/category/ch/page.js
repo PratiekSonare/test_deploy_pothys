@@ -36,7 +36,7 @@ const page = () => {
           try {
             const encodedCategory = encodeURIComponent("Cleaning and Household");
             const response = await axios.get(
-                `https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`,
+                `http://localhost:5000/api/products/category/${encodedCategory}`,
                 {
                     withCredentials: true,
                 }
