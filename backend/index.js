@@ -149,7 +149,7 @@ app.post("/api/admin/login", verifyAdmin, async (req, res) => {
 
 
 // Add Products (Single or Multiple)
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', verifyAdmin, async (req, res) => {
     try {
         if (Array.isArray(req.body)) {
             const products = await Product.insertMany(req.body);
