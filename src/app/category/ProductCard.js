@@ -30,7 +30,7 @@ const ProductCard = ({ productVariants }) => {
   };
 
   return (
-    <div className="container mx-auto grid grid-cols-1 gap-4 text0 w-[260px]">
+    <div className="md:container md:mx-auto md:grid md:grid-cols-1 md:gap-4 gap-2 text0 md:w-[260px] scale-[90%] md:scale-100">
       <div className="rounded-lg bg-white dark:bg-slate-800 shadow-md hover:shadow-lg overflow-auto">
         <div className="relative flex flex-col">
           <div className="flex justify-center items-center rounded-lg p-2">

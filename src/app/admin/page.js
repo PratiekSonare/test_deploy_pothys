@@ -12,8 +12,8 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from "@/components/ui/table"
-  
+} from "@/components/ui/table"
+
 import {
     useFormField,
     Form,
@@ -23,14 +23,14 @@ import {
     FormDescription,
     FormMessage,
     FormField,
-  }
-   from '@/components/ui/form';
+}
+    from '@/components/ui/form';
 
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-  } from "@/components/ui/popover"
+} from "@/components/ui/popover"
 
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input";
@@ -172,18 +172,18 @@ export default function AdminDashboard() {
         setEditingProduct(product);
         reset({
             brand: product.name || "",
-            name: product.name || "", 
-            price: product.price || 0, 
-            discount: product.discount || 0, 
-            discounted_price: product.discounted_price || 0, 
-            quantity: product.quantity || 0, 
-            unit: product.unit || "", 
-            product_feature: product.product_feature || "", 
-            product_tags: product.product_tags || "", 
-            imageURL: product.imageURL || "", 
-            category: product.category || "", 
-            avail: product.avail !== undefined ? product.avail.toString() : "false", 
-            dow: product.dow !== undefined ? product.dow.toString() : "false", 
+            name: product.name || "",
+            price: product.price || 0,
+            discount: product.discount || 0,
+            discounted_price: product.discounted_price || 0,
+            quantity: product.quantity || 0,
+            unit: product.unit || "",
+            product_feature: product.product_feature || "",
+            product_tags: product.product_tags || "",
+            imageURL: product.imageURL || "",
+            category: product.category || "",
+            avail: product.avail !== undefined ? product.avail.toString() : "false",
+            dow: product.dow !== undefined ? product.dow.toString() : "false",
         });
     };
 
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
     const handleSearchChange = (event) => {
         const value = event.target.value;
         setSearchTerm(value);
-        const filtered = products.filter(product => 
+        const filtered = products.filter(product =>
             product.name.toLowerCase().includes(value.toLowerCase()) ||
             product.brand.toLowerCase().includes(value.toLowerCase())
         );
@@ -274,33 +274,33 @@ export default function AdminDashboard() {
 
     const form = useForm({
         defaultValues: {
-          brand: "",
-          name: "",
-          price: "",
-          discount: "",
-          discounted_price: "",
-          quantity: "",
-          unit: "",
-          product_feature: "",
-          product_tags: "",
-          imageURL: "",
-          category: "",
-          dow: "false", // default value for Deal of the Week
-          avail: "true", // default value for Availability
-          csv: null, // for file upload
+            brand: "",
+            name: "",
+            price: "",
+            discount: "",
+            discounted_price: "",
+            quantity: "",
+            unit: "",
+            product_feature: "",
+            product_tags: "",
+            imageURL: "",
+            category: "",
+            dow: "false", // default value for Deal of the Week
+            avail: "true", // default value for Availability
+            csv: null, // for file upload
         },
-      });
+    });
 
-      const watchForm = form.watch();
+    const watchForm = form.watch();
 
-      const price = form.watch("price") || 0;
-      const discount = form.watch("discount") || 0;
-      const discountedPrice = price - (price * discount) / 100;
+    const price = form.watch("price") || 0;
+    const discount = form.watch("discount") || 0;
+    const discountedPrice = price - (price * discount) / 100;
 
-      useEffect(() => {
+    useEffect(() => {
         const discountedPrice = price - (price * discount) / 100;
         form.setValue("discounted_price", discountedPrice.toFixed(2));
-      }, [price, discount]);
+    }, [price, discount]);
 
 
     return (
@@ -309,229 +309,229 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-[4fr_1fr] space-x-5">
                 <Form {...form}>
-                <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
-                    <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
-    
-                    <div className="grid grid-cols-2 gap-4">
-                
-                        <FormField
-                            control={form.control}
-                            name="brand"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Product Brand</FormLabel>
-                                <FormControl>
-                                <Input placeholder="Product Brand" required {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-    
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Product Name</FormLabel>
-                                <FormControl>
-                                <Input placeholder="Product Name" required {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-    
-                        <FormField
-                            control={form.control}
-                            name="quantity"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Quantity</FormLabel>
-                                <FormControl>
-                                <Input type="number" placeholder="Quantity" required {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-               
-                    <div className="grid grid-cols-[4fr_2fr_4fr] space-x-5">
-    
-                        <FormField
-                            control={form.control}
-                            name="price"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Product Price</FormLabel>
-                                <FormControl>
-                                <Input type="number" placeholder="Price" required {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />     
-    
-                        <FormField
-                            control={form.control}
-                            name="discount"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Discount (%)</FormLabel>
-                                <FormControl>
-                                <Input type="number" placeholder="Discount (%)" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-    
-                        {/* Discounted Price - Read-Only */}
-                        <FormItem>
-                            <FormLabel>Discounted Price</FormLabel>
-                            <FormControl>
-                                <Input type="number" value={discountedPrice.toFixed(2)} readOnly />
-                            </FormControl>
-                        </FormItem>
-    
-                    </div>
-    
-                    <FormField
-                        control={form.control}
-                        name="unit"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Unit</FormLabel>
-                            <FormControl>
-                            <select {...field} required className="border p-2 rounded w-full">
-                                <option value="kg">kg</option>
-                                <option value="g">g</option>
-                                <option value="ml">ml</option>
-                                <option value="litre">L</option>
-                                <option value="pcs">pcs</option>
-                            </select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-    
-                    <FormField
-                    control={form.control}
-                    name="product_feature"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Product Feature</FormLabel>
-                        <FormControl>
-                            <Input type="text" placeholder="Product Feature" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-    
-                    <FormField
-                    control={form.control}
-                    name="product_tags"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Product Tags</FormLabel>
-                        <FormControl>
-                            <Input type="text" placeholder="Product Tags" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-    
-                    <FormField
-                    control={form.control}
-                    name="imageURL"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Image URL</FormLabel>
-                        <FormControl>
-                            <Input type="text" placeholder="Image URL" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-    
-                    <div className="flex flex-row items-center space-x-5 w-full">
-                    <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Select Category</FormLabel>
-                            <FormControl>
-                            <select {...field} required className="border p-2 rounded w-full">
-                                {categories.map((category, index) => (
-                                <option key={index} value={category}>
-                                    {category}
-                                </option>
-                                ))}
-                            </select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-    
-                    <FormField
-                        control={form.control}
-                        name="dow"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Deal of the Week</FormLabel>
-                            <FormControl>
-                            <select {...field} required className="border p-2 rounded w-full">
-                                <option value="true">True</option>
-                                <option value="false">False</option>
-                            </select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-    
-                    <FormField
-                        control={form.control}
-                        name="avail"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Availability</FormLabel>
-                            <FormControl>
-                            <select {...field} required className="border p-2 rounded w-full">
-                                <option value="true">Available</option>
-                                <option value="false">Out of Stock</option>
-                            </select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    </div>
-    
-                    <FormField
-                    control={form.control}
-                    name="csv"
-                    render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Upload Inventory CSV</FormLabel>
-                                <FormControl>
-                                <Input type="file" accept=".csv" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                        />
-                    </div>
-                    <Button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
-                    {editingProduct ? "Update Product" : "Add Product"}
-                    </Button>
-                </form>
+                    <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
+                        <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
+
+                        <div className="grid grid-cols-2 gap-4">
+
+                            <FormField
+                                control={form.control}
+                                name="brand"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Product Brand</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Product Brand" required {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Product Name</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Product Name" required {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Quantity</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="Quantity" required {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="grid grid-cols-[4fr_2fr_4fr] space-x-5">
+
+                                <FormField
+                                    control={form.control}
+                                    name="price"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Product Price</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" placeholder="Price" required {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="discount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Discount (%)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" placeholder="Discount (%)" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {/* Discounted Price - Read-Only */}
+                                <FormItem>
+                                    <FormLabel>Discounted Price</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" value={discountedPrice.toFixed(2)} readOnly />
+                                    </FormControl>
+                                </FormItem>
+
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="unit"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Unit</FormLabel>
+                                        <FormControl>
+                                            <select {...field} required className="border p-2 rounded w-full">
+                                                <option value="kg">kg</option>
+                                                <option value="g">g</option>
+                                                <option value="ml">ml</option>
+                                                <option value="litre">L</option>
+                                                <option value="pcs">pcs</option>
+                                            </select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="product_feature"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Product Feature</FormLabel>
+                                        <FormControl>
+                                            <Input type="text" placeholder="Product Feature" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="product_tags"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Product Tags</FormLabel>
+                                        <FormControl>
+                                            <Input type="text" placeholder="Product Tags" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="imageURL"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Image URL</FormLabel>
+                                        <FormControl>
+                                            <Input type="text" placeholder="Image URL" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex flex-row items-center space-x-5 w-full">
+                                <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Select Category</FormLabel>
+                                            <FormControl>
+                                                <select {...field} required className="border p-2 rounded w-full">
+                                                    {categories.map((category, index) => (
+                                                        <option key={index} value={category}>
+                                                            {category}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="dow"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Deal of the Week</FormLabel>
+                                            <FormControl>
+                                                <select {...field} required className="border p-2 rounded w-full">
+                                                    <option value="true">True</option>
+                                                    <option value="false">False</option>
+                                                </select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="avail"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Availability</FormLabel>
+                                            <FormControl>
+                                                <select {...field} required className="border p-2 rounded w-full">
+                                                    <option value="true">Available</option>
+                                                    <option value="false">Out of Stock</option>
+                                                </select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="csv"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Upload Inventory CSV</FormLabel>
+                                        <FormControl>
+                                            <Input type="file" accept=".csv" onChange={handleCSVUpload} className="border p-2 rounded w-full" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <Button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
+                            {editingProduct ? "Update Product" : "Add Product"}
+                        </Button>
+                    </form>
                 </Form>
 
                 <div className="p-5 bg-white rounded-lg shadow-md flex flex-col justify-center items-center">
@@ -545,8 +545,8 @@ export default function AdminDashboard() {
 
             {csvFile && (
                 <div className="mb-4">
-                    <button 
-                        onClick={() => (true)} 
+                    <button
+                        onClick={() => (true)}
                         className="bg-green-600 text-white p-2 rounded hover:bg-green-700 transition"
                     >
                         Confirm Upload
@@ -591,17 +591,17 @@ export default function AdminDashboard() {
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">Product List</h2>
                     <div className="flex flex-row mb-4 space-x-10 text-black">
                         <div className="flex my-4 flex-grow">
-                            <input 
-                                type="text" 
-                                placeholder="Search by Product Name / Brand" 
-                                value={searchTerm} 
-                                onChange={handleSearchChange} 
+                            <input
+                                type="text"
+                                placeholder="Search by Product Name / Brand"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
                                 className="border p-2 rounded w-full"
                             />
                         </div>
-                        <Button 
+                        <Button
                             variant="outline"
-                            onClick={confirmDelete} 
+                            onClick={confirmDelete}
                             className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition my-4"
                             disabled={selectedProducts.length === 0}
                         >
@@ -611,58 +611,58 @@ export default function AdminDashboard() {
                             <PopoverTrigger asChild>
                                 <div className="my-4">
                                     <Button variant="outline" className="bg-blue-600 hover:bg-blue-700 transition p-2 rounded text-white">
-                                    Update Multiple Products
+                                        Update Multiple Products
                                     </Button>
                                 </div>
                             </PopoverTrigger>
                             <PopoverContent className="w-80">
                                 <div className="grid gap-4">
-                                <div className="space-y-2">
-                                    <h4 className="font-medium leading-none">Update Multiple Products</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                    Configure the settings for updating multiple products.
-                                    </p>
-                                </div>
-                                <div className="grid gap-2">
-                                    {/* Add your input fields or any other content here */}
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                    <Label htmlFor="discount">Discount (%)</Label>
-                                    <Input
-                                        id="discount"
-                                        defaultValue="0"
-                                        className="col-span-2 h-8"
-                                    />
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Update Multiple Products</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Configure the settings for updating multiple products.
+                                        </p>
                                     </div>
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                    <Label htmlFor="quantity">Quantity</Label>
-                                    <Input
-                                        id="quantity"
-                                        defaultValue="1"
-                                        className="col-span-2 h-8"
-                                    />
+                                    <div className="grid gap-2">
+                                        {/* Add your input fields or any other content here */}
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="discount">Discount (%)</Label>
+                                            <Input
+                                                id="discount"
+                                                defaultValue="0"
+                                                className="col-span-2 h-8"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="quantity">Quantity</Label>
+                                            <Input
+                                                id="quantity"
+                                                defaultValue="1"
+                                                className="col-span-2 h-8"
+                                            />
+                                        </div>
+                                        {/* Add more fields as needed */}
                                     </div>
-                                    {/* Add more fields as needed */}
-                                </div>
                                 </div>
                             </PopoverContent>
                         </Popover>
-                    </div>         
-                </div>    
+                    </div>
+                </div>
 
                 <div className="" style={{ height: '500px', overflowY: 'auto' }}>
                     <Table className="w-full border border-gray-300 rounded-lg">
                         <TableHeader className="bg-gray-200">
                             <TableRow>
                                 <TableHead className="p-2 border">
-                                    <input 
-                                        type="checkbox" 
+                                    <input
+                                        type="checkbox"
                                         onChange={(e) => {
                                             if (e.target.checked) {
                                                 setSelectedProducts(products.map(product => product._id));
                                             } else {
                                                 setSelectedProducts([]);
                                             }
-                                        }} 
+                                        }}
                                     />
                                 </TableHead>
                                 <TableHead className="p-2 border">ID</TableHead>
@@ -686,16 +686,16 @@ export default function AdminDashboard() {
                             {filteredProducts.map((product, index) => (
                                 <TableRow key={product._id} className={index % 2 === 0 ? "bg-white" : "bg-white"}>
                                     <TableCell className="p-2 border">
-                                        <input 
-                                            type="checkbox" 
-                                            checked={selectedProducts.includes(product._id)} 
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedProducts.includes(product._id)}
                                             onChange={(e) => {
                                                 if (e.target.checked) {
                                                     setSelectedProducts([...selectedProducts, product._id]);
                                                 } else {
                                                     setSelectedProducts(selectedProducts.filter(id => id !== product._id));
                                                 }
-                                            }} 
+                                            }}
                                         />
                                     </TableCell>
                                     <TableCell className="p-2 border">{product._id}</TableCell>
