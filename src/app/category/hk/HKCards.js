@@ -40,7 +40,7 @@ export default function HKCards({products}) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-0 gap-y-0 md:gap-x-0 md:gap-y-10">
         {Object.keys(groupedProducts).map(productName => (
           <ProductCard key={productName} productVariants={groupedProducts[productName]} />
-        ))};
+        ))}
       </div>
     </div>
   );
