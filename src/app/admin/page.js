@@ -70,7 +70,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/products", {
+            const response = await axios.get("https//pothys-backend.onrender.com/api/products", {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
 
     const addProduct = async (data) => {
         try {
-            const response = await axios.post("http://localhost:5000/api/products", data, {
+            const response = await axios.post("https://pothys-backend.onrender.com/api/products", data, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
     const updateProductData = async (data) => {
         const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put('http://localhost:5000/api/products', updatedData, {
+            await axios.put('https://pothys-backend.onrender.com/api/products', updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         try {
             if (selectedProducts.length > 0) {
                 // Send the array of selected product IDs to the server
-                await axios.delete("http://localhost:5000/api/products", { data: selectedProducts }, {
+                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: selectedProducts }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
                 fetchProducts(); // Refresh the product list
                 console.log("Products removed successfully!");
             } else {
-                await axios.delete("http://localhost:5000/api/products", { data: { _id: productIdToDelete } }, {
+                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: { _id: productIdToDelete } }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -200,7 +200,7 @@ export default function AdminDashboard() {
         formData.append("file", csvFile);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/products/upload", formData, {
+            const response = await axios.post("https://pothys-backend.onrender.com/api/products/upload", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header

@@ -31,7 +31,7 @@ export default function CarouselSize() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-                          "http://localhost:5000/api/products/dow-true",
+                          "https://pothys-backend.onrender.com/api/products/dow-true",
                           {
                             withCredentials: true,
                           }

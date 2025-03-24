@@ -35,7 +35,7 @@ const page = () => {
           try {
             const encodedCategory = encodeURIComponent("Fruits and Vegetables");
             const response = await axios.get(
-                `http://localhost:5000/api/products/category/${encodedCategory}`,
+                `https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`,
                 {
                     withCredentials: true,
                 }
