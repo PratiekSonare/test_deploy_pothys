@@ -37,8 +37,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 
 import ShadcnCard from './ShadcnCard';
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
+
+    const router = useRouter();
     const { register, handleSubmit, reset, watch } = useForm();
     const [searchTerm, setSearchTerm] = useState("");
     const [products, setProducts] = useState([]);
@@ -57,16 +60,15 @@ export default function AdminDashboard() {
     const [token, setToken] = useState(null);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            setToken(localStorage.getItem("adminToken"));
+        const adminToken = localStorage.getItem("adminToken");
+        if (!adminToken) {
+            // Redirect to login if token is not found
+            router.push("/admin/adminlogin");
+        } else {
+            setToken(adminToken);
+            fetchProducts(); // Fetch products if token is valid
         }
-    }, []);
-
-    useEffect(() => {
-        if (token) {
-            fetchProducts();
-        }
-    }, [token]);
+    }, [router]);
 
     const fetchProducts = async () => {
         try {

@@ -16,8 +16,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import '../../styles.css'
 import Header from './Header';
+import { useRouter } from 'next/navigation';
 
 const FinanceDashboard = () => {
+
+    const router = useRouter();
     const [transactions, setTransactions] = useState([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [monthlyRevenue, setMonthlyRevenue] = useState(0);
@@ -76,16 +79,15 @@ const FinanceDashboard = () => {
     };
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            setToken(localStorage.getItem("adminToken"));
+        const adminToken = localStorage.getItem("adminToken");
+        if (!adminToken) {
+            // Redirect to login if token is not found
+            router.push("/admin/adminlogin");
+        } else {
+            setToken(adminToken);
+            fetchTransactions(); // Fetch products if token is valid
         }
-    }, []);
-
-    useEffect(() => {
-        if (token) {
-            fetchProducts();
-        }
-    }, [token]);
+    }, [router]);
 
     const fetchTransactions = async () => {
         try {
