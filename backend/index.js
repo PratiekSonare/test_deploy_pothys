@@ -118,7 +118,7 @@ app.get("/api/admin/protected", (req, res) => {
 });
 
 // API Routes
-app.post("/api/admin/login", verifyAdmin, async (req, res) => {
+app.post("/api/admin/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
