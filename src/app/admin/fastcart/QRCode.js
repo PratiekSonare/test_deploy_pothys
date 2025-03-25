@@ -1,47 +1,78 @@
-"use client"
-import React from 'react'
-import { useState, useEffect } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
+import '../../styles.css'
 
 const QRCodeScanner = ({ onScan }) => {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
+  const videoRef = React.useRef(null);
+  const codeReader = new BrowserMultiFormatReader();
 
   useEffect(() => {
-    const codeReader = new BrowserMultiFormatReader();
-
     const startScan = async () => {
       try {
-        const videoDevices = await codeReader.getVideoInputDevices();
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === "videoinput");
+
         if (videoDevices.length === 0) {
           setError("No camera found.");
           return;
         }
 
-        setScanning(true);
-        codeReader.decodeFromInputVideoDevice(
-          videoDevices[0].deviceId,
-          "video"
-        ).then(result => {
-          onScan(result.text);
-          codeReader.reset(); // Stop scanning after detecting one QR code
-          setScanning(false);
-        }).catch((err) => setError("Scanning failed. Try again."));
+        const deviceId = videoDevices[0].deviceId;
+
+        codeReader.decodeOnceFromVideoDevice(deviceId, videoRef.current)
+          .then(result => {
+            onScan(result.text);
+            handleAddToCart(result.text); // Call handleAddToCart with the scanned barcode
+            setScanning(false);
+          })
+          .catch(() => setError("Scanning failed. Try again."));
       } catch (err) {
         setError("Error accessing camera.");
       }
     };
 
-    startScan();
+    if (scanning) {
+      startScan();
+    }
 
     return () => codeReader.reset();
-  }, [onScan]);
+  }, [scanning, onScan]);
+
+  const handleAddToCart = async (barcode) => {
+    try {
+      const response = await fetch(`/api/products?barcode=${barcode}`); // Adjust the API endpoint as needed
+      if (!response.ok) {
+        throw new Error("Failed to fetch product data.");
+      }
+      const productData = await response.json();
+      console.log("Product data:", productData);
+      // Here you can add the product to the cart or handle it as needed
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    }
+  };
 
   return (
-    <div>
-      <video id="video" width="100%" height="300px" />
-      {scanning && <p>Scanning...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="flex flex-col items-center justify-center">
+
+      <button
+        className='text0 flex flex-row justify-center items-center rounded-lg p-2 bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out'
+        onClick={() => setScanning(prev => !prev)}
+      >
+        {scanning ? "Stop Scanning" : "Start Scanning"}
+      </button> 
+
+      {scanning && 
+        <video ref={videoRef} width="50%" height="auto" />
+      }
+
+      {scanning && <span>Scanning...</span>}
+
+      {error && <span style={{ color: "red" }}>{error}</span>}
+
     </div>
   );
 };
