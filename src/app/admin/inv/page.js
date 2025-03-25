@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import ConfirmationPopup from './ConfirmationPopup'; // Import the ConfirmationPopup component
+import ConfirmationPopup from '../ConfirmationPopup'; // Import the ConfirmationPopup component
 import {
     Table,
     TableBody,
@@ -36,7 +36,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 
-import ShadcnCard from './ShadcnCard';
+import ShadcnCard from '../ShadcnCard';
 import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {

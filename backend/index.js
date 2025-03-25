@@ -63,7 +63,7 @@ const transactionSchema = new mongoose.Schema({
     transaction_id: { type: String, required: true, unique: true },
     date_time: { type: Date, default: Date.now },
     status: { type: String, enum: ["success", "failure"], required: true },
-    payment_method: { type: String, enum: ["UPI", "Credit Card", "Net Banking", "Wallet"], required: true },
+    payment_method: { type: String, enum: ["UPI", "Cash"], required: true },
     total_amount: { type: Number, required: true },
     cartItems: [
         {
