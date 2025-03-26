@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
-import '../../styles.css'
+import '../../styles.css';
 
 const QRCodeScanner = ({ onScan }) => {
   const [scanning, setScanning] = useState(false);
@@ -57,7 +57,6 @@ const QRCodeScanner = ({ onScan }) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-
       <button
         className='text0 flex flex-row justify-center items-center rounded-lg p-2 bg-transparent border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-[20s] ease-in-out'
         onClick={() => setScanning(prev => !prev)}
@@ -65,14 +64,16 @@ const QRCodeScanner = ({ onScan }) => {
         {scanning ? "Stop Scanning" : "Start Scanning"}
       </button> 
 
-      {scanning && 
-        <video ref={videoRef} width="50%" height="auto" />
-      }
+      <div className="my-24"></div>
 
-      {scanning && <span>Scanning...</span>}
+      {scanning && (
+        <div className="flex flex-col items-center scale-150 mb-24">
+          <div className="spinner"></div>
+          <span>Scanning...</span>
+        </div>
+      )}
 
       {error && <span style={{ color: "red" }}>{error}</span>}
-
     </div>
   );
 };

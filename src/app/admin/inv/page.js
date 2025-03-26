@@ -72,7 +72,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get("https//pothys-backend.onrender.com/api/products", {
+            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/products`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
 
     const addProduct = async (data) => {
         try {
-            const response = await axios.post("https://pothys-backend.onrender.com/api/products", data, {
+            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/products`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
     const updateProductData = async (data) => {
         const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put('https://pothys-backend.onrender.com/api/products', updatedData, {
+            await axios.put(`${process.env.NEXT_BACKEND_LINK}/api/products`, updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
         try {
             if (selectedProducts.length > 0) {
                 // Send the array of selected product IDs to the server
-                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: selectedProducts }, {
+                await axios.delete(`${process.env.NEXT_BACKEND_LINK}/api/products`, { data: selectedProducts }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                 fetchProducts(); // Refresh the product list
                 console.log("Products removed successfully!");
             } else {
-                await axios.delete("https://pothys-backend.onrender.com/api/products", { data: { _id: productIdToDelete } }, {
+                await axios.delete(`${process.env.NEXT_BACKEND_LINK}/api/products`, { data: { _id: productIdToDelete } }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
         formData.append("file", csvFile);
 
         try {
-            const response = await axios.post("https://pothys-backend.onrender.com/api/products/upload", formData, {
+            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/products/upload`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
@@ -668,6 +668,7 @@ export default function AdminDashboard() {
                                     />
                                 </TableHead>
                                 <TableHead className="p-2 border">ID</TableHead>
+                                <TableHead className="p-2 border">HSN</TableHead>
                                 <TableHead className="p-2 border">Brand</TableHead>
                                 <TableHead className="p-2 border">Name</TableHead>
                                 <TableHead className="p-2 border">Price</TableHead>
@@ -701,6 +702,7 @@ export default function AdminDashboard() {
                                         />
                                     </TableCell>
                                     <TableCell className="p-2 border">{product._id}</TableCell>
+                                    <TableCell className="p-2 border">{product.hsn}</TableCell>
                                     <TableCell className="p-2 border">{product.brand}</TableCell>
                                     <TableCell className="p-2 border">{product.name}</TableCell>
                                     <TableCell className="p-2 border">₹{product.price}</TableCell>

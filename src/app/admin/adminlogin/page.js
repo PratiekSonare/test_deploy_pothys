@@ -15,7 +15,7 @@ export default function AdminLogin() {
         setError(""); 
 
         try {
-            const response = await axios.post("https://pothys-backend.onrender.com/api/admin/login", {
+            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/admin/login`, {
                 username,
                 password,
             });
@@ -24,7 +24,7 @@ export default function AdminLogin() {
             localStorage.setItem("adminToken", response.data.token);
             setShowPopup(true);
             setTimeout(() => {
-                router.push("/admin");
+                router.push("/admin/inv");
             }, 2000);   
         } catch (err) {
             console.error("Login error:", err);

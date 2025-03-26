@@ -19,6 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 export default function CarouselSize() {
   const { cartItems, selectedVar, addToCart, incrementQ, decrementQ } = useCart();
@@ -31,11 +34,11 @@ export default function CarouselSize() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-                          "https://pothys-backend.onrender.com/api/products/dow-true",
-                          {
-                            withCredentials: true,
-                          }
-                        );
+          `${process.env.NEXT_BACKEND_LINK}/api/products/dow-true`,
+          {
+            withCredentials: true,
+          }
+        );
         setProducts(response.data);
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {

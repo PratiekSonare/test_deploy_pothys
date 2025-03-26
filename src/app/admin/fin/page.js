@@ -34,7 +34,8 @@ const FinanceDashboard = () => {
             customer_name: '',
             phone: '',
             address: ''
-        }
+        },
+        delivery_status: 'pending'
     });
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState('date_time');
@@ -48,6 +49,9 @@ const FinanceDashboard = () => {
 
     //token
     const [token, setToken] = useState(null);
+
+    //pending transactions
+    const [pendingTransactions, setPendingTransactions] = useState([]);
 
     const prepareData = (transactions) => {
         const revenueData = {};
@@ -91,7 +95,7 @@ const FinanceDashboard = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await axios.get("https://pothys-backend.onrender.com/api/transactions", {
+            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/transactions`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -120,7 +124,7 @@ const FinanceDashboard = () => {
                 dailyRevenue[date].total += txn.total_amount;
                 dailyRevenue[date].count += 1;
             });
-
+            error
             // Set dailyRevenue state
             setDailyRevenue(dailyRevenue);
 
@@ -141,6 +145,20 @@ const FinanceDashboard = () => {
             console.error('Error fetching transactions:', error);
         }
     };
+
+    const fetchPendingDelivery = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/transactions?delivery_status=pending`,{ 
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }) 
+
+            setPendingTransactions(response.data.transactions);
+        } catch (error) {
+            console.error('Error fetching pending transactions', error);
+        }
+    }
 
     const handleSort = (field) => {
         const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
@@ -398,6 +416,119 @@ const FinanceDashboard = () => {
                         </TableBody>
                     </Table>
                 </div>
+
+                <div className='my-20'></div>
+
+                <span className='text0 text-3xl'>Pending Deliveries</span>
+                <div className='h-1/3 overflow-y-scroll'>
+                    <Table className="w-full border border-gray-300 bg-white rounded-lg">
+                        <TableHeader className="bg-gray-200">
+                        <TableRow className='text2 text-md'>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('transaction_id')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Transaction ID</span>
+                                    {sortField === 'transaction_id' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('total_amount')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Total Amount</span>
+                                    {sortField === 'total_amount' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '50px' }} onClick={() => handleSort('payment_method')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Payment Method</span>
+                                    {sortField === 'payment_method' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Date</span>
+                                    {sortField === 'date_time' && (sortOrder === 'asc' ? (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px' }} alt='asc' />
+                                    ) : (
+                                        <img src='/asc-arrow.svg' style={{ width: '20px', transform: 'rotate(180deg)' }} alt='desc' />
+                                    ))}
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '100px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Customer Name</span>
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('date_time')}>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <span>Delivery Address</span>
+                                </div>
+                            </TableHead>
+                            <TableHead className="p-2 border" style={{ width: '10px' }} >Customer Info</TableHead>
+                            <TableHead className="p-2 border" style={{ width: '10px' }} >Cart Items</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {pendingTransactions.map((txn) => (
+                                <TableRow key={txn.transaction_id}>
+                                    <TableCell className="border p-2">{txn.transaction_id}</TableCell>
+                                    <TableCell className="border p-2">₹ {txn.total_amount.toFixed(2)}</TableCell>
+                                    <TableCell className="border p-2">{txn.payment_method}</TableCell>
+                                    <TableCell className="border p-2">{new Date(txn.date_time).toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">{txn.customer.customer_name.toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">{txn.customer.address.toLocaleString()}</TableCell>
+                                    <TableCell className="border p-2">
+                                        <Dialog>
+                                            <DialogTrigger>
+                                                <img src='/report.svg' style={{width: '25%'}} alt='report'></img>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Customer Information</DialogTitle>
+                                                    <DialogDescription>
+                                                        <li>Name: {txn.customer.customer_name}</li>
+                                                        <li>Phone: {txn.customer.phone}</li>
+                                                        <li>Address: {txn.customer.address}</li>
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </TableCell>
+                                    <TableCell className="border p-2">
+                                        <Dialog>
+                                            <DialogTrigger>
+                                                <img src='/shoppingcart.svg' style={{width: '60%'}} alt='report'></img>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Cart Items</DialogTitle>
+                                                    <DialogDescription>
+                                                            {txn.cartItems.map(item => (
+                                                                <li key={item._id}>
+                                                                    {item.name} - {item.quantity} x ₹{item.price.toFixed(2)}
+                                                                </li>
+                                                            ))}
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+
             </div>
         </div>
     </>

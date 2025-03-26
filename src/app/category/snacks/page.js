@@ -39,11 +39,11 @@ const page = () => {
           try {
             const encodedCategory = encodeURIComponent("Snacks");
             const response = await axios.get(
-                `https://pothys-backend.onrender.com/api/products/category/${encodedCategory}`,
+                `${process.env.NEXT_BACKEND_LINK}/api/products/category/${encodedCategory}`,
                 {
                     withCredentials: true,
                 }
-            );             
+            );                    
             setProducts(response.data);
             console.log('respone data: ', response.data);
             console.log('respone data brand: ', response.data.brand);

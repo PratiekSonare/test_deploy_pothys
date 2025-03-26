@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "export",
+    env: {
+        NEXT_BACKEND_LINK: process.env.NEXT_BACKEND_LINK,
+    }
 };
 
 export default nextConfig;

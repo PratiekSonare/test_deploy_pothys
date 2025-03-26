@@ -1,12 +1,12 @@
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import '../styles.css';
-import { useCart } from '../cart/CartContext';
+import '../../styles.css';
+import { useCart } from '@/app/cart/CartContext';
 
 const SearchBar = ({ onFocus, onBlur }) => {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState([]);  
+  const [filteredProducts, setFilteredProducts] = useState([]); 
   const [searchTerm, setSearchTerm] = useState('');
   const { cartItems, addToCart, incrementQ, decrementQ } = useCart();
 
@@ -20,7 +20,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
     'Discover new products...',
     'What are you looking for?'
   ];
-
+  
   const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [animationClass, setAnimationClass] = useState('');
@@ -32,7 +32,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
         const data = await response.json();
         const availabledata = data.filter(product => product.quantity > 0);
         setProducts(availabledata);
-        setFilteredProducts(availabledata);
+        setFilteredProducts(availabledata); 
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -75,25 +75,14 @@ const SearchBar = ({ onFocus, onBlur }) => {
     setFilteredProducts(filtered);
   };
 
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  useEffect(() => {
-    if (searchTerm) {
-      setShowDropdown(true);
-    } else {
-      setTimeout(() => setShowDropdown(false), 300); // Delay hiding to allow exit animation
-    }
-  }, [searchTerm]);
-
-
   return (
-    <div className='hidden md:flex flex-col w-1/2 searchbar-container'>
+    <div className='flex md:hidden flex-col w-4/5 searchbar-container'>
       <div className='flex bg-white searchbar-sdw w-full h-10 rounded-lg p-3'>
         <div className='flex flex-row items-center gap-5 w-full'>
-          <img src='/searchicon.svg' alt='search_icon' style={{ height: '24px', width: '24px' }} />
+          <img src='/searchicon.svg' alt='search_icon' style={{ height: '24px', width: '24px' }} className='scale-75' />
           <input
             placeholder={currentPlaceholder}
-            className='bg-transparent h-full w-full border-none text-lg text-black focus:outline-none'
+            className='bg-transparent h-full w-full border-none text-lg text-black focus:outline-none text0'
             onChange={handleChange}
             value={searchTerm}
             onFocus={onFocus}
@@ -102,9 +91,8 @@ const SearchBar = ({ onFocus, onBlur }) => {
         </div>
       </div>
 
-      {showDropdown && (
-        <div className={`filtered-results w-full bg-white mt-2 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50
-     transition-transform duration-300 ease-out transform ${searchTerm ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}>
+      {searchTerm && (
+        <div className="filtered-results w-full bg-white mt-2 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
           <div className=''>
             <div className='bg-gray-300 p-1 text-black text-start text0'>
               <span className='ml-2'><span className='text-gray-700'>Showing results for</span> '{searchTerm}'</span>
@@ -116,32 +104,30 @@ const SearchBar = ({ onFocus, onBlur }) => {
 
                 return (
                   <React.Fragment key={product._id}>
-                    <div className='flex flex-row items-center gap-4 hover:bg-gray-200 cursor-pointer px-3 py-2'>
-                      <img
-                        src={product.imageURL}
-                        alt='product_image'
-                        style={{ width: '15%', height: 'auto' }}
-                        className={`bg-transparent h-full w-full rounded-lg border-none text-lg text-black focus:outline-none ${animationClass}`}
-                      />
-                      <div className='flex flex-row items-center justify-between w-full text-md'>
-                        <div className='flex flex-col gap-0'>
-                          <div className='text-gray-600 text2 text-base'>{product.brand}</div>
-                          <div className='text-black text1 text-lg'>{product.name}</div>
+                    <div className='flex flex-row items-center gap-2 hover:bg-gray-200 cursor-pointer px-2 py-1'>
+
+                      <div className='grid grid-cols-[1fr_1fr_2fr] items-center space-x-2 w-full text-xs'>
+                        
+                        <div className='flex flex-col gap-1'>
+                          <div className='text-gray-600 text2 text-xs'>{product.brand}</div>
+                          <div className='text-black text1 text-xs/2'>{product.name}</div>
+                          <div className='text1 text-xs'>{product.quantity} {product.unit}</div>
                         </div>
-                        <div className='text1 text-base'>{product.quantity} {product.unit}</div>
-                        <Separator orientation="vertical" />
-                        <div className='flex flex-col items-center justify-center gap-1'>
-                          <div className="flex items-end text1">
-                            <p className="mr-2 text-xl text-gray-900 dark:text-white">
+
+                        {/* <Separator orientation="vertical" /> */}
+
+                        <div className='flex flex-col items-center justify-center gap-1 text-[10px]'>
+                          <div className="flex flex-col items-center text1">
+                            <p className="text-[15px] text-gray-900 dark:text-white">
                               ₹{product.discount > 0 ? product.discounted_price : product.price}
                             </p>
                             {product.discount > 0 && (
-                              <p className="text-md text-gray-500 line-through">₹{product.price}</p>
+                              <p className=" text-gray-500 line-through">₹{product.price}</p>
                             )}
                           </div>
-                          {product.discount > 0 && <div className='bg-green-200 p-1 rounded-lg text-green-500'><span>{product.discount}% OFF</span></div>}
+                          {product.discount > 0 && <div className='bg-green-200 p-0.5 text-center rounded-lg text-green-500'><span>{product.discount}% OFF</span></div>} 
                         </div>
-
+                        
                         {!cartItem ? (
                           <button
                             onClick={() => {
@@ -150,18 +136,18 @@ const SearchBar = ({ onFocus, onBlur }) => {
                                 quantityType: `${product?.quantity} ${product?.unit}`
                               });
                             }}
-                            className="text-center text-md w-1/5 h-[40px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-[20s] ease-in-out"
+                            className="text-center text-md w-11/12 h-[30px] rounded-lg bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition-colors duration-200 ease-in-out"
                           >
                             <span className="font-bold transition-colors duration-300 ease-in-out">Add</span>
                           </button>
                         ) : (
-                          <div className='flex flex-row gap-1 text-lg justify-center items-center rounded-lg w-1/5 h-[40px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
+                          <div className='flex flex-row gap-0 text-lg justify-center items-center rounded-lg w-11/12 h-[30px] bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out'>
                             <button onClick={() => decrementQ({
                               ...product,
                               quantityType: `${product?.quantity} ${product?.unit}`
                             })} className="w-1/3 h-full flex items-center justify-center">-</button>
                             <button className="w-1/3 h-full flex items-center justify-center">
-                              <span className="font-bold">{quantity}</span>
+                              <span className="font-bold text2">{quantity}</span>
                             </button>
                             <button onClick={() => incrementQ({
                               ...product,
@@ -170,12 +156,13 @@ const SearchBar = ({ onFocus, onBlur }) => {
                           </div>
                         )}
                       </div>
+
                     </div>
-                    {index < filteredProducts.length - 1 && <Separator orientation="horizontal" className="my-2" />}
+                    {index < filteredProducts.length - 1 && <Separator orientation ="horizontal" className="my-2" />}
                   </React.Fragment>
                 );
-              })
-            ) : (
+              })  
+            ) : ( 
               <div className="p-2 text-gray-500 text0">No products found</div>
             )}
           </div>

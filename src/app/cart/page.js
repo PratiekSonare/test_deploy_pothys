@@ -68,7 +68,7 @@ const Cart = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://pothys-backend.onrender.com/api/transactions', {
+      const response = await fetch(`${process.env.NEXT_BACKEND_LINK}/api/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -76,7 +76,8 @@ const Cart = () => {
           total_amount,
           payment_method: "UPI",
           customer: data, // Pass the form data here
-          status: "success"
+          status: "success",
+          delivery_status: "pending"
         })
       });
 
@@ -129,7 +130,7 @@ const Cart = () => {
         <CartParent />
 
         {/* customer form */}
-        <div className=" px-2 md:p-5">
+        <div className="md:p-5">
           <h1 className="text-2xl font-bold mb-4 text3">Customer Details</h1>
 
           <div className='space-y-5 text0 w-11/12 md:w-full md:block'>

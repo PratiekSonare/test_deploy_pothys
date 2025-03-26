@@ -39,6 +39,7 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded f
 const productSchema = new mongoose.Schema({
     brand: String,
     name: String,
+    hsn: Number,
     price: Number,
     discount: Number,
     discounted_price: Number,
@@ -65,6 +66,7 @@ const transactionSchema = new mongoose.Schema({
     status: { type: String, enum: ["success", "failure"], required: true },
     payment_method: { type: String, enum: ["UPI", "Cash"], required: true },
     total_amount: { type: Number, required: true },
+    delivery_status: {type: String, enum: ["pending", "complete"], required: true},
     cartItems: [
         {
             _id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -81,7 +83,7 @@ const transactionSchema = new mongoose.Schema({
         customer_name: { type: String, required: true },
         phone: { type: Number, required: true },
         address: { type: String, required: true },
-    }
+    },
 });
 
 const Product = mongoose.model('Product', productSchema, 'productlist');
@@ -190,6 +192,18 @@ app.get('/api/products/category/:category', async (req, res) => {
     }
 });
 
+app.get('/api/products/hsn/:hsn', async (req, res) => {
+    try {
+        const hsn = req.params.category;
+
+        const products = await Product.find({hsn: hsn});
+
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+
 // Get Products with dow = true
 app.get('/api/products/dow-true', async (req, res) => {
     try {
@@ -201,7 +215,7 @@ app.get('/api/products/dow-true', async (req, res) => {
 });
 
 // Update Products (Single or Multiple)
-app.put('/api/products', verifyAdmin, async (req, res) => {
+app.put('/api/products', async (req, res) => {
     try {
         if (Array.isArray(req.body)) {
             const updatedProducts = await Promise.all(
@@ -220,7 +234,7 @@ app.put('/api/products', verifyAdmin, async (req, res) => {
 });
 
 // Delete Products (Single or Multiple or Clear All)
-app.delete('/api/products', verifyAdmin, async (req, res) => {
+app.delete('/api/products', async (req, res) => {
     try {
         // Check if the request body contains a flag to clear all products
         if (req.body.clearAll) {
@@ -244,8 +258,8 @@ app.delete('/api/products', verifyAdmin, async (req, res) => {
     }
 });
 
-// Endpoint to handle CSV upload
-app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req, res) => {
+// CSV DATA UPLOAD API
+app.post('/api/products/upload',  upload.single('file'), async (req, res) => {
     const results = [];
 
     // Check if a file was uploaded
@@ -257,10 +271,8 @@ app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req
     fs.createReadStream(req.file.path)
         .pipe(csv())
         .on('data', (data) => {
-            console.log("Raw data:", data); // Log the raw data
             data.avail = data.avail === "true" || data.avail === "TRUE" || data.avail === "Yes";
             data.dow = data.dow === "true" || data.dow === "TRUE" || data.dow === "Yes";
-            console.log("Parsed data:", data); // Log the parsed data
             results.push(data);
         })
         .on('end', async () => {
@@ -280,6 +292,10 @@ app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req
         });
 });
 
+
+// -------------------- TRANSACTION SECTION ---------------------------
+
+// TRANSACTION POSTING APIS
 app.post("/api/transactions", async (req, res) => {
     try {
         const { cartItems, total_amount, payment_method, customer } = req.body;
@@ -307,7 +323,7 @@ app.post("/api/transactions", async (req, res) => {
 });
 
 
-// Endpoint to get all transactions / according to id if specified
+// TRANSACTION DATA FETCHING APIS
 app.get("/api/transactions", verifyAdmin, async (req, res) => {
     try {
         const { transaction_id } = req.query; // Get transaction_id from query params
@@ -332,6 +348,55 @@ app.get("/api/transactions", verifyAdmin, async (req, res) => {
     }
 });
 
+//
+app.get("/api/transactions?delivery_status=pending", verifyAdmin, async (req, res) => {
+    try {
+        const { transaction_id } = req.query; // Get transaction_id from query params
+
+        if (transaction_id) {
+            // Fetch a single transaction if transaction_id is provided
+            const transaction = await Transaction.findOne({ transaction_id, delivery_status: "pending" });
+
+            if (!transaction) {
+                return res.status(404).json({ success: false, message: "Transaction not found" });
+            }
+
+            return res.status(200).json({ success: true, transaction });
+        }
+
+        // If no transaction_id is provided, fetch all transactions
+        const transactions = await Transaction.find({ delivery_status: "pending" });
+        res.status(200).json({ success: true, transactions });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching pending transactions", error: error.message });
+    }
+});
+
+//
+app.get("/api/transactions?delivery_status=complete", verifyAdmin, async (req, res) => {
+    try {
+        const { transaction_id } = req.query; // Get transaction_id from query params
+
+        if (transaction_id) {
+            // Fetch a single transaction if transaction_id is provided
+            const transaction = await Transaction.findOne({ transaction_id, delivery_status: "complete" });
+
+            if (!transaction) {
+                return res.status(404).json({ success: false, message: "Transaction not found" });
+            }
+
+            return res.status(200).json({ success: true, transaction });
+        }
+
+        // If no transaction_id is provided, fetch all transactions
+        const transactions = await Transaction.find({ delivery_status: "complete" });
+        res.status(200).json({ success: true, transactions });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching complete transactions", error: error.message });
+    }
+});
 
 // Start the server
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
