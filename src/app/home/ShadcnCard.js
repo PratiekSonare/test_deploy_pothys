@@ -36,9 +36,7 @@ export default function CarouselSize() {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/dow-true`,
           // "http://localhost:5000/api/products/dow-true",
-          {
-            withCredentials: true,
-          }
+          {withCredentials: true,}
         );
         setProducts(response.data);
         setLoading(false); // Set loading to false after data is fetched
