@@ -31,6 +31,7 @@ export default function CarouselSize() {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      console.log("Backend Link:", process.env.NEXT_PUBLIC_BACKEND_LINK);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/dow-true`,
