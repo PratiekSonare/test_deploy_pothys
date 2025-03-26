@@ -64,11 +64,12 @@ const QRCodeScanner = ({ onScan }) => {
         {scanning ? "Stop Scanning" : "Start Scanning"}
       </button> 
 
-      <div className="my-24"></div>
+      <div className="my-4"></div>
 
       {scanning && (
-        <div className="flex flex-col items-center scale-150 mb-24">
-          <div className="spinner"></div>
+        <div className="flex flex-col items-center mb-4">
+          <video ref={videoRef} className="w-full max-w-md border-2 border-gray-300 rounded-lg" autoPlay />
+          <div className="spinner mt-2"></div>
           <span>Scanning...</span>
         </div>
       )}
