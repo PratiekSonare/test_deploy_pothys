@@ -15,7 +15,7 @@ export default function AdminLogin() {
         setError(""); 
 
         try {
-            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/admin/login`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/admin/login`, {
                 username,
                 password,
             });

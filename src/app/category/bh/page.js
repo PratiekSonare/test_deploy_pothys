@@ -39,7 +39,7 @@ const page = () => {
           try {
             const encodedCategory = encodeURIComponent("Beauty and Hygiene");
             const response = await axios.get(
-                `${process.env.NEXT_BACKEND_LINK}/api/products/category/${encodedCategory}`,
+                `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/category/${encodedCategory}`,
                 {
                     withCredentials: true,
                 }

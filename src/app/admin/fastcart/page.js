@@ -42,7 +42,7 @@ const page = () => {
     //         try {
     //             // const encodedCategory = encodeURIComponent("Home and Kitchen");
     //             const response = await axios.get(
-    //                 `${process.env.NEXT_BACKEND_LINK}/api/products/hsn/${qrResult}`
+    //                 `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${qrResult}`
     //             );
     //             setProducts(response.data);
     //             console.log('respone data: ', response.data);
@@ -128,7 +128,7 @@ const page = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${process.env.NEXT_BACKEND_LINK}/api/transactions`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

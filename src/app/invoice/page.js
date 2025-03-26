@@ -34,7 +34,7 @@ const SearchParamsWrapper = ({ setTransactionData }) => {
       const fetchTransactionData = async () => {
         try {
           const response = await fetch(
-            `${process.env.NEXT_BACKEND_LINK}/api/transactions?transaction_id=${transactionId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions?transaction_id=${transactionId}`
           );
           const data = await response.json();
           if (data.success) {

@@ -72,7 +72,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/products`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
 
     const addProduct = async (data) => {
         try {
-            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/products`, data, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
     const updateProductData = async (data) => {
         const updatedData = { ...editingProduct, ...data }; // Prepare updated data
         try {
-            await axios.put(`${process.env.NEXT_BACKEND_LINK}/api/products`, updatedData, {
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
         try {
             if (selectedProducts.length > 0) {
                 // Send the array of selected product IDs to the server
-                await axios.delete(`${process.env.NEXT_BACKEND_LINK}/api/products`, { data: selectedProducts }, {
+                await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, { data: selectedProducts }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                 fetchProducts(); // Refresh the product list
                 console.log("Products removed successfully!");
             } else {
-                await axios.delete(`${process.env.NEXT_BACKEND_LINK}/api/products`, { data: { _id: productIdToDelete } }, {
+                await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, { data: { _id: productIdToDelete } }, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
         formData.append("file", csvFile);
 
         try {
-            const response = await axios.post(`${process.env.NEXT_BACKEND_LINK}/api/products/upload`, formData, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/upload`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header

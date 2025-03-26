@@ -34,7 +34,7 @@ export default function CarouselSize() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_BACKEND_LINK}/api/products/dow-true`,
+          `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/dow-true`,
           {
             withCredentials: true,
           }

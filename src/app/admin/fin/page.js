@@ -95,7 +95,7 @@ const FinanceDashboard = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/transactions`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -148,7 +148,7 @@ const FinanceDashboard = () => {
 
     const fetchPendingDelivery = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_BACKEND_LINK}/api/transactions?delivery_status=pending`,{ 
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions?delivery_status=pending`,{ 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }

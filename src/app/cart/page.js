@@ -68,7 +68,7 @@ const Cart = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_BACKEND_LINK}/api/transactions`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
