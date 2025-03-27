@@ -221,7 +221,7 @@ app.get('/api/products/dow-true', async (req, res) => {
 });
 
 // Update Products (Single or Multiple)
-app.put('/api/products', async (req, res) => {
+app.put('/api/products', verifyAdmin, async (req, res) => {
     try {
         if (Array.isArray(req.body)) {
             const updatedProducts = await Promise.all(
@@ -240,7 +240,7 @@ app.put('/api/products', async (req, res) => {
 });
 
 // Delete Products (Single or Multiple or Clear All)
-app.delete('/api/products', async (req, res) => {
+app.delete('/api/products', verifyAdmin, async (req, res) => {
     try {
         // Check if the request body contains a flag to clear all products
         if (req.body.clearAll) {
@@ -265,7 +265,7 @@ app.delete('/api/products', async (req, res) => {
 });
 
 // CSV DATA UPLOAD API
-app.post('/api/products/upload',  upload.single('file'), async (req, res) => {
+app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req, res) => {
     const results = [];
 
     // Check if a file was uploaded

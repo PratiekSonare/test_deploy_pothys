@@ -77,6 +77,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
 
   return (
     <div className='flex md:hidden flex-col w-4/5 searchbar-container'>
+      <span className='text0 text-lg'>Search by name/brand</span>
       <div className='flex bg-white searchbar-sdw w-full h-10 rounded-lg p-3'>
         <div className='flex flex-row items-center gap-5 w-full'>
           <img src='/searchicon.svg' alt='search_icon' style={{ height: '24px', width: '24px' }} className='scale-75' />
