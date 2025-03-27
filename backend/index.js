@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-    origin: ['https://pothys.onrender.com', 'http://localhost:3000'], // Replace with your frontend URL
+    origin: ['https://pothys.onrender.com', 'http://localhost:3000', 'http://localhost:3001'], // Replace with your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };

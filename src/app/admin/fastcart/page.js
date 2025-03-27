@@ -41,7 +41,7 @@ const page = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('https://pothys-backend.onrender.com/api/products');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`);
                 const data = await response.json();
                 const availabledata = data.filter(product => product.quantity > 0);
                 setProducts(availabledata);
@@ -156,36 +156,61 @@ const page = () => {
         setHsnInput(e.target.value);
     };
 
-    const handleHsnSearch = () => {
-        const filteredByHsn = products.filter(product => product.hsn === hsnInput);
-        if (filteredByHsn.length > 0) {
-            addToCart({
-                ...filteredByHsn[0],
-                quantityType: `${filteredByHsn[0]?.quantity} ${filteredByHsn[0]?.unit}`
-            });
+    const handleHsnSearch = async () => {
+        if (!hsnInput.trim()) {
+            alert("Please enter an HSN number.");
+            return;
+        }
     
-            alert(`Added ${filteredByHsn[0].name} to cart.`);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${hsnInput}`);
+            if (!response.ok) {
+                throw new Error("Product not found");
+            }
+    
+            const product = await response.json();
+            console.log('Product with given HSN Number', product);
+
+        // Ensure product is an object, not an array
+        const selectedProduct = Array.isArray(product) ? product[0] : product;
+
+        if (selectedProduct && selectedProduct.name) {
+            addToCart({
+                ...selectedProduct,
+                quantityType: `${selectedProduct?.quantity} ${selectedProduct?.unit}`
+            });
+
+            // alert(`Added ${selectedProduct.name} to cart.`);
         } else {
-            alert('No product found with this HSN number.');
+                alert("No product found with this HSN number.");
+            }
+        } catch (error) {
+            alert(error.message);
         }
     };
 
     const handleScan = async (scannedValue) => {
+
+        setHsnInput(scannedValue);
         // Fetch the product corresponding to the scanned HSN number
         try {
-            const response = await fetch(`/api/products/hsn/${scannedValue}`); // Adjust the API endpoint as needed
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${hsnInput}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch product data.");
             }
             const productData = await response.json();
     
-            if (productData.length > 0) {
+            // Ensure product is an object, not an array
+            const selectedProduct = Array.isArray(product) ? product[0] : product;
+
+
+            if (selectedProduct && selectedProduct.name) {
                 addToCart({
-                    ...productData[0], // Assuming you want to add the first product found
-                    quantityType: `${productData[0]?.quantity} ${productData[0]?.unit}`
+                    ...selectedProduct, // Assuming you want to add the first product found
+                    quantityType: `${selectedProduct?.quantity} ${selectedProduct?.unit}`
                 });
     
-                alert(`Added ${productData[0].name} to cart.`);
+                // alert(`Added ${selectedProduct.name} to cart.`);
             } else {
                 alert('No product found with this HSN number.');
             }
@@ -211,8 +236,8 @@ const page = () => {
                     <div className='border-2 border-black rounded-lg p-10 text0'>
                         <div className='flex flex-col'>
                             <span className='text3 text-xl md:text-4xl'>Scan QR/Barcode</span>
-                            <QRCodeScanner onScan={handleScan} />
-                            {qrResult && <p>Scanned Result: {qrResult}</p>}
+                            <QRCodeScanner onScan={(value) => handleScan(value)} />
+                            {/* {qrResult && <p>Scanned Result: {qrResult}</p>} */}
                         </div>
                     </div>
 

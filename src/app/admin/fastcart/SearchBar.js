@@ -28,7 +28,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://pothys-backend.onrender.com/api/products');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`);
         const data = await response.json();
         const availabledata = data.filter(product => product.quantity > 0);
         setProducts(availabledata);
