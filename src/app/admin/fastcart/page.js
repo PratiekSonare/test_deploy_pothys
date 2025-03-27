@@ -194,7 +194,7 @@ const page = () => {
         setHsnInput(scannedValue);
         // Fetch the product corresponding to the scanned HSN number
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${hsnInput}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${scannedValue}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch product data.");
             }
