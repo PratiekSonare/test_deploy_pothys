@@ -216,7 +216,7 @@ const page = () => {
             }
         } catch (error) {
             console.error("Error fetching product data:", error);
-            alert('Error fetching product data. Please try again.');
+            alert(`Error fetching product data. Please try again. - ${error}`);
         }
     };
 
