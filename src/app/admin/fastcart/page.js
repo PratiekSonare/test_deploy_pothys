@@ -198,7 +198,7 @@ const page = () => {
             if (!response.ok) {
                 throw new Error("Failed to fetch product data.");
             }
-            const productData = await response.json();
+            const product = await response.json();
     
             // Ensure product is an object, not an array
             const selectedProduct = Array.isArray(product) ? product[0] : product;
