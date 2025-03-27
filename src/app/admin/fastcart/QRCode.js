@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
 import '../../styles.css';
 
@@ -8,11 +8,11 @@ const QRCodeScanner = ({ onScan }) => {
   const [error, setError] = useState("");
   const videoRef = React.useRef(null);
   const codeReader = new BrowserMultiFormatReader();
+  const scannedValues = useRef([]); // To store scanned values
 
   useEffect(() => {
     const startScan = async () => {
       try {
-        // Get video devices
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === "videoinput");
 
@@ -21,18 +21,21 @@ const QRCodeScanner = ({ onScan }) => {
           return;
         }
 
-        // Find the back camera
         const backCamera = videoDevices.find(device => device.label.toLowerCase().includes("back")) || videoDevices[0];
         const deviceId = backCamera.deviceId;
 
-        // Start scanning from the back camera
-        codeReader.decodeOnceFromVideoDevice(deviceId, videoRef.current)
-          .then(result => {
-            onScan(result.text);
-            handleAddToCart(result.text); // Call handleAddToCart with the scanned barcode
-            setScanning(false);
-          })
-          .catch(() => setError("Scanning failed. Try again."));
+        // Start continuous scanning
+        codeReader.decodeFromVideoDevice(deviceId, videoRef.current, (result, err) => {
+          if (result) {
+            if (!scannedValues.current.includes(result.text)) {
+              scannedValues.current.push(result.text); // Store unique scanned values
+              onScan(result.text); // Call the onScan function with the scanned result
+            }
+          }
+          if (err && !(err instanceof NotFoundException)) {
+            console.error(err);
+          }
+        });
       } catch (err) {
         setError("Error accessing camera.");
       }
@@ -40,24 +43,12 @@ const QRCodeScanner = ({ onScan }) => {
 
     if (scanning) {
       startScan();
+    } else {
+      codeReader.reset(); // Stop scanning
     }
 
     return () => codeReader.reset();
   }, [scanning, onScan]);
-
-  const handleAddToCart = async (barcode) => {
-    try {
-      const response = await fetch(`/api/products?barcode=${barcode}`); // Adjust the API endpoint as needed
-      if (!response.ok) {
-        throw new Error("Failed to fetch product data.");
-      }
-      const productData = await response.json();
-      console.log("Product data:", productData);
-      // Here you can add the product to the cart or handle it as needed
-    } catch (error) {
-      console.error("Error fetching product data:", error);
-    }
-  };
 
   return (
     <div className="flex flex-col items-center justify-center">

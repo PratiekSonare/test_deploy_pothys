@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import QRCodeScanner from './QRCode'
 import HeaderParent from '@/app/cart/HeaderParent'
 import '../../styles.css'
@@ -32,7 +32,11 @@ const page = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const { cartItems, addToCart, incrementQ, decrementQ, calculateTotal } = useCart();
+    const [loading, setLoading] = useState(false);
+    const [hsnInput, setHsnInput] = useState('');
 
+    const router = useRouter();
+    const total_amount = calculateTotal();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -75,11 +79,6 @@ const page = () => {
         setFilteredProducts(filtered);
     };
 
-    const router = useRouter();
-
-    const [loading, setLoading] = useState(false);
-
-    const total_amount = calculateTotal();
 
     const form = useForm({
         defaultValues: {
@@ -153,22 +152,46 @@ const page = () => {
         }
     };
 
-    const [hsnInput, setHsnInput] = useState('');
     const handleHsnChange = (e) => {
         setHsnInput(e.target.value);
     };
+
     const handleHsnSearch = () => {
         const filteredByHsn = products.filter(product => product.hsn === hsnInput);
         if (filteredByHsn.length > 0) {
-            
             addToCart({
                 ...filteredByHsn[0],
                 quantityType: `${filteredByHsn[0]?.quantity} ${filteredByHsn[0]?.unit}`
             });
-
+    
             alert(`Added ${filteredByHsn[0].name} to cart.`);
         } else {
             alert('No product found with this HSN number.');
+        }
+    };
+
+    const handleScan = async (scannedValue) => {
+        // Fetch the product corresponding to the scanned HSN number
+        try {
+            const response = await fetch(`/api/products/hsn/${scannedValue}`); // Adjust the API endpoint as needed
+            if (!response.ok) {
+                throw new Error("Failed to fetch product data.");
+            }
+            const productData = await response.json();
+    
+            if (productData.length > 0) {
+                addToCart({
+                    ...productData[0], // Assuming you want to add the first product found
+                    quantityType: `${productData[0]?.quantity} ${productData[0]?.unit}`
+                });
+    
+                alert(`Added ${productData[0].name} to cart.`);
+            } else {
+                alert('No product found with this HSN number.');
+            }
+        } catch (error) {
+            console.error("Error fetching product data:", error);
+            alert('Error fetching product data. Please try again.');
         }
     };
 
@@ -188,7 +211,7 @@ const page = () => {
                     <div className='border-2 border-black rounded-lg p-10 text0'>
                         <div className='flex flex-col'>
                             <span className='text3 text-xl md:text-4xl'>Scan QR/Barcode</span>
-                            <QRCodeScanner onScan={setQrResult} />
+                            <QRCodeScanner onScan={handleScan} />
                             {qrResult && <p>Scanned Result: {qrResult}</p>}
                         </div>
                     </div>

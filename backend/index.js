@@ -194,12 +194,18 @@ app.get('/api/products/category/:category', async (req, res) => {
 
 app.get('/api/products/hsn/:hsn', async (req, res) => {
     try {
-        const hsn = req.params.category;
+        const hsn = req.params.hsn;
 
         const products = await Product.find({hsn: hsn});
 
-        res.json(products);
-    } catch (error) {
+        // Check if any products were found
+        if (products.length > 0) {
+            res.json(products);
+        } else {
+            res.status(404).json({ message: 'No products found with this HSN number.' });
+        }
+        
+        } catch (error) {
         res.status(500).json({message: error.message});
     }
 })
