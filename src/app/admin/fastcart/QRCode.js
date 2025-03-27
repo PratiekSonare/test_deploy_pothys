@@ -12,6 +12,7 @@ const QRCodeScanner = ({ onScan }) => {
   useEffect(() => {
     const startScan = async () => {
       try {
+        // Get video devices
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === "videoinput");
 
@@ -20,8 +21,11 @@ const QRCodeScanner = ({ onScan }) => {
           return;
         }
 
-        const deviceId = videoDevices[0].deviceId;
+        // Find the back camera
+        const backCamera = videoDevices.find(device => device.label.toLowerCase().includes("back")) || videoDevices[0];
+        const deviceId = backCamera.deviceId;
 
+        // Start scanning from the back camera
         codeReader.decodeOnceFromVideoDevice(deviceId, videoRef.current)
           .then(result => {
             onScan(result.text);
