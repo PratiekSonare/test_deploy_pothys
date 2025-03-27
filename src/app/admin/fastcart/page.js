@@ -34,29 +34,6 @@ const page = () => {
     const { cartItems, addToCart, incrementQ, decrementQ, calculateTotal } = useCart();
 
 
-
-
-    // useEffect(() => {
-
-    //     const handleDropDown = async () => {
-    //         try {
-    //             // const encodedCategory = encodeURIComponent("Home and Kitchen");
-    //             const response = await axios.get(
-    //                 `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/hsn/${qrResult}`
-    //             );
-    //             setProducts(response.data);
-    //             console.log('respone data: ', response.data);
-    //             console.log('respone data brand: ', response.data.brand);
-    //         } catch (error) {
-    //             console.error("Error fetching products:", error);
-    //         } finally {
-    //             // setLoading(false);
-    //         }
-    //     };
-
-    //     handleDropDown();
-    // }, [qrResult]);
-
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -176,6 +153,24 @@ const page = () => {
         }
     };
 
+    const [hsnInput, setHsnInput] = useState('');
+    const handleHsnChange = (e) => {
+        setHsnInput(e.target.value);
+    };
+    const handleHsnSearch = () => {
+        const filteredByHsn = products.filter(product => product.hsn === hsnInput);
+        if (filteredByHsn.length > 0) {
+            
+            addToCart({
+                ...filteredByHsn[0],
+                quantityType: `${filteredByHsn[0]?.quantity} ${filteredByHsn[0]?.unit}`
+            });
+
+            alert(`Added ${filteredByHsn[0].name} to cart.`);
+        } else {
+            alert('No product found with this HSN number.');
+        }
+    };
 
     return (
         <div className='overflow-x-hidden w-screen'>
@@ -205,9 +200,16 @@ const page = () => {
                             <div>
                                 <span className='text-lg'>Search by HSN</span>
                                 <div className='flex flex-row space-x-2'>
-                                    <Input type="HSN" placeholder="HSN" className='bg-white' />
+                                    <Input 
+                                    type="HSN" 
+                                    placeholder="HSN" 
+                                    className='bg-white'
+                                    value={hsnInput}
+                                    onChange={handleHsnChange}
+                                    />
                                     <Button
                                         type="submit"
+                                        onClick={handleHsnSearch}
                                         className='flex flex-row justify-center items-center rounded-lg h-[40px] bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-[20s] ease-in-out'
                                     >
                                         Search
