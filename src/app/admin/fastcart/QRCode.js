@@ -32,9 +32,9 @@ const QRCodeScanner = ({ onScan }) => {
               onScan(result.text); // Call the onScan function with the scanned result
             }
           }
-          if (err && !(err instanceof NotFoundException)) {
-            console.error(err);
-          }
+          // if (err && !(err instanceof NotFoundException)) {
+          //   console.error(err);
+          // }
         });
       } catch (err) {
         setError("Error accessing camera.");
