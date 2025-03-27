@@ -24,7 +24,7 @@ export default function AdminLogin() {
             localStorage.setItem("adminToken", response.data.token);
             setShowPopup(true);
             setTimeout(() => {
-                router.push("/admin/inv");
+                router.push("/admin/home");
             }, 2000);   
         } catch (err) {
             console.error("Login error:", err);

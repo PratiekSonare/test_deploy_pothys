@@ -21,6 +21,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -139,6 +140,8 @@ app.post("/api/admin/login", async (req, res) => {
             console.log("Password does not match");
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
+        
+        
 
         // Generate a token
         const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });

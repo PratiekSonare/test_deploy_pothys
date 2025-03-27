@@ -83,23 +83,32 @@ const FinanceDashboard = () => {
     };
 
     useEffect(() => {
-        const adminToken = localStorage.getItem("adminToken");
-        if (!adminToken) {
-            // Redirect to login if token is not found
+        if (typeof window !== "undefined") { // Ensure it's client-side
+          const adminToken = localStorage.getItem("adminToken");
+    
+          if (!adminToken) {
+            console.log("No token found, redirecting...");
             router.push("/admin/adminlogin");
-        } else {
+          } else {
+            console.log("Token found:", adminToken);
             setToken(adminToken);
-            fetchTransactions(); // Fetch products if token is valid
+            fetchTransactions(); // Fetch data only after token is set
+          }
         }
-    }, [router]);
+      }, [router]); // Run once when the component mounts
 
     const fetchTransactions = async () => {
+
+        const adminToken = localStorage.getItem("adminToken");
+
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
                 },
             });
+            console.log('Token: ', adminToken);
+            console.log('fetched transactions successfully.')
             setTransactions(response.data.transactions);
             
             // Calculate total revenue
