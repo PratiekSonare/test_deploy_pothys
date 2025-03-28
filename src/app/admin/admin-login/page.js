@@ -2,6 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation"; // Assuming you're using Next.js
+import '../../styles.css'
 
 export default function AdminLogin() {
     const [username, setUsername] = useState("");
@@ -12,7 +13,7 @@ export default function AdminLogin() {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        setError(""); 
+        setError("");
 
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/admin/login`, {
@@ -25,7 +26,7 @@ export default function AdminLogin() {
             setShowPopup(true);
             setTimeout(() => {
                 router.push("/admin/home");
-            }, 2000);   
+            }, 2000);
         } catch (err) {
             console.error("Login error:", err);
             // Display specific error message from the server
@@ -34,30 +35,49 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-96 text-black">
-                <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
-                {error && <p className="text-red-500 mb-4">{error}</p>}
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="border p-2 rounded w-full mb-4"
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="border p-2 rounded w-full mb-4"
-                    required
-                />
-                <button type="submit" className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700">
-                    Login
-                </button>
-            </form>
+        <div className=" p-24 flex flex-col items-center justify-center min-h-screen bg-gray-100 text0">
+
+            <div className="p-10 grid grid-cols-2 space-x-10 bg-white rounded-lg bg-dotted border-blue-500 border-4">
+
+                <div className="flex flex-col items-center justify-center">
+                    <img
+                        src="/pothys-2template.svg"
+                        className="w-[35%] mb-5"
+                    ></img>
+        
+                    <span className="text0 text-xs text-gray-600">Powered by</span>
+                    <img
+                        src="/seltel-black.svg"
+                        className="w-[10%] -mt-2"
+                    ></img>
+                </div>
+    
+    
+                <form onSubmit={handleLogin} className="bg-white p-10 card-sdw border-blue-500 border-4 w-96 text-black rounded-lg">
+            
+                    <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
+                    {error && <p className="text-red-500 mb-4">{error}</p>}
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="border p-2 rounded w-full mb-4"
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="border p-2 rounded w-full mb-4"
+                        required
+                    />
+                    <button type="submit" className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700">
+                        Login
+                    </button>
+                </form>
+            </div>
 
             {/* Popup Notification */}
             {showPopup && (
@@ -65,6 +85,8 @@ export default function AdminLogin() {
                     Login successful! Redirecting...
                 </div>
             )}
+
+
         </div>
     );
 }

@@ -41,7 +41,7 @@ const page = () => {
     {
       title: "Inventory Dashboard",
       description: "Checkout existing inventory, pending stock",
-      src: "/shoppingcart.svg",
+      src: "/cart-shopping-fast.svg",
       routeTo: "/admin/inv",
     },
     {
@@ -89,17 +89,17 @@ const page = () => {
 
             <img
               src={content.src}
-              className='w-[5%]'
+              className='w-[5%] group-hover:filter group-hover:invert'
             />
 
             <div className='flex flex-row justify-between w-full'>
               <div className='flex flex-col'>
                 <span className='text3 text-3xl group-hover:text-white'>{content.title}</span>
-                <span className='text0 text-lg text-gray-600 group-hover:text-gray-400'>{content.description}</span>
+                <span className='text0 text-lg text-gray-600 group-hover:text-gray-200'>{content.description}</span>
               </div>
               <div className='flex-grow'></div>
 
-              <img src='/arrow.svg' className='w-[3%] rotate-180'>
+              <img src='/arrow.svg' className='w-[3%] rotate-180 group-hover:filter group-hover:invert'>
               </img>
             </div>
 

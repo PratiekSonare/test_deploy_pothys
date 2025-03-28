@@ -48,7 +48,7 @@ export default function Home() {
 
       <div className={isSearchFocused ? 'blur' : ''}>
         <div className="p-5 md:pt-10 md:px-40 z-0">
-          <div className="flex flex-col bg-gray-100 rounded-lg px-5 md:px-20 py-5 border-black border-dashed border-[1px] border-opacity-80">
+          <div className="flex flex-col bg-gray-100 rounded-lg px-5 md:px-20 py-5 border-black border-dashed border-[1px] border-opacity-80 bg-dow">
             <span className="text-xl md:text-[40px] items-start text3 mt-2 md:mt-5 md:mb-3">Deal of the Week</span>
             <div className="mb-5 mt-2"><ShadcnCardParent /></div>
           </div>
@@ -102,11 +102,11 @@ export default function Home() {
           <div className="flex flex-col justify-center items-center">
             <ImageCarousel />
             <div className="my-5"></div>
-            <span className="text-3xl text3">Established in 2024</span>
-            <div className="my-3"></div>
-            <span className="text-lg/6 md:text-xl text1">Pothy's store has served more than <span className="text2 text-green-600">500+</span> customers across <span className="text2">Puducherry</span>!</span>
-            <div className="my-3"></div>
-            <span className="text-lg md:text-xl text1">Customter's <span className="text2">trust</span>, our <span className="text2">commitment</span>! </span>
+            <span className="text-4xl text3">Established in 2024</span>
+            <div className="my-1"></div>
+            <span className="text-lg/6 md:text-3xl text1">Pothy's store has served more than <span className="text2 text-green-600">500+</span> customers across <span className="text2">Puducherry</span>!</span>
+            <div className="my-5"></div>
+            <span className="text-lg md:text-3xl text1">Customter's <span className="text2">trust</span>, our <span className="text2">commitment</span>! </span>
           </div>
         </div>
 

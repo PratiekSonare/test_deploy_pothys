@@ -18,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
 import { Separator } from "@/components/ui/separator";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -29,6 +31,7 @@ export default function CarouselSize() {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [loading, setLoading] = useState(true); // Loading state
   const [isVariantSelected, setIsVariantSelected] = useState(false); // New state to track variant selection
+  const { toast } = useToast(); // Ensure it's inside the component
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -91,18 +94,20 @@ export default function CarouselSize() {
           </div>; // You can customize this loading state
   }
 
-  const handleAddToCart = (variant) => {
-    const existingItem = cartItems.find(item => item.name === variant.name);
-    
-    if (existingItem) {
-      // If the product already exists in the cart, do not allow adding a different quantity
-      alert(`You have already added ${existingItem.quantityType} of ${variant.name}. Please update the quantity instead.`);
-      return;
-    }
+  const handleAddtoCartWithToast = (selectedVariant) => {
+    // const { toast } = useToast(); // Ensure it's inside the component
   
     addToCart({
-      ...variant,
-      quantityType: `${variant.quantity} ${variant.unit}`
+      ...selectedVariant,
+      quantityType: `${selectedVariant?.quantity} ${selectedVariant?.unit}`,
+    });
+  
+    // Show the toast notification
+    toast({
+      title: "Item Added to Cart",
+      description: `${selectedVariant?.name} has been added to your cart.`,
+      action: <ToastAction altText="View cart" onClick={() => router.push(`${NEXT_PUBLIC_FRONTEND_LINK}/cart`)}>View Cart</ToastAction>,
+      className: 'bg-green-500 text0'
     });
   };
 
@@ -201,10 +206,7 @@ export default function CarouselSize() {
                   {!cartItem ? (
                     <div className="flex justify-center p-3">
                       <button
-                        onClick={() => addToCart({
-                          ...selectedVariant,
-                          quantityType: `${selectedVariant?.quantity} ${selectedVariant?.unit}`
-                        })}
+                        onClick={() => handleAddtoCartWithToast(selectedVariant)}
                         className="flex justify-center items-center p-2 text-md w-full h-[40px] rounded-lg border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 transition"
                       >
                         <span className="font-bold">Add</span>

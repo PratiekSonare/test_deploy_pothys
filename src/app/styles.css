@@ -104,3 +104,34 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+  .bg-dotted {
+    background-image: url('/abstract-curve.avif');
+    /* background-image: radial-gradient(circle, #ccc 1px, transparent 5px); */
+    background-size: 2000px 500px; /* Adjust size for spacing */
+    
+}
+
+.bg-dow {
+  position: relative; /* Ensure the parent is positioned */
+  overflow: hidden; /* Hide any overflow from the pseudo-element */
+}
+
+.bg-dow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/blue-gradient.avif');
+  /* background-image: url('/celebration2.webp'); */
+  background-size: 2000px 800px; /* Adjust size for spacing */
+  opacity: 0.5; /* Set the opacity of the background image */
+  z-index: 0; /* Ensure it is behind other content */
+}
+
+.bg-dow > * {
+  position: relative; /* Ensure child elements are above the pseudo-element */
+  z-index: 1; /* Bring child elements above the background */
+}
