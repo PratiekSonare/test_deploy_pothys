@@ -36,25 +36,25 @@ const page = () => {
       title: "Admin Settings",
       description: "Manage and edit admin users, settings",
       src: "/admin-svgrepo-com.svg",
-      routeTo: "/admin/settings",
+      routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/settings`,
     },
     {
       title: "Inventory Dashboard",
       description: "Checkout existing inventory, pending stock",
       src: "/cart-shopping-fast.svg",
-      routeTo: "/admin/inv",
+      routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/inv`,
     },
     {
       title: "Finances",
       description: "Look at daily, monthly revenue. Manage dyanmic pricing.",
       src: "/american-dollar-cents.svg",
-      routeTo: "/admin/fin",
+      routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/fin`,
     },
     {
       title: "Activity Dashboard", //notifications, pending deliveries
       description: "Analyse user/admin activity across all interfaces in one touch.",
       src: "/notebook.svg",
-      routeTo: "/admin/activity",
+      routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/activity`,
     },
   ];
 
@@ -83,7 +83,7 @@ const page = () => {
         {content.map((content, index) =>
           <div
             key={index}
-            onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/${content.routeTo}`)}
+            onClick={() => router.push(`${content.routeTo}`)}
             className='p-10 mb-10 shadow-lg rounded-lg flex flex-row gap-16 items-center hover:scale-[101%] transition-all duration-300 ease-in-out
             bg-transparent border-blue-500 border-[3px] hover:bg-blue-500 hover:border-0 group'>
 
