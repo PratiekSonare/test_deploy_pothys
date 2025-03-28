@@ -88,9 +88,8 @@ const FinanceDashboard = () => {
     
           if (!adminToken) {
             console.log("No token found, redirecting...");
-            router.push("/admin/adminlogin");
+            router.push("/admin/admin-login");
           } else {
-            console.log("Token found:", adminToken);
             setToken(adminToken);
             fetchTransactions(); // Fetch data only after token is set
           }
@@ -99,16 +98,17 @@ const FinanceDashboard = () => {
 
     const fetchTransactions = async () => {
 
+
         const adminToken = localStorage.getItem("adminToken");
+        console.log(`backend link detecting:`, process.env.NEXT_PUBLIC_BACKEND_LINK);
+        console.log("Admin Token in Frontend:", adminToken);
 
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
                 headers: {
-                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
+                    Authorization: `${adminToken}`, // Include the token in the Authorization header
                 },
             });
-            console.log('Token: ', adminToken);
-            console.log('fetched transactions successfully.')
             setTransactions(response.data.transactions);
             
             // Calculate total revenue

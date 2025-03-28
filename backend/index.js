@@ -99,20 +99,23 @@ const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync("
 
 const verifyAdmin = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1]; // Get token from Bearer
-
+    console.log(`Recieved token in backend is`, token); 
     if (!token) {
       return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if (decoded.role !== "admin") {
-        return res.status(403).json({ message: "Unauthorized" });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded Token:", decoded);
+        if (decoded.role !== "admin") {
+          console.log("Unauthorized Access - Not an Admin:", decoded.role);
+          return res.status(403).json({ message: "Unauthorized" });
+        }
+        next();
+      } catch (error) {
+        console.error("JWT Verification Error:", error.message);
+        res.status(400).json({ message: "Invalid Token" });
       }
-      next(); // Proceed to the actual API route
-    } catch (error) {
-      res.status(400).json({ message: "Invalid Token" });
-    }
 };
 
 // Example protected route

@@ -65,7 +65,7 @@ export default function AdminDashboard() {
     
           if (!adminToken) {
             console.log("No token found, redirecting...");
-            router.push("/admin/adminlogin");
+            router.push("/admin/admin-login");
           } else {
             console.log("Token found:", adminToken);
             setToken(adminToken);
