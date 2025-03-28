@@ -106,7 +106,7 @@ const FinanceDashboard = () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions`, {
                 headers: {
-                    Authorization: `${adminToken}`, // Include the token in the Authorization header
+                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
                 },
             });
             setTransactions(response.data.transactions);
@@ -133,7 +133,7 @@ const FinanceDashboard = () => {
                 dailyRevenue[date].total += txn.total_amount;
                 dailyRevenue[date].count += 1;
             });
-            error
+            
             // Set dailyRevenue state
             setDailyRevenue(dailyRevenue);
 

@@ -28,7 +28,6 @@ const page = () => {
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
-
   const router = useRouter();
 
   const content = [

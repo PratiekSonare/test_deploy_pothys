@@ -105,7 +105,7 @@ const verifyAdmin = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, 'iLOVEpaneer65');
         console.log("Decoded Token:", decoded);
         if (decoded.role !== "admin") {
           console.log("Unauthorized Access - Not an Admin:", decoded.role);
@@ -147,7 +147,7 @@ app.post("/api/admin/login", async (req, res) => {
         
 
         // Generate a token
-        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: admin._id, role: "admin" }, 'iLOVEpaneer65', { expiresIn: "1h" });
         res.json({ success: true, token });
     } catch (error) {
         console.error("Login error:", error);
