@@ -1,9 +1,11 @@
 'use client';
 
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useState, Suspense, useEffect, useRef  } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Dynamically import jsPDF and html2canvas for SSR compatibility
 const jsPDF = dynamic(() => import("jspdf"), { ssr: false });
@@ -37,8 +39,11 @@ const SearchParamsWrapper = ({ setTransactionData }) => {
             `${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/transactions?transaction_id=${transactionId}`
           );
           const data = await response.json();
+
+          console.log('data response: ', data.transactions)
           if (data.success) {
-            setTransactionData(data.transaction);
+            console.log('data received', data.message)
+            setTransactionData(data.transactions[0]);
           } else {
             console.error("Error fetching transactionData:", data.message);
           }

@@ -40,6 +40,8 @@ import ShadcnCard from '../ShadcnCard';
 import { useRouter } from "next/navigation";
 import Header from "../../cart/Header";
 import '../../styles.css'
+import dotenv from 'dotenv'
+dotenv.config();
 
 export default function AdminDashboard() {
 
@@ -100,7 +102,6 @@ export default function AdminDashboard() {
     const onSubmit = async (data) => {
         const formattedData = {
             ...data,
-            avail: data.avail === "true",
         };
 
         if (editingProduct) {
@@ -113,10 +114,12 @@ export default function AdminDashboard() {
     };
 
     const addProduct = async (data) => {
+        const adminToken = localStorage.getItem("adminToken");
+
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, data, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
                 },
             });
             console.log("Response:", response.data);
@@ -129,23 +132,47 @@ export default function AdminDashboard() {
     };
 
     const updateProductData = async (data) => {
-        const updatedData = { ...editingProduct, ...data }; // Prepare updated data
+        const adminToken = localStorage.getItem("adminToken");
+
+        // Ensure the _id is included in the updated data
+        const updatedData = { ...editingProduct, ...data, _id: editingProduct._id }; // Prepare updated data
         try {
-            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, updatedData, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products`, updatedData, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
                 },
-            }); // Send updated data in the body
-            console.log('PUT Request successful!');
+            });
+            console.log('PUT Request successful!', response.data);
             fetchProducts(); // Refresh the product list
-            reset(); // Reset the form
+            reset(); // Reset the form to default values
             setEditingProduct(null); // Clear editing state
-            setShowPopup(true); // Show confirmation popup if needed
+            setShowPopup(true); // Show confirmation popup
         } catch (error) {
             console.error("Error updating product:", error.response ? error.response.data : error.message);
+            alert("Failed to update product. Please try again.");
         }
     };
 
+    const updateProduct = (product) => {
+        console.log("Editing Product:", product); // Debugging line
+        setEditingProduct(product);
+        reset({
+            hsn: product.hsn,
+            brand: product.brand,
+            name: product.name,
+            quantity: product.quantity,
+            price: product.price,
+            discount: product.discount,
+            unit: product.unit,
+            product_feature: product.product_feature,
+            product_tags: product.product_tags,
+            imageURL: product.imageURL,
+            category: product.category,
+            dow: product.dow.toString(),
+            avail: product.avail.toString(),
+        });
+    };
+    
     const multipleupdateProductData = () => {
         setMultipleUpdate(true)
     };
@@ -155,7 +182,7 @@ export default function AdminDashboard() {
         setActionType("delete");
         setShowPopup(true);
     };
-
+    
     const confirmDelete = async () => {
         try {
             if (selectedProducts.length > 0) {
@@ -183,24 +210,6 @@ export default function AdminDashboard() {
         setSelectedProducts([]); // Clear selected products after deletion
     };
 
-    const updateProduct = (product) => {
-        setEditingProduct(product);
-        reset({
-            brand: product.name || "",
-            name: product.name || "",
-            price: product.price || 0,
-            discount: product.discount || 0,
-            discounted_price: product.discounted_price || 0,
-            quantity: product.quantity || 0,
-            unit: product.unit || "",
-            product_feature: product.product_feature || "",
-            product_tags: product.product_tags || "",
-            imageURL: product.imageURL || "",
-            category: product.category || "",
-            avail: product.avail !== undefined ? product.avail.toString() : "false",
-            dow: product.dow !== undefined ? product.dow.toString() : "false",
-        });
-    };
 
     const handleCSVUpload = (event) => {
         const file = event.target.files[0];
@@ -211,6 +220,8 @@ export default function AdminDashboard() {
     };
 
     const confirmCSVUpload = async () => {
+        const adminToken = localStorage.getItem("adminToken");
+
         const formData = new FormData();
         formData.append("file", csvFile);
 
@@ -218,7 +229,7 @@ export default function AdminDashboard() {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/products/upload`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    Authorization: `Bearer ${adminToken}`, // Include the token in the Authorization header
                 },
             });
             console.log("Products uploaded successfully:", response.data);
@@ -289,6 +300,7 @@ export default function AdminDashboard() {
 
     const form = useForm({
         defaultValues: {
+            hsn: "",
             brand: "",
             name: "",
             price: "",
@@ -307,7 +319,6 @@ export default function AdminDashboard() {
     });
 
     const watchForm = form.watch();
-
     const price = form.watch("price") || 0;
     const discount = form.watch("discount") || 0;
     const discountedPrice = price - (price * discount) / 100;
@@ -335,19 +346,19 @@ export default function AdminDashboard() {
 
     return (
 
-       <>
+        <>
             <header className="top-0 header-sdw">
                 <Header />
             </header>
-        
-            < div className = "container mx-auto p-2" >
+
+            < div className="container mx-auto p-2" >
                 <div className='flex flex-row justify-between items-center mt-10'>
-    
+
                     <div className='flex flex-col'>
                         <span className='text-4xl text3'>Inventory Dashboard</span>
                         <div className='bg-blue-500 rounded-lg self-start'><span className="text2 text-2xl font-bold mb-5 text-gray-300 px-3 py-2">Admin Access</span></div>
                     </div>
-    
+
                     <div className='flex flex-row items-start gap-5 mr-5'>
                         <div className='flex flex-col bg-green-500 px-5 py-2 rounded-lg'>
                             <span className='text-lg text0 self-end text-green-300'>Time</span>
@@ -358,18 +369,34 @@ export default function AdminDashboard() {
                             <span className='text-2xl text2'>{currentDate}</span>
                         </div>
                     </div>
-    
+
                 </div>
-    
+
                 <div className="my-10"></div>
-    
+
                 <div className="grid grid-cols-[4fr_1fr] space-x-5">
                     <Form {...form}>
-                        <form className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)} 
+                            className="mb-6 bg-white p-6 rounded-lg shadow-md space-y-4 text-black">
                             <h2 className="text-xl font-semibold text-gray-700">{editingProduct ? "Edit Product" : "Add Product"}</h2>
-    
+
                             <div className="grid grid-cols-2 gap-4">
-    
+
+                                <FormField
+                                    control={form.control}
+                                    name="hsn"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>HSN</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="HSN" required {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="brand"
@@ -383,7 +410,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <FormField
                                     control={form.control}
                                     name="name"
@@ -397,7 +424,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <FormField
                                     control={form.control}
                                     name="quantity"
@@ -411,9 +438,9 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <div className="grid grid-cols-[4fr_2fr_4fr] space-x-5">
-    
+
                                     <FormField
                                         control={form.control}
                                         name="price"
@@ -427,7 +454,7 @@ export default function AdminDashboard() {
                                             </FormItem>
                                         )}
                                     />
-    
+
                                     <FormField
                                         control={form.control}
                                         name="discount"
@@ -441,7 +468,7 @@ export default function AdminDashboard() {
                                             </FormItem>
                                         )}
                                     />
-    
+
                                     {/* Discounted Price - Read-Only */}
                                     <FormItem>
                                         <FormLabel>Discounted Price</FormLabel>
@@ -449,9 +476,9 @@ export default function AdminDashboard() {
                                             <Input type="number" value={discountedPrice.toFixed(2)} readOnly />
                                         </FormControl>
                                     </FormItem>
-    
+
                                 </div>
-    
+
                                 <FormField
                                     control={form.control}
                                     name="unit"
@@ -471,7 +498,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <FormField
                                     control={form.control}
                                     name="product_feature"
@@ -485,7 +512,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <FormField
                                     control={form.control}
                                     name="product_tags"
@@ -499,7 +526,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <FormField
                                     control={form.control}
                                     name="imageURL"
@@ -513,7 +540,7 @@ export default function AdminDashboard() {
                                         </FormItem>
                                     )}
                                 />
-    
+
                                 <div className="flex flex-row items-center space-x-5 w-full">
                                     <FormField
                                         control={form.control}
@@ -534,7 +561,7 @@ export default function AdminDashboard() {
                                             </FormItem>
                                         )}
                                     />
-    
+
                                     <FormField
                                         control={form.control}
                                         name="dow"
@@ -551,7 +578,7 @@ export default function AdminDashboard() {
                                             </FormItem>
                                         )}
                                     />
-    
+
                                     <FormField
                                         control={form.control}
                                         name="avail"
@@ -569,7 +596,7 @@ export default function AdminDashboard() {
                                         )}
                                     />
                                 </div>
-    
+
                                 <FormField
                                     control={form.control}
                                     name="csv"
@@ -589,7 +616,7 @@ export default function AdminDashboard() {
                             </Button>
                         </form>
                     </Form>
-    
+
                     <div className="p-5 bg-white rounded-lg shadow-md flex flex-col justify-center items-center">
                         <div className="">
                             <h1 className="mb-5 -mt-10 text-xl font-semibold text-gray-700">Product Card</h1>
@@ -598,31 +625,31 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 </div>
-    
-        {
-            csvFile && (
-                <div className="mb-4">
-                    <button
-                        onClick={() => (true)}
-                        className="bg-green-600 text-white p-2 rounded hover:bg-green-700 transition"
-                    >
-                        Confirm Upload
-                    </button>
-                </div>
-            )
-        }
-    
-        {
-            showConfirmUpload && (
-                <ConfirmationPopup
-                    message="Are you sure you want to upload this CSV file?"
-                    onConfirm={confirmCSVUpload}
-                    onCancel={() => setShowConfirmUpload(false)}
-                />
-            )
-        }
-    
-    
+
+                {
+                    csvFile && (
+                        <div className="mb-4">
+                            <button
+                                onClick={() => (true)}
+                                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 transition"
+                            >
+                                Confirm Upload
+                            </button>
+                        </div>
+                    )
+                }
+
+                {
+                    showConfirmUpload && (
+                        <ConfirmationPopup
+                            message="Are you sure you want to upload this CSV file?"
+                            onConfirm={confirmCSVUpload}
+                            onCancel={() => setShowConfirmUpload(false)}
+                        />
+                    )
+                }
+
+
                 <div className="mb-4">
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Filter Products</h2>
                     <div className="flex space-x-4 mb-4">
@@ -645,7 +672,7 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                 </div>
-    
+
                 <div className="bg-white p-6 rounded-lg shadow-md text-black">
                     <div className="flex flex-row space-x-10 justify-between items-center">
                         <h2 className="text-xl font-semibold text-gray-700 mb-4">Product List</h2>
@@ -708,7 +735,7 @@ export default function AdminDashboard() {
                             </Popover>
                         </div>
                     </div>
-    
+
                     <div className="" style={{ height: '500px', overflowY: 'auto' }}>
                         <Table className="w-full border border-gray-300 rounded-lg">
                             <TableHeader className="bg-gray-200">
@@ -790,20 +817,20 @@ export default function AdminDashboard() {
                         </Table>
                     </div>
                 </div>
-    
-        {
-            showPopup && (
-                <ConfirmationPopup
-                    message={actionType === "delete" ? "Are you sure you want to delete this product?" : "Are you sure you want to update this product?"}
-                    onConfirm={actionType === "delete" ? confirmDelete : updateProductData}
-                    onCancel={() => setShowPopup(false)}
-                />
-            )
-        }
-    
-    
-    
+
+                {
+                    showPopup && (
+                        <ConfirmationPopup
+                            message={actionType === "delete" ? "Are you sure you want to delete this product?" : "Are you sure you want to update this product?"}
+                            onConfirm={actionType === "delete" ? confirmDelete : updateProductData}
+                            onCancel={() => setShowPopup(false)}
+                        />
+                    )
+                }
+
+
+
             </div >
-       </>
+        </>
     );
 }

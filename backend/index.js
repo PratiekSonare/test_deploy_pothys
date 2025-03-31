@@ -340,7 +340,7 @@ app.post('/api/products/upload', verifyAdmin, upload.single('file'), async (req,
 // TRANSACTION POSTING APIS
 app.post("/api/transactions", async (req, res) => {
     try {
-        const { cartItems, total_amount, payment_method, customer } = req.body;
+        const { cartItems, total_amount, payment_method, customer, delivery_status } = req.body;
 
         // Generate a unique transaction ID
         const transaction_id = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
@@ -352,7 +352,8 @@ app.post("/api/transactions", async (req, res) => {
             total_amount,
             payment_method: "UPI", // Since you're not integrating a payment gateway yet
             customer,
-            status: "success"
+            status: "success",
+            delivery_status: "pending" //online delivery
         });
 
         await newTransaction.save();
@@ -366,7 +367,7 @@ app.post("/api/transactions", async (req, res) => {
 
 
 // TRANSACTION DATA FETCHING APIS
-app.get("/api/transactions", verifyAdmin, async (req, res) => {
+app.get("/api/transactions", async (req, res) => {
 
     try {
         const { transaction_id, payment_method, delivery_status } = req.query;
@@ -396,7 +397,7 @@ app.get("/api/transactions", verifyAdmin, async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching transaction data. Please contact administrator.", error: error.message })
     }
-});
+}); 
 
 // TRANSACTION FETCHING BY TRANSACTION ID
 app.patch("/api/transactions/:transaction_id", verifyAdmin, async (req, res) => {

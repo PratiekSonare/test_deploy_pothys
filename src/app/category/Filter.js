@@ -13,7 +13,6 @@ const Filter = () => {
     const discountOptions = [
         { id: "fiftyPercent", label: "50% and more off" },
         { id: "thirtyPercent", label: "30% and more off" },
-        { id: "dealOfTheWeek", label: "Deal of the Week" },
     ];
 
     const router = useRouter();
@@ -24,7 +23,6 @@ const Filter = () => {
     const [selectedDiscounts, setSelectedDiscounts] = useState({
         fiftyPercent: false,
         thirtyPercent: false,
-        dealOfTheWeek: false,
     });
 
     useEffect(() => {
@@ -60,9 +58,8 @@ const Filter = () => {
     const filteredProducts = products.filter(product => {
         const meetsFiftyPercent = selectedDiscounts.fiftyPercent ? product.discount >= 50 : true;
         const meetsThirtyPercent = selectedDiscounts.thirtyPercent ? product.discount >= 30 : true;
-        const meetsDealOfTheWeek = selectedDiscounts.dealOfTheWeek ? product.dow === true : true;
 
-        return meetsFiftyPercent && meetsThirtyPercent && meetsDealOfTheWeek;
+        return meetsFiftyPercent && meetsThirtyPercent;
     });
 
     useEffect(() => {
