@@ -3,12 +3,26 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation"; // Assuming you're using Next.js
 import '../../styles.css'
-
+import { useForm } from 'react-hook-form';
+import {
+    useFormField,
+    Form,
+    FormItem,
+    FormLabel,
+    FormControl,
+    FormDescription,
+    FormMessage,
+    FormField,
+}
+    from '@/components/ui/form';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 export default function AdminLogin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleLogin = async (event) => {
@@ -34,11 +48,30 @@ export default function AdminLogin() {
         }
     };
 
+    const form = useForm({
+        defaultValues: {
+            name: '',
+            phone: '',
+            aadhar: '',
+            address: '',
+            branch: '',
+            username: '',
+            password: '',
+            empID: '',
+            // tran_succ: Number,
+            // verification: '',
+        },
+    });
+
+    const handleEmpReg = () => {
+
+    }
+
     return (
         <>
             <div className=" p-24 flex flex-col items-center justify-center min-h-screen bg-gray-100 text0">
 
-                <div className="p-10 grid grid-cols-2 space-x-10 bg-white rounded-lg bg-dotted border-blue-500 border-4">
+                <div className="p-10 grid grid-cols-2 space-x-5 bg-white rounded-lg bg-dotted-emp border-green-500 border-4">
 
                     <div className="flex flex-col items-center justify-center">
                         <img
@@ -54,9 +87,9 @@ export default function AdminLogin() {
                     </div>
 
 
-                    <form onSubmit={handleLogin} className="bg-white p-10 card-sdw border-blue-500 border-4 w-96 text-black rounded-lg">
+                    <form onSubmit={handleLogin} className="bg-white p-10 card-sdw border-green-500 border-4 w-96 text-black rounded-lg">
 
-                        <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
+                        <h2 className="text-2xl font-bold mb-4">Employee Login</h2>
                         {error && <p className="text-red-500 mb-4">{error}</p>}
                         <input
                             type="text"
@@ -74,10 +107,20 @@ export default function AdminLogin() {
                             className="border p-2 rounded w-full mb-4"
                             required
                         />
-                        <button type="submit" className="text2 text-md p-2 rounded w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-[20s] ease-in-out">
+                        <button type="submit" className="text2 p-2 text-md rounded w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-[20s] ease-in-out">
                             Login
                         </button>
+                        <div className="my-2"></div>
+                        <button
+                        type="submit"
+                        onClick={() => router.push('/employee/emp-reg')}
+                        className="text2 p-2 text-md rounded w-full border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out">
+                        Register New Employee
+                    </button>
                     </form>
+                    
+
+
                 </div>
 
                 {/* Popup Notification */}

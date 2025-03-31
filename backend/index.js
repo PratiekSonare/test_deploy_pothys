@@ -31,7 +31,7 @@ mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+    .catch(err => console.log(err));
 
 // Set up multer for file uploads
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
@@ -60,6 +60,20 @@ const adminSchema = new mongoose.Schema({
     password: String,
 });
 
+// Employee schema
+const employeeSchema = new mongoose.Schema({
+    name: String,
+    phone: Number,
+    aadhar: Number,
+    address: String,
+    branch: String,
+    username: String,
+    password: String,
+    empID: String,
+    tran_succ: Number,
+    verification: String,
+});
+
 // Transaction Schema
 const transactionSchema = new mongoose.Schema({
     transaction_id: { type: String, required: true, unique: true },
@@ -67,7 +81,7 @@ const transactionSchema = new mongoose.Schema({
     status: { type: String, enum: ["success", "failure"], required: true },
     payment_method: { type: String, enum: ["UPI", "Cash"], required: true },
     total_amount: { type: Number, required: true },
-    delivery_status: {type: String, enum: ["pending", "complete"], required: true},
+    delivery_status: { type: String, enum: ["pending", "complete"], required: true },
     cartItems: [
         {
             _id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -89,9 +103,10 @@ const transactionSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema, 'productlist');
 const Admin = mongoose.model("Admin", adminSchema, 'admin');
+const Employee = mongoose.model("Employee", employeeSchema, 'employee');
 const Transaction = mongoose.model('Transaction', transactionSchema, 'transactions');
 
-    // AUTH / MIDDLEWARE (IMPORTANT) 
+// AUTH / MIDDLEWARE (IMPORTANT) 
 
 // Fake Admin Credentials (Replace with DB-stored credentials)
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
@@ -101,42 +116,42 @@ const verifyAdmin = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1]; // Get token from Bearer
     // console.log(`Recieved token in backend is`, token); 
     if (!token) {
-      return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
+        return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
     }
 
     try {
         const decoded = jwt.verify(token, 'iLOVEpaneer65');
         // console.log("Decoded Token:", decoded);
         if (decoded.role !== "admin") {
-          console.log("Unauthorized Access - Not an Admin:", decoded.role);
-          return res.status(403).json({ message: "Unauthorized" });
+            console.log("Unauthorized Access - Not an Admin:", decoded.role);
+            return res.status(403).json({ message: "Unauthorized" });
         }
         next();
-      } catch (error) {
+    } catch (error) {
         console.error("JWT Verification Error:", error.message);
         res.status(400).json({ message: "Invalid Token" });
-      }
+    }
 };
 
 const verifyAdminOrEmp = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1]; // Get token from Bearer
     // console.log(`Recieved token in backend is`, token); 
     if (!token) {
-      return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
+        return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
     }
 
     try {
         const decoded = jwt.verify(token, 'iLOVEpaneer65');
         // console.log("Decoded Token:", decoded);
         if (decoded.role !== "emp" && decoded.role !== "admin") {
-          console.log("Unauthorized Access - Not an Admin/Employee:", decoded.role);
-          return res.status(403).json({ message: "Unauthorized" });
+            console.log("Unauthorized Access - Not an Admin/Employee:", decoded.role);
+            return res.status(403).json({ message: "Unauthorized" });
         }
         next();
-      } catch (error) {
+    } catch (error) {
         console.error("JWT Verification Error:", error.message);
         res.status(400).json({ message: "Invalid Token" });
-      }
+    }
 };
 
 // API Routes
@@ -159,8 +174,8 @@ app.post("/api/admin/login", async (req, res) => {
             console.log("Password does not match");
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
-        
-        
+
+
 
         // Generate a token
         const token = jwt.sign({ id: admin._id, role: "admin" }, 'iLOVEpaneer65', { expiresIn: "1h" });
@@ -190,8 +205,8 @@ app.post("/api/emp/login", async (req, res) => {
             console.log("Password does not match");
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
-        
-        
+
+
 
         // Generate a token
         const token = jwt.sign({ id: admin._id, role: "emp" }, 'iLOVEpaneer65', { expiresIn: "1h" });
@@ -248,7 +263,7 @@ app.get('/api/products/hsn/:hsn', async (req, res) => {
     try {
         const hsn = req.params.hsn;
 
-        const products = await Product.find({hsn: hsn});
+        const products = await Product.find({ hsn: hsn });
 
         // Check if any products were found
         if (products.length > 0) {
@@ -256,9 +271,9 @@ app.get('/api/products/hsn/:hsn', async (req, res) => {
         } else {
             res.status(404).json({ message: 'No products found with this HSN number.' });
         }
-        
-        } catch (error) {
-        res.status(500).json({message: error.message});
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 })
 
@@ -317,7 +332,7 @@ app.delete('/api/products', verifyAdmin, async (req, res) => {
 });
 
 // CSV DATA UPLOAD API
-app.post('/api/products/upload', verifyAdmin,  upload.single('file'), async (req, res) => {
+app.post('/api/products/upload', verifyAdmin, upload.single('file'), async (req, res) => {
     const results = [];
 
     // Check if a file was uploaded
@@ -385,7 +400,7 @@ app.post("/api/transactions", async (req, res) => {
 app.get("/api/transactions", verifyAdmin, async (req, res) => {
 
     try {
-        const {transaction_id, payment_method, delivery_status} = req.query;
+        const { transaction_id, payment_method, delivery_status } = req.query;
 
         const query = {}
 
@@ -403,18 +418,18 @@ app.get("/api/transactions", verifyAdmin, async (req, res) => {
 
         const transactions = await Transaction.find(query);
 
-        if(transactions.length > 0) {
+        if (transactions.length > 0) {
             return res.status(200).json({ success: true, transactions });
         } else {
-            return res.status(404).json({ success: false, message: "No transactions found matching the criteria."})
+            return res.status(404).json({ success: false, message: "No transactions found matching the criteria." })
         }
 
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching transaction data. Please contact administrator.", error: error.message})
+        res.status(500).json({ success: false, message: "Error fetching transaction data. Please contact administrator.", error: error.message })
     }
 });
 
-// Assuming you have a Transaction model defined
+// TRANSACTION FETCHING BY TRANSACTION ID
 app.patch("/api/transactions/:transaction_id", verifyAdmin, async (req, res) => {
     try {
         const { transaction_id } = req.params;
@@ -439,6 +454,18 @@ app.patch("/api/transactions/:transaction_id", verifyAdmin, async (req, res) => 
         return res.status(200).json({ success: true, transaction });
     } catch (error) {
         res.status(500).json({ success: false, message: "Error updating transaction status", error: error.message });
+    }
+});
+
+
+//  EMP REGISTRATION
+app.post("/api/employee/reg", async (req, res) => {
+    try {
+        const employee = new Employee(req.body);
+        await employee.save();
+        res.status(201).json(employee);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 

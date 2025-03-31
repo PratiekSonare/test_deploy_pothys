@@ -19,15 +19,7 @@ const CategoryCard = () => {
         {
             src: "/category_images/hk/hp_GMStorefront-pressure-cooker_m_250723_03.webp",
             alt: "beverages"
-        },
-        {
-            src: "/category_images/hk/hp_GMStorefront-stationery-store_m_250723_04.webp",
-            alt: "beverages"
-        },
-        {
-            src: "/category_images/hk/hp_GMunder-99_m_250723_01.webp",
-            alt: "beverages"
-        },
+        }
     ]
     
     const router = useRouter();
@@ -46,7 +38,7 @@ const CategoryCard = () => {
                     src={image.src}
                     alt={image.alt}
                     key={index}
-                    className='rounded-lg w-full md:w-[15%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
+                    className='rounded-lg w-full md:w-[22%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
                     onClick={() => router.push('/category/hk')}>                                        
                 </img>
             ))}

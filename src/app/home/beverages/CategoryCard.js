@@ -22,14 +22,6 @@ const CategoryCard = () => {
             src: "/category_images/beverages/hp_bev_m_juices_480_250923.webp",
             alt: "beverages"
         },
-        {
-            src: "/category_images/beverages/hp_bev_m_soft-drinks-&-more_480_250923.webp",
-            alt: "beverages"
-        },
-        {
-            src: "/category_images/beverages/hp_bev_m_tea-&-coffee_480_250923.webp",
-            alt: "beverages"
-        },
     ]
 
     const router = useRouter();
@@ -48,7 +40,7 @@ const CategoryCard = () => {
                         src={image.src}
                         alt={image.alt}
                         key={index}
-                        className='rounded-lg w-full md:w-[15%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
+                        className='rounded-lg w-full md:w-[22%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
                         onClick={() => router.push('/category/beverages')}>                    
                     </img>
                 ))}

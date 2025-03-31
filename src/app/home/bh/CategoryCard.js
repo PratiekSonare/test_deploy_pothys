@@ -22,14 +22,6 @@ const CategoryCard = () => {
             src: "/category_images/bh/hp_b&h_m_minimum-30-off_480_250923.webp",
             alt: "beverages"
         },
-        {
-            src: "/category_images/bh/hp_b&h_m_moisturiser_480_250923.webp",
-            alt: "beverages"
-        },
-        {
-            src: "/category_images/bh/hp_b&h_m_moisturiser_480_250923.webp",
-            alt: "beverages"
-        },
     ]
   return (
     <div className="flex flex-col bg-transparent rounded-lg py-5">
@@ -45,7 +37,7 @@ const CategoryCard = () => {
                     src={image.src}
                     alt={image.alt}
                     key={index}
-                    className='rounded-lg w-full md:w-[15%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
+                    className='rounded-lg w-full md:w-[22%] h-auto hover:scale-105 transition-all ease-in-out duration-300 shadow-xl hover:shadow-2xl'
                     onClick={() => router.push('/category/bh')}>                    
                 </img>
             ))}

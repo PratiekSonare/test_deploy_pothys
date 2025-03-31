@@ -119,8 +119,8 @@ const HomeScan = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className='text3 p-5 -z-10 text-xl group text-black border-2 border-red-500 bg-transparent hover:bg-red-500 hover:border-2 hover:border-transparent card-sdw'>
-          <span className="group-hover:text-white">Quick Scan</span>
+        <Button variant="outline" className='text3 p-3 md:p-5 -z-10 text-base md:text-xl group text-black border-2 border-red-500 bg-transparent hover:bg-red-500 hover:border-2 hover:border-transparent card-sdw'>
+          <span className="group-hover:text-white text-red-500">Quick Scan</span>
         </Button>
       </SheetTrigger>
       <SheetContent className=''>
@@ -137,10 +137,10 @@ const HomeScan = () => {
 
         {/* manual addition of products */}
         <div className='border-2 border-gray-500 rounded-lg p-5 text0 mt-10 card-sdw'>
-          <span className='text3 text-xl md:text-2xl'>Add Products Manually</span>
+          <span className='text3 text-base md:text-2xl'>Add Products Manually</span>
           <div className='grid grid-rows-1 md:grid-rows-2 gap-5 mt-2'>
             <div>
-              <span className='text-base'>Search by HSN</span>
+              <span className='text-sm md:text-base'>Search by HSN</span>
               <div className='flex flex-row space-x-2'>
                 <Input
                   type="HSN"
@@ -175,6 +175,11 @@ const HomeScan = () => {
             <span className='text3 text-xl md:text-2xl mb-5'>Scan QR/Barcode</span>
             <QRCodeScanner onScan={(value) => handleScan(value)} />
           </div>
+        </div>
+
+
+        <div className="my-10">
+          <Separator />
         </div>
 
         <SheetFooter>

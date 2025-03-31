@@ -112,6 +112,13 @@
     
 }
 
+.bg-dotted-emp {
+  background-image: url('/abstract-curve.avif');
+  /* background-image: radial-gradient(circle, #ccc 1px, transparent 5px); */
+  background-size: 2000px 800px; /* Adjust size for spacing */
+  
+}
+
 .bg-dow {
   position: relative; /* Ensure the parent is positioned */
   overflow: hidden; /* Hide any overflow from the pseudo-element */
