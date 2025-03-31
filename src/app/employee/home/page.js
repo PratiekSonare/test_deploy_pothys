@@ -1,4 +1,7 @@
+"use client"
 import React from 'react'
+import HeaderParent from '@/app/cart/HeaderParent'
+
 
 const page = () => {
   return (
