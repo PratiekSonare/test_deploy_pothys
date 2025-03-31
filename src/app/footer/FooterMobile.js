@@ -12,7 +12,7 @@ const Footer = () => {
       <div className='flex flex-col justify-center items-center gap-10'>
         {/* main footer, pothys links */}
         <div className=''>
-          <div className='grid grid-cols-[1fr_3fr_1fr] justify-around items-center space-x-5'>
+          <div className='grid grid-cols-[1fr_2fr_1fr] justify-around items-center space-x-5'>
 
 
             <div className='flex flex-col justify-center items-start gap-5'>

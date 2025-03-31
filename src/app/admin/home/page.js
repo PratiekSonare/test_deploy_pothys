@@ -11,6 +11,7 @@ dotenv.config();
 
 const page = () => {
   
+  const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
@@ -19,7 +20,8 @@ const page = () => {
       const formattedTime = now.toLocaleTimeString(); // HH:MM:SS
       const formattedDate = now.toLocaleDateString(); // DD/MM/YYYY or MM/DD/YYYY based on locale
 
-      setCurrentTime(`${formattedDate} | ${formattedTime}`);
+      setCurrentTime(`${formattedTime}`);
+      setCurrentDate(`${formattedDate}`);
     };
 
     updateTime(); // Set initial value immediately
@@ -68,10 +70,17 @@ const page = () => {
 
       <div className='px-24 flex flex-row justify-between items-center'>
         <span className='text-4xl text3'>Welcome, admin.</span>
-        <div className='flex flex-col items-end mr-5'>
-          <span className='text-lg text0'>Date/Time</span>
-          <span className='text-2xl text2'>{currentTime}
-          </span>
+        <div className='flex flex-row items-start gap-5 mr-5'>
+
+          <div className='flex flex-col bg-green-500 px-5 py-2 rounded-lg'>
+            <span className='text-lg text0 self-end text-green-300'>Time</span>
+            <span className='text-2xl text2'>{currentTime}</span>
+          </div>
+          <div className='flex flex-col bg-green-500 px-5 py-2 rounded-lg'>
+            <span className='text-lg text0 self-end text-green-300'>Date</span>
+            <span className='text-2xl text2'>{currentDate}</span>
+          </div>
+
         </div>
       </div>
 

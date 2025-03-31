@@ -102,7 +102,7 @@ export default function Home() {
           <div className="flex flex-col justify-center items-center">
             <ImageCarousel />
             <div className="my-5"></div>
-            <span className="text-4xl text3">Established in 2024</span>
+            <span className="text-3xl md:text-4xl text3">Established in 2024</span>
             <div className="my-1"></div>
             <span className="text-lg/6 md:text-3xl text1">Pothy's store has served more than <span className="text2 text-green-600">500+</span> customers across <span className="text2">Puducherry</span>!</span>
             <div className="my-5"></div>

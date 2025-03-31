@@ -135,3 +135,4 @@
   position: relative; /* Ensure child elements are above the pseudo-element */
   z-index: 1; /* Bring child elements above the background */
 }
+

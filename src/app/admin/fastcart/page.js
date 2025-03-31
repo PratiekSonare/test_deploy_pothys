@@ -54,19 +54,19 @@ const page = () => {
         fetchProducts();
     }, []);
 
-    useEffect(() => {
-        if (typeof window !== "undefined") { // Ensure it's client-side
-          const adminToken = localStorage.getItem("adminToken");
+    // useEffect(() => {
+    //     if (typeof window !== "undefined") { // Ensure it's client-side
+    //       const adminToken = localStorage.getItem("adminToken");
     
-          if (!adminToken) {
-            console.log("No token found, redirecting...");
-            router.push("/admin/admin-login");
-          } else {
-            setToken(adminToken);
-            fetchTransactions(); // Fetch data only after token is set
-          }
-        }
-      }, [router]); 
+    //       if (!adminToken) {
+    //         console.log("No token found, redirecting...");
+    //         router.push("/admin/admin-login");
+    //       } else {
+    //         setToken(adminToken);
+    //         fetchTransactions(); // Fetch data only after token is set
+    //       }
+    //     }
+    //   }, [router]); 
 
     const handleChange = (e) => {
         const value = e.target.value.toLowerCase().trim();

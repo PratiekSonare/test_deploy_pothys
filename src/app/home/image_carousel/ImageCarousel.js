@@ -17,7 +17,7 @@ export default function CarouselDemo() {
       alt: "stock",
     },
     {
-      src: "/premium_photo-1701842912345-6a7e59265c4a.avif",
+      src: "/blue-gradient.avif",
       alt: "stock",
     },
     {

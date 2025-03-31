@@ -16,7 +16,7 @@ const app = express();
 
 const corsOptions = {
     origin: ['https://pothys.onrender.com', 'http://localhost:3000', 'http://localhost:3001'], // Replace with your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Specify allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
@@ -118,10 +118,26 @@ const verifyAdmin = (req, res, next) => {
       }
 };
 
-// Example protected route
-app.get("/api/admin/protected", (req, res) => {
-  res.json({ message: "Welcome to the admin area!" });
-});
+const verifyAdminOrEmp = (req, res, next) => {
+    const token = req.header("Authorization")?.split(" ")[1]; // Get token from Bearer
+    // console.log(`Recieved token in backend is`, token); 
+    if (!token) {
+      return res.status(403).json({ message: "Access Denied. Contact administrator or login as admin before making changes!" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'iLOVEpaneer65');
+        // console.log("Decoded Token:", decoded);
+        if (decoded.role !== "emp" && decoded.role !== "admin") {
+          console.log("Unauthorized Access - Not an Admin/Employee:", decoded.role);
+          return res.status(403).json({ message: "Unauthorized" });
+        }
+        next();
+      } catch (error) {
+        console.error("JWT Verification Error:", error.message);
+        res.status(400).json({ message: "Invalid Token" });
+      }
+};
 
 // API Routes
 app.post("/api/admin/login", async (req, res) => {
@@ -155,6 +171,36 @@ app.post("/api/admin/login", async (req, res) => {
     }
 });
 
+app.post("/api/emp/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        console.log("Received username:", username);
+        console.log("Received password:", password);
+
+        // Find the admin by username
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            console.log("Admin not found");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        // Compare plain text password directly
+        if (admin.password !== password) {
+            console.log("Password does not match");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+        
+        
+
+        // Generate a token
+        const token = jwt.sign({ id: admin._id, role: "emp" }, 'iLOVEpaneer65', { expiresIn: "1h" });
+        res.json({ success: true, token });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
 
 // Add Products (Single or Multiple)
 app.post('/api/products', verifyAdmin, async (req, res) => {
@@ -337,78 +383,66 @@ app.post("/api/transactions", async (req, res) => {
 
 // TRANSACTION DATA FETCHING APIS
 app.get("/api/transactions", verifyAdmin, async (req, res) => {
+
     try {
-        const { transaction_id } = req.query; // Get transaction_id from query params
+        const {transaction_id, payment_method, delivery_status} = req.query;
+
+        const query = {}
 
         if (transaction_id) {
-            // Fetch a single transaction if transaction_id is provided
-            const transaction = await Transaction.findOne({ transaction_id });
-
-            if (!transaction) {
-                return res.status(404).json({ success: false, message: "Transaction not found" });
-            }
-
-            return res.status(200).json({ success: true, transaction });
+            query.transaction_id = transaction_id;
         }
 
-        // If no transaction_id is provided, fetch all transactions
-        const transactions = await Transaction.find();
-        res.status(200).json({ success: true, transactions });
+        if (payment_method) {
+            query.payment_method = payment_method;
+        }
+
+        if (delivery_status) {
+            query.delivery_status = delivery_status;
+        }
+
+        const transactions = await Transaction.find(query);
+
+        if(transactions.length > 0) {
+            return res.status(200).json({ success: true, transactions });
+        } else {
+            return res.status(404).json({ success: false, message: "No transactions found matching the criteria."})
+        }
 
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching transactions", error: error.message });
+        res.status(500).json({ success: false, message: "Error fetching transaction data. Please contact administrator.", error: error.message})
     }
 });
 
-//
-app.get("/api/transactions?delivery_status=pending", verifyAdmin, async (req, res) => {
+// Assuming you have a Transaction model defined
+app.patch("/api/transactions/:transaction_id", verifyAdmin, async (req, res) => {
     try {
-        const { transaction_id } = req.query; // Get transaction_id from query params
+        const { transaction_id } = req.params;
+        const { delivery_status } = req.body; // Expecting delivery_status in the request body
 
-        if (transaction_id) {
-            // Fetch a single transaction if transaction_id is provided
-            const transaction = await Transaction.findOne({ transaction_id, delivery_status: "pending" });
-
-            if (!transaction) {
-                return res.status(404).json({ success: false, message: "Transaction not found" });
-            }
-
-            return res.status(200).json({ success: true, transaction });
+        // Validate the delivery_status
+        if (!delivery_status || !['pending', 'complete'].includes(delivery_status)) {
+            return res.status(400).json({ success: false, message: "Invalid delivery status" });
         }
 
-        // If no transaction_id is provided, fetch all transactions
-        const transactions = await Transaction.find({ delivery_status: "pending" });
-        res.status(200).json({ success: true, transactions });
+        // Find the transaction and update its delivery status
+        const transaction = await Transaction.findOneAndUpdate(
+            { transaction_id },
+            { delivery_status },
+            { new: true } // Return the updated document
+        );
 
+        if (!transaction) {
+            return res.status(404).json({ success: false, message: "Transaction not found" });
+        }
+
+        return res.status(200).json({ success: true, transaction });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching pending transactions", error: error.message });
+        res.status(500).json({ success: false, message: "Error updating transaction status", error: error.message });
     }
 });
 
-//
-app.get("/api/transactions?delivery_status=complete", verifyAdmin, async (req, res) => {
-    try {
-        const { transaction_id } = req.query; // Get transaction_id from query params
-
-        if (transaction_id) {
-            // Fetch a single transaction if transaction_id is provided
-            const transaction = await Transaction.findOne({ transaction_id, delivery_status: "complete" });
-
-            if (!transaction) {
-                return res.status(404).json({ success: false, message: "Transaction not found" });
-            }
-
-            return res.status(200).json({ success: true, transaction });
-        }
-
-        // If no transaction_id is provided, fetch all transactions
-        const transactions = await Transaction.find({ delivery_status: "complete" });
-        res.status(200).json({ success: true, transactions });
-
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching complete transactions", error: error.message });
-    }
-});
 
 // Start the server
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
+
