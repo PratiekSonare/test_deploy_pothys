@@ -52,6 +52,12 @@ const page = () => {
       routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/fin`,
     },
     {
+      title: "Product Analytics", //which product is fast moving, slow moving, rate of their transactions, best performing product in this week etc.
+      description: "Analyse fast-moving, slow-moving products in your inventory, restock inventory intelligently!",
+      src: "/statistics.svg",
+      routeTo: `${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/product-analytics`,
+    },
+    {
       title: "Activity Dashboard", //notifications, pending deliveries
       description: "Analyse user/admin activity across all interfaces in one touch.",
       src: "/notebook.svg",

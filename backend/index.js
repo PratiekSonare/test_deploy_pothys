@@ -62,7 +62,7 @@ const adminSchema = new mongoose.Schema({
 
 // Employee schema
 const employeeSchema = new mongoose.Schema({
-    name: String,
+    full_name: String,
     phone: Number,
     aadhar: Number,
     address: String,
@@ -70,7 +70,7 @@ const employeeSchema = new mongoose.Schema({
     username: String,
     password: String,
     empID: String,
-    tran_succ: Number,
+    succ_tran: Number,
     verification: String,
 });
 
@@ -179,37 +179,6 @@ app.post("/api/admin/login", async (req, res) => {
 
         // Generate a token
         const token = jwt.sign({ id: admin._id, role: "admin" }, 'iLOVEpaneer65', { expiresIn: "1h" });
-        res.json({ success: true, token });
-    } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-});
-
-app.post("/api/emp/login", async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        console.log("Received username:", username);
-        console.log("Received password:", password);
-
-        // Find the admin by username
-        const admin = await Admin.findOne({ username });
-        if (!admin) {
-            console.log("Admin not found");
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
-        }
-
-        // Compare plain text password directly
-        if (admin.password !== password) {
-            console.log("Password does not match");
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
-        }
-
-
-
-        // Generate a token
-        const token = jwt.sign({ id: admin._id, role: "emp" }, 'iLOVEpaneer65', { expiresIn: "1h" });
         res.json({ success: true, token });
     } catch (error) {
         console.error("Login error:", error);
@@ -459,8 +428,8 @@ app.patch("/api/transactions/:transaction_id", verifyAdmin, async (req, res) => 
 
 
 //  EMP REGISTRATION
-app.post("/api/employee/reg", async (req, res) => {
-    try {
+app.post("/api/emp/reg", async (req, res) => {
+    try { 
         const employee = new Employee(req.body);
         await employee.save();
         res.status(201).json(employee);
@@ -469,6 +438,112 @@ app.post("/api/employee/reg", async (req, res) => {
     }
 });
 
+// EMP LOGIN
+app.post("/api/emp/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        console.log("Received username:", username);
+        console.log("Received password:", password);
+
+        // Find the admin by username
+        const employee = await Employee.findOne({ username });
+
+        if (!employee) {
+            console.log("Admin not found");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        // Compare plain text password directly
+        if (employee.password !== password) {
+            console.log("Password does not match");
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        if (employee.verification !== 'verified'){
+            console.log("Verification pending! Please verify registration from administrator.");
+            // alert("Verification pending! Please verify registration from administrator.");
+            return res.status(402).json({ success: false, message: "Verification pending! Please verify registration from administrator." });
+        }
+
+        // Generate a token
+        const token = jwt.sign({ id: employee._id, role: "emp" }, 'iLOVEpaneer65', { expiresIn: "1h" });
+        res.json({ success: true, token });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+// EMP DATA FETCHING APIS
+app.get("/api/employee", verifyAdmin, async (req, res) => {
+    try {
+        const {  verification } = req.query;
+
+        const query = {}
+
+        if (verification) {
+            query.verification = verification;
+        }
+
+        const employee = await Employee.find(query);
+
+        if (employee.length > 0) {
+            return res.status(200).json({ success: true, employee });
+        } else {
+            return res.status(404).json({ success: false, message: "No employee found matching the criteria." })
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching employee data. Please contact administrator.", error: error.message })
+    }
+});
+
+// Update verification status of an employee
+app.patch("/api/employee/:username", verifyAdmin, async (req, res) => {
+    try {
+        const { username } = req.params;
+        const { verification, empID } = req.body; // Expecting verification status in the request body
+
+        // Validate the verification status
+        if (!verification || !['pending', 'verified'].includes(verification)) {
+            return res.status(400).json({ success: false, message: "Invalid verification status" });
+        }
+
+        // Find the employee and update its verification status
+        const employee = await Employee.findOneAndUpdate(
+            { username: username },
+            { verification, empID },
+            { new: true } // Return the updated document
+        );
+
+        if (!employee) {
+            return res.status(404).json({ success: false, message: "Employee not found" });
+        }
+
+        return res.status(200).json({ success: true, employee });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error updating verification status", error: error.message });
+    }
+});
+
+// Delete an employee
+app.delete("/api/employee/:username", verifyAdmin, async (req, res) => {
+    try {
+        const { username } = req.params;
+
+        // Find the employee and delete it
+        const employee = await Employee.findOneAndDelete({ username: username });
+
+        if (!employee) {
+            return res.status(404).json({ success: false, message: "Employee not found" });
+        }
+
+        return res.status(200).json({ success: true, message: "Employee deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error deleting employee", error: error.message });
+    }
+});
 
 // Start the server
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));

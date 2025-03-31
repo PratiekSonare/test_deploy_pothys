@@ -30,7 +30,7 @@ export default function AdminLogin() {
         setError("");
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/admin/login`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_LINK}/api/emp/login`, {
                 username,
                 password,
             });
@@ -39,7 +39,7 @@ export default function AdminLogin() {
             localStorage.setItem("adminToken", response.data.token);
             setShowPopup(true);
             setTimeout(() => {
-                router.push("/admin/home");
+                router.push("/employee/home");
             }, 2000);
         } catch (err) {
             console.error("Login error:", err);
@@ -112,7 +112,7 @@ export default function AdminLogin() {
                         </button>
                         <div className="my-2"></div>
                         <button
-                        type="submit"
+                        // type="submit"
                         onClick={() => router.push('/employee/emp-reg')}
                         className="text2 p-2 text-md rounded w-full border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-[20s] ease-in-out">
                         Register New Employee

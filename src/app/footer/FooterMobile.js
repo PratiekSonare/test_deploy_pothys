@@ -30,6 +30,7 @@ const Footer = () => {
                 <span className="text2 text-white">Help</span>
                 <div className="my-0"></div>
                 <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/admin-login`)}>Admin Portal</button>
+                <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/employee/emp-login`)}>Employee Portal</button>
                 <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/admin-login`)}>Contact Us</button>
                 <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/admin/admin-login`)}>About Us</button>
               </div>
