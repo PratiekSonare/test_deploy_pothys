@@ -88,7 +88,7 @@ const SearchBar = ({ onFocus, onBlur }) => {
 
   return (
     <div className='hidden md:flex flex-col w-1/2 searchbar-container'>
-      <div className='flex bg-white searchbar-sdw w-full h-10 rounded-lg p-3'>
+      <div className='flex bg-white card-sdw w-full h-10 rounded-lg p-3'>
         <div className='flex flex-row items-center gap-5 w-full'>
           <img src='/searchicon.svg' alt='search_icon' style={{ height: '24px', width: '24px' }} />
           <input

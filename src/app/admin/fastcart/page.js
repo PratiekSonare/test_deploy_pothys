@@ -276,11 +276,13 @@ const page = () => {
                                         Search
                                     </Button>
                                 </div>
+
                             </div>
 
                             <SearchBarParent />
                         </div>
                     </div>
+                    
                 </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 md:gap-10 mt-10'>

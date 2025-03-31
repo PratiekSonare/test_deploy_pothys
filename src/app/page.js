@@ -17,6 +17,7 @@ import Footer from "./footer/Footer";
 import HeaderParent from "./header/HeaderParent";
 import FooterParent from "./footer/FooterParent";
 import ShadcnCardParent from "./home/ShadcnCardParent";
+import HomeScan from './scan/HomeScan'
 
 export default function Home() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -42,6 +43,8 @@ export default function Home() {
           onFocus={() => setIsSearchFocused(true)}
           onBlur={() => setIsSearchFocused(false)}
         />
+
+        <div className="-mt-1"><HomeScan /></div>
 
       </div>
 

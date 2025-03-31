@@ -104,7 +104,7 @@ export default function CarouselSize() {
     toast({
       title: "Item Added to Cart",
       description: `${selectedVariant?.name} has been added to your cart.`,
-      action: <ToastAction altText="View cart" onClick={() => router.push(`${NEXT_PUBLIC_FRONTEND_LINK}/cart`)}>View Cart</ToastAction>,
+      action: <ToastAction altText="View cart" onClick={() => router.push(`${process.env.NEXT_PUBLIC_FRONTEND_LINK}/cart`)}>View Cart</ToastAction>,
       className: 'bg-green-500 text0'
     });
   };
